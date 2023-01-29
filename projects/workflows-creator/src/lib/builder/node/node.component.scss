@@ -1,0 +1,39 @@
+@import '../../../assets/styles/colors';
+
+.tree-node {
+  display: flex;
+  padding-bottom: 8px;
+  position: relative;
+  .workflow-content {
+    flex-grow: 1;
+  }
+  .action-icons {
+    cursor: pointer;
+    display: inline !important;
+    margin: 0 15px;
+    font-size: 18px;
+    padding: 5px;
+    height: 30px;
+    @media screen and (max-width: 480px) {
+      font-size: 12px;
+      margin: 0 5px;
+    }
+    &.icon-workflow-delete {
+      order: 2;
+    }
+    &.icon-workflow-plus {
+      order: 1;
+    }
+    &:hover {
+      &.icon-workflow-plus,
+      &.icon-workflow-delete {
+        background: $grey2;
+        border-radius: 5px;
+      }
+    }
+  }
+
+  .icon-workflow-delete:hover ~ .workflow-content {
+    text-decoration: line-through;
+  }
+}

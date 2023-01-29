@@ -1,0 +1,66 @@
+<div class="container">
+  <span *ngFor="let group of eventGroups; let i = index">
+    <workflow-group
+      [group]="group"
+      [isLast]="i === eventGroups.length - 1"
+      [isFirst]="i === 0"
+      [nodeType]="types.EVENT"
+      [eventGroups]="eventGroups"
+      [popupTemplate]="nodePopup"
+      [templateMap]="templateMap"
+      (add)="openPopup(types.GROUP)"
+      (remove)="onGroupRemove(i)"
+      (eventAdded)="onEventAdded($event)"
+      (actionAdded)="onActionAdded($event)"
+      (itemChanged)="onItemChanged($event)"
+    ></workflow-group>
+  </span>
+  <div class="down-arrow">
+    <span class="icon-workflow-down-arrow green"></span>
+  </div>
+  <span *ngFor="let group of actionGroups; let i = index">
+    <workflow-group
+      [group]="group"
+      [isLast]="true"
+      [isFirst]="true"
+      [nodeType]="types.GROUP"
+      [popupTemplate]="nodePopup"
+      [templateMap]="templateMap"
+      [allColumns]="allColumns"
+      (eventAdded)="onEventAdded($event)"
+      (actionAdded)="onActionAdded($event)"
+      (itemChanged)="onItemChanged($event)"
+    ></workflow-group>
+  </span>
+  <ng-container *ngIf="showElseBlock">
+    else
+    <div class="down-arrow">
+      <span class="icon-workflow-down-arrow red"></span>
+    </div>
+
+    <span *ngFor="let group of elseActionGroups; let i = index">
+      <workflow-group
+        [group]="group"
+        [isLast]="true"
+        [isFirst]="true"
+        [nodeType]="types.GROUP"
+        [popupTemplate]="nodePopup"
+        [templateMap]="templateMap"
+        [allColumns]="allColumns"
+        (eventAdded)="onEventAdded($event)"
+        (actionAdded)="onActionAdded($event)"
+        (itemChanged)="onItemChanged($event)"
+      ></workflow-group>
+    </span>
+  </ng-container>
+</div>
+
+<popper-content #nodePopup>
+  <div
+    class="option-div"
+    (click)="onGroupAdd(node); nodePopup.hide()"
+    *ngFor="let node of nodeList"
+  >
+    {{ node.name }}
+  </div>
+</popper-content>

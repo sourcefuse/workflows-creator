@@ -1,0 +1,247 @@
+@import '../../../assets/styles/colors';
+
+@mixin round-btn {
+  height: 30px;
+  width: 44px;
+  margin: 10px;
+  background-color: $white;
+  border: 1px solid $black;
+  border-radius: 5px;
+}
+
+@mixin theme {
+  background-color: $primary-color !important;
+  border: 1px solid $primary-color;
+  color: $white;
+}
+
+.tree-group {
+  padding: 5px 0;
+  @media screen and (max-width: 480px) {
+    margin-bottom: -25px;
+  }
+  &.no-node {
+    margin-bottom: -25px;
+  }
+  .workflow-group {
+    display: flex;
+    .workflow-group-content {
+      flex-grow: 1;
+    }
+    .action-items {
+      &.hide {
+        display: none;
+      }
+      .action-icons {
+        cursor: pointer;
+        display: inline !important;
+        margin: 0 15px;
+        font-size: 18px;
+        padding: 5px;
+        &:hover {
+          &.icon-workflow-plus,
+          &.icon-workflow-delete {
+            background: $grey2;
+            border-radius: 5px;
+          }
+        }
+      }
+    }
+  }
+
+  workflow-node {
+    &.last-node {
+      display: block;
+      height: 10px;
+      @media screen and (max-width: 1024px) {
+        height: auto;
+      }
+    }
+  }
+
+  .input-text {
+    cursor: pointer;
+    border-bottom: 1.5px solid;
+    display: inline;
+    text-decoration: inherit;
+    .placeholder-text {
+      color: $placeholder-color;
+      text-transform: lowercase;
+    }
+    .value-text {
+      display: inline-block;
+      overflow: hidden;
+      max-width: 45%;
+      text-decoration: inherit;
+      text-overflow: ellipsis;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+  }
+  .container {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+  }
+  .email-template {
+    width: 450px;
+    .email-input {
+      padding: 10px;
+      width: 100%;
+      border: 0;
+      outline: none;
+    }
+    .email-body-input {
+      border-top: 1px solid $grey;
+      border-bottom: 1px solid $grey;
+    }
+    .auto-populate {
+      padding: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      .item {
+        border: 1px solid $grey;
+        margin: 5px 10px;
+        padding: 4px;
+        font-size: 13px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    }
+    .set-email-btn {
+      text-align: right;
+      padding: 10px;
+      .close-btn {
+        background: $black;
+        color: $white;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 5px 20px;
+        border: 0;
+        border-radius: 5px;
+      }
+    }
+  }
+  .text-input {
+    border: 2px solid $primary-color;
+  }
+  .option-div {
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 200px;
+    &:hover {
+      background: $hover-color;
+    }
+    &.selected {
+      background-color: $primary-color;
+      color: $white;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .multiselect-dropdown,
+  .dropdown-list {
+    min-width: 250px;
+    margin-top: 0 !important;
+    font-size: 15px;
+    .dropdown-btn {
+      width: 225px;
+      font-size: 16px;
+      padding: 9px 12px;
+    }
+  }
+  .multiselect-dropdown {
+    .dropdown-btn {
+      .selected-item-container {
+        .selected-item {
+          font-size: 12px;
+          background: $primary-color !important;
+          border: 1px solid $primary-color !important;
+        }
+      }
+    }
+  }
+
+  .multiselect-item-checkbox input[type='checkbox']:checked + div:before {
+    background: $primary-color !important;
+    border: 2px solid $primary-color !important;
+  }
+
+  .multiselect-item-checkbox input[type='checkbox'] + div:before {
+    border: 2px solid $primary-color !important;
+  }
+
+  div.ngxp__container {
+    max-width: none;
+    font-size: 15px;
+  }
+
+  .ngb-dp-day {
+    .bg-primary {
+      @include theme;
+    }
+  }
+  ngb-datepicker {
+    padding-top: 10px;
+  }
+
+  ngb-datepicker-navigation-select > .custom-select {
+    margin-right: 10px;
+  }
+
+  fieldset {
+    border: 0;
+    text-align: center;
+    padding: 0;
+  }
+  .ngb-tp-input {
+    @include round-btn;
+  }
+  .ngb-tp-meridian {
+    .btn-outline-primary {
+      @include round-btn;
+    }
+  }
+
+  .sr-only {
+    display: none;
+  }
+  .ngb-dp-week {
+    border-radius: 5px;
+    display: flex;
+    width: 320px;
+    justify-content: space-between;
+  }
+  .btn-link {
+    background-color: $white;
+    border: 0;
+    color: $primary-color;
+    font-size: 13px;
+  }
+}
+
+.date-time-picker {
+  border: 1px solid;
+  max-width: 330px;
+  border-radius: 5px;
+  .time-picker {
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+  }
+  .close-btn {
+    @include theme;
+    height: 30px;
+    padding: 0 10px;
+    margin-top: 35px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+}

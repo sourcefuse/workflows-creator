@@ -1,0 +1,17 @@
+import {NodeTypes} from '../../enum';
+import {Constructor, RecordOfAnyType} from '../../types';
+import {WorkflowElement} from '../element/abstract-element.class';
+import {State} from '../state';
+import {WorkflowPrompt} from './abstract-prompt.class';
+
+export abstract class AbstractWorkflowNode<E> {
+  abstract type: NodeTypes;
+  abstract groupType: NodeTypes;
+  abstract groupId: string;
+  abstract elements: Constructor<WorkflowElement<E>>[];
+  abstract statement: string;
+  abstract prompts: Constructor<WorkflowPrompt>[];
+  abstract state: State<RecordOfAnyType>;
+  abstract name: string;
+  id: string;
+}

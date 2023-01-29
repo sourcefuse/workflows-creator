@@ -1,0 +1,6 @@
+{
+  "entryPoints": ["projects/workflows-creator/src/public-api.ts"],
+  "out": "docs",
+  "excludeExternals": true,
+  "readme": "/README.md"
+}

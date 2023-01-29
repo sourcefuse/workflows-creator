@@ -1,0 +1,26 @@
+<div class="tree-node">
+  <span
+    class="action-icons icon-workflow-plus"
+    *ngIf="isLast && node.node.state.get('condition') !== 'changes'"
+    [popper]="popupTemplate"
+    [popperShowOnStart]="false"
+    [popperHideOnClickOutside]="true"
+    [popperHideOnScroll]="true"
+    [popperTrigger]="'click'"
+    [popperPlacement]="'bottom'"
+    (click)="addClick()"
+  ></span>
+  <span
+    class="action-icons icon-workflow-delete"
+    (click)="removeClick()"
+  ></span>
+
+  <div class="workflow-content">
+    <span *ngIf="!isFirst"> and </span>
+    {{ node?.node?.statement || '' }}
+
+    <ng-container
+      *ngTemplateOutlet="inputTemplate; context: {node: node}"
+    ></ng-container>
+  </div>
+</div>

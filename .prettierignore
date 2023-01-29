@@ -1,0 +1,7 @@
+dist
+*.json
+coverage
+src/assets
+dhtmlx-gantt
+.snyk
+docs

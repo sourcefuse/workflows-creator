@@ -1,0 +1,34 @@
+on: pull_request
+name: Lint npm packages on pull request
+jobs:
+  npmLint:
+    name: npm lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v2
+        env:
+          cache-name: ${{ github.event.repository.name }}
+        with:
+          # caching node_modules
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Run npm install
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run test
+        run: npm test -- --no-progress --browsers=ChromeHeadlessCI
+
+      - name: Comment Test Coverage
+        uses: AthleticNet/comment-test-coverage@1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: coverage/biz-book-ui/coverage-summary.json
+          title: Karma Test Coverage

@@ -1,0 +1,308 @@
+<div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
+  <div class="workflow-group">
+    <div class="workflow-group-content">
+      <span *ngIf="!isFirst"> {{ group.name }} </span>
+      <span
+        class="input-text"
+        *ngIf="group.children.length === 0"
+        [popper]="nodePopup"
+        [popperShowOnStart]="false"
+        [popperHideOnClickOutside]="true"
+        [popperHideOnScroll]="true"
+        [popperTrigger]="'click'"
+        [popperPlacement]="'bottom'"
+        (click)="openPopup(group.nodeType)"
+      >
+        <span *ngIf="group.nodeType === types.EVENT">If this</span>
+        <span *ngIf="group.nodeType === types.ACTION">Do this</span>
+      </span>
+    </div>
+
+    <span
+      class="action-items hide"
+      *ngIf="group.children.length && enableActionIcon"
+    >
+      <span
+        class="action-add"
+        *ngIf="isLast && nodeType === types.EVENT"
+        [popper]="popupTemplate"
+        [popperShowOnStart]="false"
+        [popperHideOnClickOutside]="true"
+        [popperHideOnScroll]="true"
+        [popperTrigger]="'click'"
+        [popperPlacement]="'bottom'"
+        (click)="addClick()"
+      >
+        <span class="action-icons icon-workflow-plus"></span>
+      </span>
+      <span class="delete" *ngIf="!isFirst" (click)="removeClick()">
+        <span class="action-icons icon-workflow-delete"></span>
+      </span>
+    </span>
+  </div>
+  <span *ngFor="let node of group.children; let i = index">
+    <workflow-node
+      [ngClass]="{'last-node': i === group.children.length - 1}"
+      [node]="node"
+      [ngClass]="{'last-node': i === group.children.length - 1}"
+      [isLast]="i === group.children.length - 1"
+      [isFirst]="i === 0"
+      [inputTemplate]="inputs"
+      [popupTemplate]="nodePopup"
+      (add)="openPopup(group.nodeType)"
+      (remove)="onNodeRemove(i)"
+    ></workflow-node>
+  </span>
+
+  <popper-content #nodePopup>
+    <div
+      class="option-div"
+      (click)="
+        onNodeAdd(node, group.constructor.name, group.id); nodePopup.hide()
+      "
+      *ngFor="let node of nodeList"
+    >
+      {{ node.name }}
+    </div>
+  </popper-content>
+
+  <ng-template #inputs let-nodeWithInput="node">
+    <ng-container *ngFor="let input of nodeWithInput.inputs || []">
+      {{
+        (input.prefix.state
+          ? nodeWithInput.node.state.get(input.prefix.state)
+          : input.prefix) || ''
+      }}
+      <ng-container
+        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node.state))"
+      >
+        <div
+          class="input-text"
+          [popper]="inputPopper"
+          [popperShowOnStart]="false"
+          [popperHideOnClickOutside]="false"
+          [popperHideOnScroll]="true"
+          [popperTrigger]="'none'"
+          [popperPlacement]="'bottom-start'"
+          [popperApplyClass]="'workflow-popper'"
+          (click)="onPoperClick($event, inputPopper)"
+        >
+          <span
+            class="value-text"
+            *ngIf="input.getValueName(nodeWithInput.node.state)"
+            title="{{ input.getValueName(nodeWithInput.node.state) }}"
+            (click)="setInput(input, nodeWithInput)"
+            >{{ input.getValueName(nodeWithInput.node.state) }}</span
+          >
+          <span
+            class="placeholder-text"
+            *ngIf="!input.getValueName(nodeWithInput.node.state)"
+          >
+            {{ input.placeholder }}</span
+          >
+        </div>
+      </ng-container>
+      {{
+        (input.suffix?.state
+          ? nodeWithInput.node.state.get(input.suffix?.state)
+          : input.suffix) || ''
+      }}
+      <popper-content #inputPopper>
+        <ng-container
+          *ngIf="
+            inputPopper.displayType === 'block' &&
+            templateMap &&
+            templateMap[input.typeFunction(nodeWithInput.node.state)]
+          "
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              templateMap[input.typeFunction(nodeWithInput.node.state)] ||
+                listTemplate;
+              context: {
+                list: input.options
+                  ? input.options(nodeWithInput.node.state)
+                  : [],
+                callback: createCallback(nodeWithInput, input, inputPopper),
+                nodeWithInput: nodeWithInput,
+                input: input,
+                emailInput: emailInput,
+                appendEmailBody: appendEmailBody,
+                setFocusKey: setFocusKey,
+                hide: hidePopper()
+              }
+            "
+          ></ng-container>
+        </ng-container>
+      </popper-content>
+    </ng-container>
+  </ng-template>
+
+  <ng-template
+    #textTemplate
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-hide="hide"
+  >
+    <div (document:click)="hide()">
+      <input
+        type="text"
+        class="text-input"
+        autofocus
+        value="{{ input.setValueName(nodeWithInput.node.state) }}"
+        (focusout)="callback($event.target)"
+      />
+    </div>
+  </ng-template>
+
+  <ng-template
+    #numberTemplate
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-hide="hide"
+  >
+    <div (document:click)="hide()">
+      <input
+        type="number"
+        class="text-input"
+        autofocus
+        value="{{ input.setValueName(nodeWithInput.node.state) }}"
+        (focusout)="callback($event.target)"
+      />
+    </div>
+  </ng-template>
+
+  <ng-template
+    #listTemplate
+    let-list="list"
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-hide="hide"
+  >
+    <div
+      #select
+      class="option-div"
+      [ngClass]="{
+        selected:
+          option[input.listValueField] ===
+          input.setValueName(nodeWithInput.node.state)
+      }"
+      (click)="callback(option)"
+      (document:click)="hide()"
+      *ngFor="let option of list"
+    >
+      {{ option[input.listNameField] }}
+    </div>
+  </ng-template>
+
+  <ng-template
+    #searchableDropdownTemplate
+    let-list="list"
+    let-callback="callback"
+    let-hide="hide"
+  >
+    <ng-multiselect-dropdown
+      [placeholder]="'Please Select'"
+      [settings]="dropdownSettings"
+      [data]="list"
+      [(ngModel)]="selectedItems"
+      (onDropDownClose)="hide()"
+      (onSelect)="callback($event)"
+      (onSelectAll)="callback($event)"
+    >
+    </ng-multiselect-dropdown>
+  </ng-template>
+
+  <ng-template
+    #dateTemplate
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-hide="hide"
+  >
+    <ngb-datepicker
+      [(ngModel)]="date"
+      #d
+      (dateSelect)="callback($event)"
+      (document:click)="hide()"
+    ></ngb-datepicker>
+  </ng-template>
+
+  <ng-template
+    #dateTimeTemplate
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-hide="hide"
+  >
+    <div class="date-time-picker" (document:click)="hide()">
+      <ngb-datepicker [(ngModel)]="dateTime.date" #d></ngb-datepicker>
+      <div class="time-picker">
+        <div>
+          <ngb-timepicker
+            [(ngModel)]="dateTime.time"
+            meridian="true"
+          ></ngb-timepicker>
+        </div>
+        <div>
+          <button
+            class="close-btn"
+            (click)="callback(dateTime)"
+            [disabled]="!dateTime.date || !dateTime.time"
+          >
+            Set
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template
+    #emailTemplate
+    let-callback="callback"
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-emailInput="emailInput"
+    let-appendEmailBody="appendEmailBody"
+    let-setFocusKey="setFocusKey"
+    let-hide="hide"
+  >
+    <div class="email-template" (document:click)="hide()">
+      <input
+        type="text"
+        class="email-input"
+        id="email-subject"
+        autofocus
+        (focus)="setFocusKey(emailInput, 'subject')"
+        placeholder="Type your subject"
+        [(ngModel)]="emailInput.subject"
+      />
+      <textarea
+        placeholder="Type your mail"
+        id="email-body"
+        class="email-input email-body-input"
+        (focus)="setFocusKey(emailInput, 'body')"
+        [(ngModel)]="emailInput.body"
+      ></textarea>
+      <div class="auto-populate">
+        <ng-container *ngFor="let item of allColumns">
+          <div class="item" (click)="appendEmailBody(item, emailInput)">
+            {{ item.text }}
+          </div>
+        </ng-container>
+      </div>
+      <div class="set-email-btn">
+        <button
+          class="close-btn"
+          (click)="callback(emailInput)"
+          [disabled]="!emailInput.subject || !emailInput.body"
+        >
+          Set
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</div>
