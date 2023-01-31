@@ -195,7 +195,9 @@ export class CreateTaskStrategy implements CreateStrategy<ModdleElement> {
    */
   getInputFromPrev(element: BpmnElement, node: BpmnStatementNode) {
     const prevGateways = node.prev.filter(
-      n => n.element.constructor.name === 'GatewayElement',
+      n =>
+        n.element.constructor.name === 'GatewayElement' ||
+        n.element.constructor.name === 'OrGatewayElement',
     );
     if (prevGateways.length) {
       return node.element.id?.split('_').includes('true')

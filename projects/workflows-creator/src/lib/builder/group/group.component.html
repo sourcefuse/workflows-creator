@@ -1,7 +1,7 @@
 <div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
   <div class="workflow-group">
     <div class="workflow-group-content">
-      <span *ngIf="!isFirst"> {{ group.name }} </span>
+      <span *ngIf="!isFirst"> and </span>
       <span
         class="input-text"
         *ngIf="group.children.length === 0"
@@ -19,7 +19,7 @@
     </div>
 
     <span
-      class="action-items hide"
+      class="action-items"
       *ngIf="group.children.length && enableActionIcon"
     >
       <span
@@ -47,6 +47,7 @@
       [ngClass]="{'last-node': i === group.children.length - 1}"
       [isLast]="i === group.children.length - 1"
       [isFirst]="i === 0"
+      [groupName]="group.name"
       [inputTemplate]="inputs"
       [popupTemplate]="nodePopup"
       (add)="openPopup(group.nodeType)"

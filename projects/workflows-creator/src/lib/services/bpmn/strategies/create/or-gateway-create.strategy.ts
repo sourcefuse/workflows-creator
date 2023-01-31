@@ -30,8 +30,10 @@ export class CreateOrGatewayStrategy implements CreateStrategy<ModdleElement> {
   ): ModdleElement {
     element.id = `${element.constructor.name}_${node.workflowNode.constructor.name}_${node.workflowNode.id}_${node.workflowNode.groupType}_${node.workflowNode.groupId}`;
     node.outgoing = node.outgoing ?? `Flow_${this.utils.uuid()}`;
-    (element as OrGatewayElement).elseOutGoing = `Flow_${this.utils.uuid()}`;
-    (element as OrGatewayElement).default = `Flow_${this.utils.uuid()}`;
+    (element as OrGatewayElement).elseOutGoing =
+      (element as OrGatewayElement).elseOutGoing ?? `Flow_${this.utils.uuid()}`;
+    (element as OrGatewayElement).default =
+      (element as OrGatewayElement).default ?? `Flow_${this.utils.uuid()}`;
     return this.moddle.create(element.tag, {
       id: element.id,
       name: 'Gateway',

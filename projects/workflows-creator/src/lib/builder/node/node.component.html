@@ -16,7 +16,7 @@
   ></span>
 
   <div class="workflow-content">
-    <span *ngIf="!isFirst"> and </span>
+    <span *ngIf="!isFirst"> {{groupName}} </span>
     {{ node?.node?.statement || '' }}
 
     <ng-container

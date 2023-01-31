@@ -21,8 +21,8 @@ export class OrGatewayElement extends BpmnElement {
   ) {
     super();
   }
-  tag = 'bpmn:ExclusiveGateway';
-  name = 'orgateway';
+  tag = 'bpmn:InclusiveGateway';
+  name = 'gateway';
   properties = {};
   statement: string | undefined;
   static type = ElementTypes.Gateway;

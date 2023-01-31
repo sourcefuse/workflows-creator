@@ -21,7 +21,7 @@ export class GatewayElement extends BpmnElement {
   ) {
     super();
   }
-  tag = 'bpmn:ExclusiveGateway';
+  tag = 'bpmn:InclusiveGateway';
   name = 'gateway';
   properties = {};
   statement: string | undefined;
@@ -31,6 +31,7 @@ export class GatewayElement extends BpmnElement {
       state: 'condition',
     },
   };
+  otherOutgoings: string[];
   elseOutGoing: string;
   default: string;
   inputs: ElementInput;

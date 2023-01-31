@@ -30,6 +30,10 @@ export class CreateGatewayStrategy implements CreateStrategy<ModdleElement> {
   ): ModdleElement {
     element.id = `${element.constructor.name}_${node.workflowNode.constructor.name}_${node.workflowNode.id}_${node.workflowNode.groupType}_${node.workflowNode.groupId}`;
     node.outgoing = node.outgoing ?? `Flow_${this.utils.uuid()}`;
+    if (node.next.length > 1)
+      (element as GatewayElement).otherOutgoings = Array(
+        node.next.length - 1,
+      ).fill(`Flow_${this.utils.uuid()}`);
     (element as GatewayElement).elseOutGoing =
       (element as GatewayElement).elseOutGoing ?? `Flow_${this.utils.uuid()}`;
     (element as GatewayElement).default =

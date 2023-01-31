@@ -27,6 +27,9 @@ export class NodeComponent<E> {
   isFirst = false;
 
   @Input()
+  groupName: string;
+
+  @Input()
   inputTemplate!: TemplateRef<RecordOfAnyType>;
 
   @Input()

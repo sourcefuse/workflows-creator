@@ -74,7 +74,10 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
     const link = [];
     const from = node.tag;
     for (let i = 0; i < nextNodes.length; i++) {
-      const id = i == 0 ? node.outgoing : `Flow_${this.utils.uuid()}`;
+      const id =
+        i == 0
+          ? node.outgoing
+          : (node.element as GatewayElement).otherOutgoings[i - 1];
       const to = nextNodes[i].tag;
       nextNodes[i].incoming = id;
       const attrs = this.createLinkAttrs(id, from, to);
@@ -199,8 +202,11 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
     const loop = this.createLoopScript(node, condition, isElse);
     const setters = `
       json.prop("taskIds", ids);
-      execution.setVariable('${flowId}',json);
-      if(ids.length > 0){true;}else {false;}
+      ${
+        node.element.id?.split('_').includes('OrGroup')
+          ? `execution.setVariable('${flowId}',JSON.stringify(readObj));true;`
+          : `if(ids.length > 0){execution.setVariable('${flowId}',json);true;}else {false;}`
+      }
       `;
     return {
       script: [read, declarations, loop, setters].join('\n'),
