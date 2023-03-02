@@ -20,7 +20,8 @@
     "build:docs": "rm -rf ./docs && typedoc --out docs && cp projects/workflows-creator/README.md ./README.md",
     "workflowBuild": "ng build workflows-creator  && cp -r projects/workflows-creator/src/assets dist/workflows-creator/",
     "test": "ng test --no-watch",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@angular/animations": "~13.3.0",
