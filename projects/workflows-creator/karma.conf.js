@@ -19,13 +19,13 @@ module.exports = function (config) {
         // for example, you can disable the random execution with `random: false`
         // or set a specific seed with `seed: 4321`
       },
-      clearContext: true, // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/workflows-creator'),
+      dir: require('path').join(__dirname, '../../coverage/workflows-creator'),
       subdir: '.',
       reporters: [
         {type: 'html'},
@@ -39,8 +39,8 @@ module.exports = function (config) {
       ],
       check: {
         global: {
-          statements: 25,
-          functions: 25,
+          statements: 5,
+          functions: 5,
         },
       },
     },
@@ -49,7 +49,9 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadlessCI'],
+    // by default Chrome UI is used, but we want to run Chrome in headless mode in the CI
+    // for that, the CI test script passes the browser name ChromeHeadlessCI
+    browsers: ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',

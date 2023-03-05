@@ -38,4 +38,9 @@ export class TriggerWhenColumnChanges extends ServiceTaskElement {
     },
   };
   outputs = 'outputVariable';
+  static identifier = 'TriggerWhenColumnChanges';
+
+  getIdentifier(): string {
+    return TriggerWhenColumnChanges.identifier;
+  }
 }

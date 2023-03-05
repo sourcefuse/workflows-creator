@@ -48,8 +48,8 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
     let mainNodes: BpmnStatementNode[] = [];
     let elseNodes: BpmnStatementNode[] = [];
     node.next.forEach(node =>
-      (node.element.constructor.name === 'ChangeColumnValue' ||
-        node.element.constructor.name === 'SendEmail') &&
+      (node.element.getIdentifier() === 'ChangeColumnValue' ||
+        node.element.getIdentifier() === 'SendEmail') &&
       (node.workflowNode as BpmnAction).isElseAction
         ? elseNodes.push(node)
         : mainNodes.push(node),
@@ -327,7 +327,7 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
       }
       if (current?.prev && current.prev.length) queue.push(...current.prev);
     }
-    return queue[queue.length - 1];
+    return node;
   }
 
   /**

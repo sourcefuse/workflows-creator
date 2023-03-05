@@ -193,7 +193,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   setInput(input: WorkflowPrompt, nodeWithInput: NodeWithInput<E>) {
     const allowedInputs = ['ValueInput', 'EmailDataInput', 'ToValueInput'];
-    if (allowedInputs.includes(input.constructor.name)) {
+    if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
       if (nodeWithInput.node.state.get('email')) {
         this.emailInput = value;
@@ -288,7 +288,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     const newNode = {
       node: this.nodes.getNodeByName(
-        node.constructor.name,
+        node.getIdentifier(),
         groupType,
         groupId,
         id,
@@ -301,7 +301,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         node: node,
         newNode: newNode,
       });
-      if (newNode.node.constructor.name === 'OnIntervalEvent') {
+      if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
       this.group.children.push(newNode as EventWithInput<E>);
@@ -392,8 +392,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     this.enableActionIcon = true;
     if (
-      input.constructor.name === 'ConditionInput' &&
-      element.node.constructor.name === 'OnChangeEvent'
+      input.getIdentifier() === 'ConditionInput' &&
+      element.node.getIdentifier() === 'OnChangeEvent'
     ) {
       if ((value as AllowedValuesMap).value === ConditionTypes.Changes) {
         /**
@@ -404,10 +404,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         this.enableActionIcon = false;
       } else {
         element.node.elements = [
-          TriggerWhenColumnChanges,
-          ReadColumnValue,
-          GatewayElement,
-        ] as unknown as Constructor<WorkflowElement<E>>[];
+          TriggerWhenColumnChanges.identifier,
+          ReadColumnValue.identifier,
+          GatewayElement.identifier,
+        ];
       }
     }
     if (select && isSelectInput(input)) {
@@ -420,7 +420,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           value as AllowedValuesMap,
         );
         this.itemChanged.emit({
-          field: input,
+          field: input.getIdentifier(),
           value: value as AllowedValuesMap,
           element: element,
         });
@@ -431,7 +431,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           (value as AllowedValuesMap)[input.listNameField],
         );
         this.itemChanged.emit({
-          field: input,
+          field: input.getIdentifier(),
           value: (value as AllowedValuesMap)[input.listValueField],
           element: element,
         });
@@ -441,7 +441,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     element.node.state.change(input.inputKey, value);
     this.handleSubsequentInputs(element, input);
     this.itemChanged.emit({
-      field: input,
+      field: input.getIdentifier(),
       value: value,
       element: element,
     });
@@ -459,7 +459,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     input: WorkflowPrompt,
   ) {
     const currentIndex = element.inputs.findIndex(
-      i => i.constructor.name === input.constructor.name,
+      i => i.getIdentifier() === input.getIdentifier(),
     );
     const subsequentInputs = element.inputs.filter((r, i) => i > currentIndex);
     for (const nextInput of subsequentInputs) {

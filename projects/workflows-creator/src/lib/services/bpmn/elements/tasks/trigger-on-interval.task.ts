@@ -41,4 +41,9 @@ export class TriggerOnInterval extends ServiceTaskElement {
     },
   };
   outputs = 'outputVariable';
+  static identifier = 'TriggerOnInterval';
+
+  getIdentifier(): string {
+    return TriggerOnInterval.identifier;
+  }
 }

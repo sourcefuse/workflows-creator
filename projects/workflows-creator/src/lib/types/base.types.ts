@@ -28,6 +28,9 @@ export type AllowedValuesMap = {
 // sonarignore:start
 export type Constructor<T> = new (...args: any) => T;
 // sonarignore:end
+export type ConstructorWithIdentifier<T> = Constructor<T> & {
+  identifier: string;
+};
 export type StrategyFunction<R, S> = (arg: R) => S;
 
 /**

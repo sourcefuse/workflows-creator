@@ -12,4 +12,9 @@ export class ColumnInput extends WorkflowPrompt {
   placeholder = 'Column';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('columns');
+  static identifier = 'ColumnInput';
+
+  getIdentifier(): string {
+    return ColumnInput.identifier;
+  }
 }

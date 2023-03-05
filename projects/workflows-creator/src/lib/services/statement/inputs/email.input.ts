@@ -9,6 +9,11 @@ export class EmailDataInput extends WorkflowPrompt {
   typeFunction = () => InputTypes.Email;
   inputKey = 'email';
   placeholder = 'Email';
+  static identifier = 'EmailDataInput';
+
+  getIdentifier(): string {
+    return EmailDataInput.identifier;
+  }
 }
 
 export class EmailToInput extends WorkflowPrompt {
@@ -23,8 +28,18 @@ export class EmailToInput extends WorkflowPrompt {
     state.get('emailToValues') as [];
   typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('emailToInputType') as InputTypes;
+  static identifier = 'EmailToInput';
+
+  getIdentifier(): string {
+    return EmailToInput.identifier;
+  }
 }
 
 export class EmailRecepientInput extends ValueInput {
   inputKey = 'specificRecepient';
+  static identifier = 'EmailRecepientInput';
+
+  getIdentifier(): string {
+    return EmailRecepientInput.identifier;
+  }
 }

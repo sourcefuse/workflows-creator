@@ -12,6 +12,7 @@ import {
   BaseGroup,
   BpmnNodePrompt,
   Constructor,
+  ConstructorWithIdentifier,
   WorkflowNode,
 } from '../../types';
 import {UtilsService} from '../utils.service';
@@ -21,9 +22,9 @@ export class BpmnNodesService<E> extends NodeService<E> {
   events = new Map<string, Constructor<WorkflowEvent<E>>>();
   constructor(
     @Inject(BPMN_NODES)
-    private readonly nodes: Constructor<WorkflowNode<E>>[],
+    private readonly nodes: ConstructorWithIdentifier<WorkflowNode<E>>[],
     @Inject(BPMN_NODES)
-    private readonly groups: Constructor<BaseGroup<E>>[],
+    private readonly groups: ConstructorWithIdentifier<BaseGroup<E>>[],
     @Inject(BPMN_INPUTS)
     private readonly inputs: BpmnNodePrompt[],
     private readonly utils: UtilsService,
@@ -96,7 +97,7 @@ export class BpmnNodesService<E> extends NodeService<E> {
     id?: string,
     isElseAction?: boolean,
   ) {
-    const ctor = this.nodes.find(n => n.name === name);
+    const ctor = this.nodes.find(n => n.identifier === name);
     if (!id) {
       id = this.utils.uuid();
     }
@@ -123,7 +124,7 @@ export class BpmnNodesService<E> extends NodeService<E> {
     id?: string,
     isElseGroup?: boolean,
   ): BaseGroup<E> {
-    const ctor = this.groups.find(n => n.name === name);
+    const ctor = this.groups.find(n => n.identifier === name);
     if (!id) {
       id = this.utils.uuid();
     }
@@ -138,13 +139,11 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * @param prompts - typeof WorkflowPrompt[]
    * @returns An array of input instances.
    */
-  mapInputs(prompts: (typeof WorkflowPrompt)[]) {
+  mapInputs(prompts: string[]) {
     return prompts.map(input => {
-      const inputInstance = this.inputs.find(
-        i => i.constructor.name === input.name,
-      );
+      const inputInstance = this.inputs.find(i => i.getIdentifier() === input);
       if (!inputInstance) {
-        throw new InvalidEntityError(input.name);
+        throw new InvalidEntityError(input);
       }
       return inputInstance;
     });

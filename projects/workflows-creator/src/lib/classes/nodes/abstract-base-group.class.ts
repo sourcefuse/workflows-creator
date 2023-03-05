@@ -9,4 +9,6 @@ export abstract class AbstractBaseGroup<E> {
   abstract children: NodeWithInput<E>[];
   abstract isElseGroup: boolean;
   id: string;
+
+  abstract getIdentifier(): string;
 }

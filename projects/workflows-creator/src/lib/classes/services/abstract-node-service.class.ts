@@ -23,5 +23,5 @@ export abstract class NodeService<E> {
     nodeType: NodeTypes,
     id?: string,
   ): AbstractBaseGroup<E>;
-  abstract mapInputs(prompts: Constructor<WorkflowPrompt>[]): WorkflowPrompt[];
+  abstract mapInputs(prompts: string[]): WorkflowPrompt[];
 }

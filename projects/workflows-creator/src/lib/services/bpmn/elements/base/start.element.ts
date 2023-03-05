@@ -26,4 +26,9 @@ export class StartElement extends BpmnElement {
   name = 'start';
   inputs: ElementInput;
   outputs: string;
+  static identifier = 'StartElement';
+
+  getIdentifier(): string {
+    return StartElement.identifier;
+  }
 }

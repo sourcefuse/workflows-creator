@@ -26,4 +26,9 @@ export class StartOnIntervalElement extends BpmnElement {
   name = 'start';
   inputs: ElementInput;
   outputs: string;
+  static identifier = 'StartOnIntervalElement';
+
+  getIdentifier(): string {
+    return StartOnIntervalElement.identifier;
+  }
 }

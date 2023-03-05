@@ -29,7 +29,7 @@ export class CreateBasicIntervalStrategy
     node: BpmnStatementNode,
     attrs: RecordOfAnyType,
   ): ModdleElement {
-    element.id = `${element.constructor.name}_${this.utils.uuid()}`;
+    element.id = `${element.getIdentifier()}_${this.utils.uuid()}`;
 
     const timerEventDefinition = this.moddle.create(
       'bpmn:TimerEventDefinition',

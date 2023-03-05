@@ -25,6 +25,8 @@ export abstract class WorkflowPrompt {
   abstract inputKey: string;
   abstract placeholder: string;
 
+  abstract getIdentifier(): string;
+
   /* A function that is called before the value is changed. */
   prevchange?: <S extends RecordOfAnyType>(state: State<S>) => void;
 
@@ -84,15 +86,13 @@ export abstract class WorkflowPrompt {
       }
       case InputTypes.Date:
         const _date = `${this.onDateSelect(value as NgbDateStruct)}`;
-        return moment(_date.toString(), 'DD-MM-YYYY').format('MMM DD, YYYY');
+        return moment(_date.toString(), 'DD-MM-YYYY').format();
       case InputTypes.DateTime:
         const {date, time} = value as DateTime;
         const hours = this.convertToTwoDigits(time.hour);
         const min = this.convertToTwoDigits(time.minute);
         const dateTime = `${this.onDateSelect(date)} ${hours}:${min}`;
-        return moment(dateTime.toString(), 'DD-MM-YYYY hh:mm').format(
-          'MMM DD, YYYY hh:mm A',
-        );
+        return moment(dateTime.toString(), 'DD-MM-YYYY hh:mm').format();
       case InputTypes.Email:
         (value as AllowedValuesMap).displayValue = 'email';
         return value;
@@ -149,6 +149,18 @@ export abstract class WorkflowPrompt {
         return state.get(`${this.inputKey}`)?.displayValue;
       case InputTypes.Email:
         return state.get(this.inputKey)?.displayValue;
+      case InputTypes.Date:
+        return state.get(this.inputKey)
+          ? moment
+              .utc(state.get(this.inputKey), 'YYYY-MM-DD')
+              .format('MMM DD, YYYY')
+          : '';
+      case InputTypes.DateTime:
+        return state.get(this.inputKey)
+          ? moment
+              .utc(state.get(this.inputKey), 'YYYY-MM-DD hh:mm')
+              .format('MMM DD, YYYY hh:mm A')
+          : '';
       case InputTypes.Number:
       case InputTypes.Text:
       case InputTypes.Boolean:

@@ -52,4 +52,9 @@ export class ChangeColumnValue extends ServiceTaskElement {
     },
   };
   outputs = 'outputVariable';
+  static identifier = 'ChangeColumnValue';
+
+  getIdentifier(): string {
+    return ChangeColumnValue.identifier;
+  }
 }
