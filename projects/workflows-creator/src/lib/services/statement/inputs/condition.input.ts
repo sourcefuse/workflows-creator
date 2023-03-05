@@ -20,4 +20,9 @@ export class ConditionInput extends WorkflowPrompt {
     state.remove('conditionSuffix');
   };
   options = (state: State<RecordOfAnyType>) => state.get('conditions');
+  static identifier = 'ConditionInput';
+
+  getIdentifier(): string {
+    return ConditionInput.identifier;
+  }
 }

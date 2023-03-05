@@ -38,4 +38,9 @@ export class TriggerOnAddItem extends ServiceTaskElement {
     },
   };
   outputs = 'outputVariable';
+  static identifier = 'TriggerOnAddItem';
+
+  getIdentifier(): string {
+    return TriggerOnAddItem.identifier;
+  }
 }

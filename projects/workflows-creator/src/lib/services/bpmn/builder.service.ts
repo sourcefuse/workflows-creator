@@ -87,7 +87,7 @@ export class BpmnBuilderService extends BuilderService<
     try {
       return (await this.layout.layoutProcess(xml)).xml;
     } catch (e) {
-      return '';
+      throw e;
     }
   }
 
@@ -155,8 +155,8 @@ export class BpmnBuilderService extends BuilderService<
       const current = queue.shift()!;
       if (
         elseStatement.head.length &&
-        (current.element.constructor.name === 'GatewayElement' ||
-          current.element.constructor.name === 'OrGatewayElement')
+        (current.element.getIdentifier() === 'GatewayElement' ||
+          current.element.getIdentifier() === 'OrGatewayElement')
       ) {
         current.next.push(elseStatement.head[0]);
         if (elseStatement.head[0].prev) {
@@ -175,8 +175,8 @@ export class BpmnBuilderService extends BuilderService<
    */
   setTags(element: BpmnStatementNode) {
     if (
-      element.element.constructor.name === 'ChangeColumnValue' ||
-      element.element.constructor.name === 'SendEmail'
+      element.element.getIdentifier() === 'ChangeColumnValue' ||
+      element.element.getIdentifier() === 'SendEmail'
     ) {
       for (let ele of element.prev) {
         ele.element.create(ele);
@@ -306,7 +306,7 @@ export class BpmnBuilderService extends BuilderService<
     node: StatementNode<ModdleElement>,
   ) {
     return this.elements.createElementByName(
-      ProcessPropertiesElement.name,
+      ProcessPropertiesElement.identifier,
       node,
       {
         state,

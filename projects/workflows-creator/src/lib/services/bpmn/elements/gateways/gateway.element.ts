@@ -35,4 +35,9 @@ export class GatewayElement extends BpmnElement {
   default: string;
   inputs: ElementInput;
   outputs: string;
+  static identifier = 'GatewayElement';
+
+  getIdentifier(): string {
+    return GatewayElement.identifier;
+  }
 }

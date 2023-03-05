@@ -33,4 +33,9 @@ export class OrGatewayElement extends BpmnElement {
   default: string;
   inputs: ElementInput;
   outputs: string;
+  static identifier = 'OrGatewayElement';
+
+  getIdentifier(): string {
+    return OrGatewayElement.identifier;
+  }
 }

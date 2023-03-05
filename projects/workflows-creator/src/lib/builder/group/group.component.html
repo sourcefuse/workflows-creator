@@ -58,7 +58,7 @@
     <div
       class="option-div"
       (click)="
-        onNodeAdd(node, group.constructor.name, group.id); nodePopup.hide()
+        onNodeAdd(node, group.getIdentifier(), group.id); nodePopup.hide()
       "
       *ngFor="let node of nodeList"
     >

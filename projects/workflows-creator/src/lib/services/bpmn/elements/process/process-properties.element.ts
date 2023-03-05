@@ -27,4 +27,9 @@ export class ProcessPropertiesElement extends BpmnElement {
   outputs: string;
   static type = ElementTypes.Extension;
   attributes = {};
+  static identifier = 'ProcessPropertiesElement';
+
+  getIdentifier(): string {
+    return ProcessPropertiesElement.identifier;
+  }
 }

@@ -34,4 +34,9 @@ export class ValueInput extends WorkflowListPrompt {
     state.get('values') as [];
   typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('valueInputType') as InputTypes;
+  static identifier = 'ValueInput';
+
+  getIdentifier(): string {
+    return ValueInput.identifier;
+  }
 }

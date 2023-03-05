@@ -27,4 +27,9 @@ export class EndElement extends BpmnElement {
   inputs: ElementInput;
   outputs: string;
   statement: string | undefined;
+  static identifier = 'EndElement';
+
+  getIdentifier(): string {
+    return EndElement.identifier;
+  }
 }

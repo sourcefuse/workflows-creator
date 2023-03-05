@@ -1,4 +1,3 @@
-import {NodeTypes} from '../../../enum';
 import {BpmnAction} from '../../../types/bpmn.types';
 import {SendEmail} from '../../bpmn/elements/tasks/send-email.task';
 import {
@@ -9,15 +8,20 @@ import {
 
 export class SendEmailAction extends BpmnAction {
   isElseAction: boolean;
-  groupType: NodeTypes;
+  groupType: string;
   groupId: string;
-  elements = [SendEmail];
+  elements = [SendEmail.identifier];
   name = 'Send Email';
   statement = 'send an';
-  prompts = [EmailDataInput, EmailToInput, EmailRecepientInput];
+  prompts = [
+    EmailDataInput.identifier,
+    EmailToInput.identifier,
+    EmailRecepientInput.identifier,
+  ];
+  static identifier = 'SendEmailAction';
   constructor(
     id: string,
-    groupType: NodeTypes,
+    groupType: string,
     groupId: string,
     isElseAction: boolean,
   ) {
@@ -26,5 +30,9 @@ export class SendEmailAction extends BpmnAction {
     this.groupType = groupType;
     this.groupId = groupId;
     this.isElseAction = isElseAction || false;
+  }
+
+  getIdentifier(): string {
+    return SendEmailAction.identifier;
   }
 }

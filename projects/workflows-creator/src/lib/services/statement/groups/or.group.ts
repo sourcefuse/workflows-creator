@@ -15,9 +15,14 @@ export class OrGroup<E> extends AbstractBaseGroup<E> {
   trigger = false;
   name = 'or';
   nodeType: NodeTypes;
+  static identifier = 'OrGroup';
   constructor(id: string, type: NodeTypes) {
     super();
     this.nodeType = type;
     this.id = id;
+  }
+
+  getIdentifier(): string {
+    return OrGroup.identifier;
   }
 }

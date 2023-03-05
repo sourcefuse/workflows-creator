@@ -124,15 +124,20 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       const {events, actions, elseActions, groups, process, state} =
         await this.builder.restore(this.diagram);
       this.processId = process.id;
-
-      this.eventGroups = [];
-      this.actionGroups = [];
       this.selectedActions = actions;
       this.selectedEvents = events;
       this.selectedElseActions = elseActions;
+      if (this.selectedActions.length) this.actionGroups = [];
+      if (this.selectedEvents) this.eventGroups = [];
       groups.forEach(group => this.onGroupAdd(group));
       this.restoreState(state);
       this.elseActionGroups[0].children = elseActions;
+      this.elseActionGroups[0].children.forEach(action =>
+        this.actionAdded.emit({
+          name: action.node.getIdentifier(),
+          action: action.node as WorkflowAction<E>,
+        }),
+      );
       events.forEach(event => {
         const groupId = event.node.groupId;
         this.eventGroups.forEach(group => {
@@ -141,7 +146,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           }
         });
         this.eventAdded.emit({
-          name: event.node.constructor.name,
+          name: event.node.getIdentifier(),
           event: event.node,
         });
       });
@@ -152,18 +157,11 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
             group.children.push(action);
           }
         });
-        this.eventAdded.emit({
-          name: action.node.constructor.name,
-          event: action.node as unknown as WorkflowEvent<E>,
+        this.actionAdded.emit({
+          name: action.node.getIdentifier(),
+          action: action.node as WorkflowAction<E>,
         });
       });
-      if (this.eventGroups[0].children?.length) {
-        this.showElseBlock =
-          this.eventGroups[0].children[0].node.constructor.name ===
-            EventTypes.OnChangeEvent &&
-          this.eventGroups[0].children[0].node.state.get('condition') !==
-            ConditionTypes.Changes;
-      }
       this.updateDiagram();
     }
   }
@@ -199,14 +197,14 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   onEventAdded(event: ElementsWithInput<E>) {
     this.eventAdded.emit({
-      name: event.node.constructor.name,
+      name: event.node.getIdentifier(),
       event: event.newNode.node as WorkflowEvent<E>,
     });
     this.updateDiagram();
     this.updateState(event.node, event.newNode.inputs);
     this.showElseBlock =
-      event.node.constructor.name === EventTypes.OnChangeEvent ||
-      event.node.constructor.name === EventTypes.OnValueEvent;
+      event.node.getIdentifier() !== EventTypes.OnIntervalEvent &&
+      event.node.getIdentifier() !== EventTypes.OnAddItemEvent;
   }
 
   /**
@@ -216,7 +214,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   onActionAdded(action: ElementsWithInput<E>) {
     this.actionAdded.emit({
-      name: action.node.constructor.name,
+      name: action.node.getIdentifier(),
       action: action.newNode.node as WorkflowAction<E>,
     });
     this.updateDiagram();
@@ -235,12 +233,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       item: item.element.node,
     });
     this.updateState(item.element.node, item.element.inputs);
+    // TODO: to be refactored
     if (this.eventGroups[0].children?.length) {
       this.showElseBlock =
-        this.eventGroups[0].children[0].node.constructor.name ===
-          EventTypes.OnChangeEvent &&
-        this.eventGroups[0].children[0].node.state.get('condition') !==
-          ConditionTypes.Changes;
+        item.element.node.state.get('condition') !== ConditionTypes.Changes;
     }
     this.updateDiagram();
   }
@@ -320,7 +316,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         (value as AllowedValuesMap)[input.listNameField],
       );
       this.itemChanged.emit({
-        field: input,
+        field: input.getIdentifier(),
         value: (value as AllowedValuesMap)[input.listValueField],
         item: element.node,
       });
@@ -329,7 +325,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     element.node.state.change(input.inputKey, value);
     this.handleSubsequentInputs(element, input);
     this.itemChanged.emit({
-      field: input,
+      field: input.getIdentifier(),
       value: value,
       item: element.node,
     });
@@ -354,7 +350,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           .map(e => e.node)
           .forEach(node => {
             node.elements.forEach(element => {
-              const instance = this.elements.createInstanceByName(element.name);
+              const instance = this.elements.createInstanceByName(element);
               statement.addNode(instance, node);
             });
           });
@@ -367,7 +363,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           .map(e => e.node)
           .forEach(node => {
             node.elements.forEach(element => {
-              const instance = this.elements.createInstanceByName(element.name);
+              const instance = this.elements.createInstanceByName(element);
               statementNodes.push(new StatementNode(instance, node));
             });
             elseNode.workflowNode = node;
@@ -384,7 +380,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           .map(e => e.node)
           .forEach(node => {
             node.elements.forEach(element => {
-              const instance = this.elements.createInstanceByName(element.name);
+              const instance = this.elements.createInstanceByName(element);
               elseStatement.addNode(instance, node);
             });
           });
@@ -434,7 +430,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     input: WorkflowPrompt,
   ) {
     const currentIndex = element.inputs.findIndex(
-      i => i.constructor.name === input.constructor.name,
+      i => i.getIdentifier() === input.getIdentifier(),
     );
     const subsequentInputs = element.inputs.filter((r, i) => i > currentIndex);
     for (const nextInput of subsequentInputs) {

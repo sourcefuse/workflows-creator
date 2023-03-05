@@ -24,11 +24,11 @@ jobs:
         run: npm ci
 
       - name: Run test
-        run: npm test -- --no-progress --browsers=ChromeHeadlessCI
+        run: npm run test:ci
 
       - name: Comment Test Coverage
         uses: AthleticNet/comment-test-coverage@1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: coverage/biz-book-ui/coverage-summary.json
+          path: coverage/workflows-creator/coverage-summary.json
           title: Karma Test Coverage

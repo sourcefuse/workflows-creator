@@ -13,6 +13,7 @@ export abstract class WorkflowElement<ElementType> {
   abstract outputs: string;
   protected abstract creator: CreateStrategy<ElementType>;
   protected abstract linker: LinkStrategy<ElementType>;
+  static identifier: string;
 
   /**
    * It creates a new element for the current node, with the given attributes
@@ -27,6 +28,7 @@ export abstract class WorkflowElement<ElementType> {
     });
   }
 
+  abstract getIdentifier(): string;
   /**
    * "The link function is a function that takes a node and returns a link node."
    *

@@ -40,10 +40,12 @@ export class CreateTaskStrategy implements CreateStrategy<ModdleElement> {
     attrs: RecordOfAnyType,
   ) {
     if (!node.workflowNode) {
-      throw new InvalidEntityError(node.constructor.name);
+      throw new InvalidEntityError(node.identifier);
     }
 
-    element.id = `${element.constructor.name}_${node.workflowNode.constructor.name}_${node.workflowNode.id}_${node.workflowNode.groupType}_${node.workflowNode.groupId}`;
+    element.id = `${element.getIdentifier()}_${node.workflowNode.getIdentifier()}_${
+      node.workflowNode.id
+    }_${node.workflowNode.groupType}_${node.workflowNode.groupId}`;
     if (node.workflowNode.type === NodeTypes.ACTION) {
       element.id += `_${(node.workflowNode as BpmnAction).isElseAction}`;
     }
@@ -195,7 +197,7 @@ export class CreateTaskStrategy implements CreateStrategy<ModdleElement> {
    */
   getInputFromPrev(element: BpmnElement, node: BpmnStatementNode) {
     const prevGateways = node.prev.filter(
-      n => n.element.constructor.name === 'GatewayElement',
+      n => n.element.getIdentifier() === 'GatewayElement',
     );
     if (prevGateways.length) {
       return node.element.id?.split('_').includes('true')

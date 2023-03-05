@@ -12,4 +12,9 @@ export class IntervalInput extends WorkflowPrompt {
   placeholder = 'Interval';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('intervalList');
+  static identifier = 'IntervalInput';
+
+  getIdentifier(): string {
+    return IntervalInput.identifier;
+  }
 }

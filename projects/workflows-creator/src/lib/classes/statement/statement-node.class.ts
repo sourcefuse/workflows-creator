@@ -19,6 +19,7 @@ export class StatementNode<E> {
   outgoing: string;
   next: StatementNode<E>[];
   prev: StatementNode<E>[];
+  identifier = 'StatementNode';
 
   /**
    * The constructor function takes in a WorkflowElement and a WorkflowNode and sets the element and

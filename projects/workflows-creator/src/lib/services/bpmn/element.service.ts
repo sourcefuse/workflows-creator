@@ -4,7 +4,7 @@ import {ElementService} from '../../classes/services';
 import {StatementNode} from '../../classes/statement';
 import {BPMN_ELEMENTS} from '../../const';
 import {InvalidEntityError, NotProvided} from '../../errors/base.error';
-import {Constructor, DecoratedContructor, RecordOfAnyType} from '../../types';
+import {RecordOfAnyType} from '../../types';
 @Injectable()
 export class BpmnElementService<E> implements ElementService<E> {
   constructor(
@@ -72,7 +72,7 @@ export class BpmnElementService<E> implements ElementService<E> {
    * @returns An instance of the class that was passed in.
    */
   createInstanceByName(element: string) {
-    const instance = this.elements.find(e => e.constructor.name === element);
+    const instance = this.elements.find(e => e.getIdentifier() === element);
     if (!instance) {
       throw new NotProvided(element);
     }

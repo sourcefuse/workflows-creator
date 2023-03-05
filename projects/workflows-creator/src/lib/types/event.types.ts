@@ -59,6 +59,6 @@ export type ActionAddition<E> = {
  */
 export type InputChanged<E> = {
   item: WorkflowNode<E>;
-  field: WorkflowPrompt;
+  field: string;
   value: AllowedValues;
 };

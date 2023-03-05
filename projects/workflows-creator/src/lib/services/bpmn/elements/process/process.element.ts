@@ -27,7 +27,12 @@ export class ProcessElement extends BpmnElement {
   inputs: ElementInput;
   outputs: string;
   static type = ElementTypes.Process;
+  static identifier = 'ProcessElement';
   attributes = {
     isExecutable: true,
   };
+
+  getIdentifier(): string {
+    return ProcessElement.identifier;
+  }
 }

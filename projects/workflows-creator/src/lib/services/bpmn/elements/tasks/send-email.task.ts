@@ -55,4 +55,9 @@ export class SendEmail extends ServiceTaskElement {
     },
   };
   outputs: string;
+  static identifier = 'SendEmail';
+
+  getIdentifier(): string {
+    return SendEmail.identifier;
+  }
 }

@@ -37,4 +37,9 @@ export class ReadColumnValue extends ServiceTaskElement {
       },
     },
   };
+  static identifier = 'ReadColumnValue';
+
+  getIdentifier(): string {
+    return ReadColumnValue.identifier;
+  }
 }

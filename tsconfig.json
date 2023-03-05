@@ -15,7 +15,7 @@
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "paths": {
-      "search-lib": ["dist"]
+      "@sourceloop/workflows-creator": ["dist"]
     },
     "experimentalDecorators": true,
     "moduleResolution": "node",

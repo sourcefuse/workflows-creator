@@ -27,7 +27,7 @@ export class CreateBasicStrategy implements CreateStrategy<ModdleElement> {
     node: BpmnStatementNode,
     attrs: RecordOfAnyType,
   ): ModdleElement {
-    element.id = `${element.constructor.name}_${this.utils.uuid()}`;
+    element.id = `${element.getIdentifier()}_${this.utils.uuid()}`;
     return this.moddle.create(element.tag, {
       id: element.id,
       name: element.name,
