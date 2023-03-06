@@ -20,6 +20,7 @@
     "build:docs": "rm -rf ./docs && typedoc --out docs && cp projects/workflows-creator/README.md ./README.md",
     "workflowBuild": "ng build workflows-creator  && cp -r projects/workflows-creator/src/assets dist/workflows-creator/",
     "test": "ng test --no-watch",
+    "test:ci": "ng test --no-watch --no-progress --browsers=ChromeHeadlessCI --code-coverage",
     "lint": "ng lint",
     "prepare": "husky install"
   },
