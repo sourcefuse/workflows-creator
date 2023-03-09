@@ -27,6 +27,11 @@
     "@angular/core": "~13.3.11",
     "@angular/forms": "~13.3.11",
     "@angular/platform-browser-dynamic": "~13.3.11",
+    "@semantic-release/changelog": "^6.0.2",
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^9.0.2",
+    "@semantic-release/release-notes-generator": "^10.0.3",
     "@types/bpmn-moddle": "^5.1.6",
     "@types/lodash": "^4.14.182",
     "@typescript-eslint/eslint-plugin": "5.27.1",
@@ -35,6 +40,7 @@
     "eslint": "^8.17.0",
     "lodash": "^4.17.21",
     "ngx-popperjs": "^13.3.0",
+    "semantic-release": "^19.0.3",
     "tslib": "^2.0.0",
     "typedoc-umlclass": "^0.6.1"
   },
@@ -46,7 +52,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcefuse/workflows-creator"
+    "url": "https://github.com/sourcefuse/workflows-creator.git"
   },
   "author": "Sourcefuse",
   "license": "MIT",
@@ -55,5 +61,40 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public",
     "directory": "dist"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "angular",
+          "releaseRules": [
+            {
+              "type": "chore",
+              "scope": "deps",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version} semantic"
+        }
+      ],
+      "@semantic-release/github"
+    ],
+    "repositoryUrl": "git@github.com:sourcefuse/workflows-creator.git"
   }
 }
