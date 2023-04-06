@@ -66,6 +66,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   @Input()
   nodeType: NodeTypes;
 
+  @Input()
+  localizedStringMap: {[key: string]: string};
+
   /* A decorator that tells Angular that the popupTemplate property is an input property. */
   @Input()
   popupTemplate!: NgxPopperjsContentComponent;
@@ -151,9 +154,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * variables
    */
   ngOnInit(): void {
-    this.events = this.nodes.getEvents();
-    this.triggerEvents = this.nodes.getEvents(true);
-    this.actions = this.nodes.getActions();
+    this.events = this.nodes.getEvents(this.localizedStringMap);
+    this.triggerEvents = this.nodes.getEvents(this.localizedStringMap, true);
+    this.actions = this.nodes.getActions(this.localizedStringMap);
   }
 
   /**
@@ -288,6 +291,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     const newNode = {
       node: this.nodes.getNodeByName(
+        this.localizedStringMap,
         node.getIdentifier(),
         groupType,
         groupId,

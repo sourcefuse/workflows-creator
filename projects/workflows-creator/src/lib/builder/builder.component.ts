@@ -59,6 +59,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   state: StateMap<RecordOfAnyType> = {};
 
   @Input()
+  localizedStringMap: {[key: string]: string};
+
+  @Input()
   diagram = '';
 
   @Input()
@@ -105,13 +108,13 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   ngOnInit(): void {
     this.nodes
-      .getGroups(true, NodeTypes.EVENT)
+      .getGroups(this.localizedStringMap, true, NodeTypes.EVENT)
       .forEach(group => this.onGroupAdd(group));
     this.nodes
-      .getGroups(true, NodeTypes.ACTION)
+      .getGroups(this.localizedStringMap, true, NodeTypes.ACTION)
       .forEach(group => this.onGroupAdd(group));
     this.nodes
-      .getGroups(true, NodeTypes.ACTION, true)
+      .getGroups(this.localizedStringMap, true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
   }
 
@@ -122,7 +125,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
       const {events, actions, elseActions, groups, process, state} =
-        await this.builder.restore(this.diagram);
+        await this.builder.restore(this.diagram, this.localizedStringMap);
       this.processId = process.id;
       this.selectedActions = actions;
       this.selectedEvents = events;
@@ -249,7 +252,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   openPopup(type: NodeTypes) {
     if (type === NodeTypes.GROUP) {
-      this.nodeList = this.nodes.getGroups();
+      this.nodeList = this.nodes.getGroups(this.localizedStringMap);
     } else {
       throw new InvalidEntityError('' + type);
     }

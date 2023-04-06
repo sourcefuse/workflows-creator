@@ -16,7 +16,11 @@ export class OrGroup<E> extends AbstractBaseGroup<E> {
   name = 'or';
   nodeType: NodeTypes;
   static identifier = 'OrGroup';
-  constructor(id: string, type: NodeTypes) {
+  constructor(
+    localizedStringMap: {[key: string]: string},
+    id: string,
+    type: NodeTypes,
+  ) {
     super();
     this.nodeType = type;
     this.id = id;

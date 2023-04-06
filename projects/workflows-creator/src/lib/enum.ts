@@ -76,3 +76,18 @@ export enum StartElementTypes {
   BasicStartElement = 'StartElement',
   StartOnIntervalElement = 'StartOnIntervalElement',
 }
+
+export enum LocalizedStringKeys {
+  WhenThisHappens = 'whenThisHappensLbl',
+  DoThis = 'doThisLbl',
+  ColumnChanges = 'columnChangesLbl',
+  OnInterval = 'onIntervalLbl',
+  OnAddItem = 'onAddItemLbl',
+  ItemCreated = 'itemCreatedLbl',
+  CheckValue = 'checkValueLbl',
+  ChangeValue = 'changeValueLbl',
+  SendAnEmail = 'sendAnEmailLbl',
+  Else = 'elseLbl',
+  TypeSubject = 'typeSubjectLbl',
+  TypeEmail = 'typeEmailLbl',
+}

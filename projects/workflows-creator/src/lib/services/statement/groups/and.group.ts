@@ -15,7 +15,12 @@ export class AndGroup<E> extends AbstractBaseGroup<E> {
   name = 'and';
   nodeType: NodeTypes;
   static identifier = 'AndGroup';
-  constructor(id: string, type: NodeTypes, isElseGroup?: boolean) {
+  constructor(
+    localizedStringMap: {[key: string]: string},
+    id: string,
+    type: NodeTypes,
+    isElseGroup?: boolean,
+  ) {
     super();
     this.nodeType = type;
     this.id = id;

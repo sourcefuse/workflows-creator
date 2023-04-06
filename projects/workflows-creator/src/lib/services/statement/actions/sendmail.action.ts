@@ -1,3 +1,4 @@
+import {LocalizedStringKeys} from '../../../enum';
 import {BpmnAction} from '../../../types/bpmn.types';
 import {SendEmail} from '../../bpmn/elements/tasks/send-email.task';
 import {
@@ -11,7 +12,7 @@ export class SendEmailAction extends BpmnAction {
   groupType: string;
   groupId: string;
   elements = [SendEmail.identifier];
-  name = 'Send Email';
+  name = 'Send an email';
   statement = 'send an';
   prompts = [
     EmailDataInput.identifier,
@@ -20,6 +21,7 @@ export class SendEmailAction extends BpmnAction {
   ];
   static identifier = 'SendEmailAction';
   constructor(
+    localizedStringMap: {[key: string]: string},
     id: string,
     groupType: string,
     groupId: string,
@@ -30,6 +32,8 @@ export class SendEmailAction extends BpmnAction {
     this.groupType = groupType;
     this.groupId = groupId;
     this.isElseAction = isElseAction || false;
+    this.name =
+      localizedStringMap[LocalizedStringKeys.SendAnEmail] ?? 'Send an email';
   }
 
   getIdentifier(): string {

@@ -10,6 +10,7 @@ export class ReadColumnValueAction extends BpmnAction {
   prompts = [];
   static identifier = 'ReadColumnValueAction';
   constructor(
+    localizedStringMap: {[key: string]: string},
     id: string,
     groupType: string,
     groupId: string,

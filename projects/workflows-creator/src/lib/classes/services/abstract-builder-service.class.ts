@@ -12,7 +12,10 @@ export abstract class BuilderService<E, S extends RecordOfAnyType> {
     statement: Statement<E>,
     elseStatement: Statement<E>,
   ): Promise<string>;
-  abstract restore(model: string): Promise<{
+  abstract restore(
+    model: string,
+    localizedStringMap: {[key: string]: string},
+  ): Promise<{
     actions: ActionWithInput<E>[];
     elseActions: ActionWithInput<E>[];
     events: EventWithInput<E>[];
