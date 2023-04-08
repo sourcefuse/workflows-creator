@@ -1,3 +1,5 @@
+# Workflows Creator
+
 An Angular Client to develop workflows using an intuitive statement based UI.
 
 ## Installation
