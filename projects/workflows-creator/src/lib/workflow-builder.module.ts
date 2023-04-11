@@ -85,6 +85,7 @@ import {TriggerOnInterval} from './services/bpmn/elements/tasks/trigger-on-inter
 import {StartOnIntervalElement} from './services/bpmn/elements/base/start-on-interval.element';
 import {TriggerOnAddItem} from './services/bpmn/elements/tasks/trigger-on-add-item.task';
 import {OnAddItemEvent} from './services/statement/events/onadditem.event';
+import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.input';
 @NgModule({
   declarations: [BuilderComponent, GroupComponent, NodeComponent],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
@@ -133,6 +134,7 @@ import {OnAddItemEvent} from './services/statement/events/onadditem.event';
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},

@@ -20,7 +20,7 @@ import {
 } from '../classes';
 import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
-import {ConditionTypes, NodeTypes, EventTypes} from '../enum';
+import {EventTypes, NodeTypes, ValueTypes} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
 import {
   ActionAddition,
@@ -59,7 +59,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   state: StateMap<RecordOfAnyType> = {};
 
   @Input()
-  localizedStringMap: {[key: string]: string};
+  localizedStringMap: RecordOfAnyType;
 
   @Input()
   diagram = '';
@@ -239,7 +239,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     // TODO: to be refactored
     if (this.eventGroups[0].children?.length) {
       this.showElseBlock =
-        item.element.node.state.get('condition') !== ConditionTypes.Changes;
+        item.element.node.state.get('value') !== ValueTypes.AnyValue;
     }
     this.updateDiagram();
   }

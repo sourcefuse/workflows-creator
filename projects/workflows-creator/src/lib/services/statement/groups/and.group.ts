@@ -1,5 +1,6 @@
 import {AbstractBaseGroup} from '../../../classes/nodes';
 import {NodeTypes} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 
 /**
  * @description
@@ -16,7 +17,7 @@ export class AndGroup<E> extends AbstractBaseGroup<E> {
   nodeType: NodeTypes;
   static identifier = 'AndGroup';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     type: NodeTypes,
     isElseGroup?: boolean,

@@ -1,9 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {
-  WorkflowAction,
-  WorkflowEvent,
-  WorkflowPrompt,
-} from '../../classes/nodes';
+import {WorkflowAction, WorkflowEvent} from '../../classes/nodes';
 import {NodeService} from '../../classes/services';
 import {BPMN_INPUTS, BPMN_NODES} from '../../const';
 import {NodeTypes} from '../../enum';
@@ -149,11 +145,11 @@ export class BpmnNodesService<E> extends NodeService<E> {
 
   /**
    * It takes an array of prompts, and returns an array of inputs
-   * @param prompts - typeof WorkflowPrompt[]
+   * @param node - typeof WorkflowNode
    * @returns An array of input instances.
    */
-  mapInputs(prompts: string[]) {
-    return prompts.map(input => {
+  mapInputs(node: WorkflowNode<E>) {
+    return node.prompts.map(input => {
       const inputInstance = this.inputs.find(i => i.getIdentifier() === input);
       if (!inputInstance) {
         throw new InvalidEntityError(input);

@@ -3,8 +3,7 @@ import {BpmnEvent} from '../../../types/bpmn.types';
 import {GatewayElement} from '../../bpmn/elements/gateways/gateway.element';
 import {ReadColumnValue} from '../../bpmn/elements/tasks/read-column.task';
 import {TriggerWhenColumnChanges} from '../../bpmn/elements/tasks/trigger-when-column-changes.task';
-import {ColumnInput} from '../inputs/column.input';
-import {ConditionInput} from '../inputs/condition.input';
+import {TriggerColumnInput} from '../inputs';
 import {ValueInput} from '../inputs/value.input';
 
 export class OnChangeEvent extends BpmnEvent {
@@ -20,11 +19,7 @@ export class OnChangeEvent extends BpmnEvent {
   name = 'Column changes';
   statement = 'When ';
   properties = {};
-  prompts = [
-    ColumnInput.identifier,
-    ConditionInput.identifier,
-    ValueInput.identifier,
-  ];
+  prompts = [TriggerColumnInput.identifier, ValueInput.identifier];
   static identifier = 'OnChangeEvent';
   constructor(
     localizedStringMap: {[key: string]: string},

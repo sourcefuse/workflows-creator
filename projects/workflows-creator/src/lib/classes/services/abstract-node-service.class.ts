@@ -1,6 +1,6 @@
 import {WorkflowPrompt} from '..';
 import {NodeTypes} from '../../enum';
-import {Constructor, WorkflowNode} from '../../types/base.types';
+import {RecordOfAnyType, WorkflowNode} from '../../types/base.types';
 import {AbstractBaseGroup} from '../nodes';
 
 export abstract class NodeService<E> {
@@ -8,17 +8,17 @@ export abstract class NodeService<E> {
     [key: string]: string;
   }): WorkflowNode<E>[];
   abstract getEvents(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     trigger?: boolean,
   ): WorkflowNode<E>[];
   abstract getGroups(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     trigger?: boolean,
     type?: NodeTypes,
     isElseGroup?: boolean,
   ): AbstractBaseGroup<E>[];
   abstract getNodeByName(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     name: string,
     groupType: string,
     groupId: string,
@@ -26,10 +26,10 @@ export abstract class NodeService<E> {
     isElseAction?: boolean,
   ): WorkflowNode<E>;
   abstract getGroupByName(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     name: string,
     nodeType: NodeTypes,
     id?: string,
   ): AbstractBaseGroup<E>;
-  abstract mapInputs(prompts: string[]): WorkflowPrompt[];
+  abstract mapInputs(node: WorkflowNode<E>): WorkflowPrompt[];
 }

@@ -1,4 +1,5 @@
 import {LocalizedStringKeys} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {GatewayElement} from '../../bpmn/elements/gateways/gateway.element';
 import {ReadColumnValue} from '../../bpmn/elements/tasks/read-column.task';
@@ -21,7 +22,7 @@ export class OnValueEvent extends BpmnEvent {
   ];
   static identifier = 'OnValueEvent';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,

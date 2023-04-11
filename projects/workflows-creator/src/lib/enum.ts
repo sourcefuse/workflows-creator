@@ -36,11 +36,18 @@ export enum ConditionTypes {
   PastBy = 'pastby',
 }
 
+export enum ValueTypes {
+  Today = 'today',
+  PastToday = 'pasttoday',
+  AnyValue = 'anyValue',
+  Custom = 'custom',
+}
+
 /* Defining the types of nodes that can be used in the application. */
 export enum NodeTypes {
-  ACTION,
-  EVENT,
-  GROUP,
+  ACTION = 'action',
+  EVENT = 'event',
+  GROUP = 'group',
 }
 
 /* Defining the types of elements that can be used in the application. */

@@ -3,6 +3,7 @@ import {ToColumnInput} from '../inputs/tocolumn.input';
 import {ToValueInput} from '../inputs/tovalue.input';
 import {BpmnAction} from '../../../types/bpmn.types';
 import {LocalizedStringKeys} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 
 export class ChangeColumnValueAction extends BpmnAction {
   isElseAction: boolean;
@@ -14,7 +15,7 @@ export class ChangeColumnValueAction extends BpmnAction {
   prompts = [ToColumnInput.identifier, ToValueInput.identifier];
   static identifier = 'ChangeColumnValueAction';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,

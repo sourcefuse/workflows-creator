@@ -8,11 +8,11 @@ import {RecordOfAnyType} from '../../../types';
 
 export class ValueInput extends WorkflowListPrompt {
   prefix: string | {state: string} = '';
-  suffix = '';
+  suffix: string | {state: string} = {state: 'valueSuffix'};
   inputKey = 'value';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Value';
+  placeholder = 'Something';
 
   isHidden = <S extends RecordOfAnyType>(state: State<S>) => {
     return (
@@ -21,7 +21,6 @@ export class ValueInput extends WorkflowListPrompt {
         NotificationRecipientTypesEnum.NotifyEveryoneOnProject,
         NotificationRecipientTypesEnum.NotifyProjectOwners,
       ].includes(state.get('emailTo')) ||
-      state.get('condition') === ConditionTypes.Changes ||
       state.get('condition') === ConditionTypes.PastToday
     );
   };

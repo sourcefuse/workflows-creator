@@ -1,5 +1,6 @@
 import {AbstractBaseGroup} from '../../../classes/nodes';
 import {NodeTypes} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 
 /**
  * @description
@@ -17,7 +18,7 @@ export class OrGroup<E> extends AbstractBaseGroup<E> {
   nodeType: NodeTypes;
   static identifier = 'OrGroup';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     type: NodeTypes,
   ) {

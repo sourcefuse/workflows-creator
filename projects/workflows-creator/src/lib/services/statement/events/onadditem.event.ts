@@ -1,4 +1,5 @@
 import {LocalizedStringKeys, StartElementTypes} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {TriggerOnAddItem} from '../../bpmn/elements/tasks/trigger-on-add-item.task';
 
@@ -14,7 +15,7 @@ export class OnAddItemEvent extends BpmnEvent {
   prompts = [];
   static identifier = 'OnAddItemEvent';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,

@@ -11,7 +11,7 @@ import {
 } from '../../../../types';
 import {CONDITION_LIST} from '../../../../const';
 import {UtilsService} from '../../../utils.service';
-import {ConditionTypes, InputTypes, NUMBER} from '../../../../enum';
+import {ConditionTypes, InputTypes, NUMBER, ValueTypes} from '../../../../enum';
 import {GatewayElement} from '../../elements';
 
 const BPMN_SEQ_FLOW = 'bpmn:SequenceFlow';
@@ -224,6 +224,37 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const column: string = node.workflowNode.state.get('columnName');
     const conditionType = node.workflowNode.state.get('condition');
+    const value = node.workflowNode.state.get('value');
+
+    if (!conditionType && value) {
+      switch (value) {
+        case ValueTypes.PastToday:
+          return `
+                for(var key in readObj){
+                  var taskValuePair = readObj[key];
+                  if(taskValuePair && taskValuePair.value){
+                    var readDateValue = new Date(taskValuePair.value);
+                    if(readDateValue < new Date()){
+                      ids.push(taskValuePair.id);
+                    }
+                  }
+                }
+              `;
+        case ValueTypes.Today:
+          return `
+                for(var key in readObj){
+                  var taskValuePair = readObj[key];
+                  if(taskValuePair && taskValuePair.value){
+                    var readDateValue = new Date(taskValuePair.value);
+                    if(readDateValue.toDateString() === new Date().toDateString()){
+                      ids.push(taskValuePair.id);
+                    }
+                  }
+                }
+              `;
+      }
+    }
+
     const conditionExpression =
       ConditionTypes.NotEqual === conditionType ? '!' : '';
     const conditionExpressionElse =

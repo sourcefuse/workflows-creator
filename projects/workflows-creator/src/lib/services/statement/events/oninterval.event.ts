@@ -1,4 +1,5 @@
 import {LocalizedStringKeys, StartElementTypes} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {TriggerOnInterval} from '../../bpmn/elements/tasks/trigger-on-interval.task';
 import {IntervalInput} from '../inputs/interval.input';
@@ -16,7 +17,7 @@ export class OnIntervalEvent extends BpmnEvent {
   prompts = [ValueInput.identifier, IntervalInput.identifier];
   static identifier = 'OnIntervalEvent';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,
