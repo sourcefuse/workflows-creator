@@ -86,6 +86,7 @@ import {StartOnIntervalElement} from './services/bpmn/elements/base/start-on-int
 import {TriggerOnAddItem} from './services/bpmn/elements/tasks/trigger-on-add-item.task';
 import {OnAddItemEvent} from './services/statement/events/onadditem.event';
 import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.input';
+import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 @NgModule({
   declarations: [BuilderComponent, GroupComponent, NodeComponent],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
@@ -143,6 +144,7 @@ import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.inpu
     {provide: BPMN_INPUTS, useClass: ToColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ToValueInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ValueInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ValueTypeInput, multi: true},
     {provide: CREATE_BASIC_STRATEGY, useClass: CreateBasicStrategy},
     {
       provide: CREATE_BASIC_INTERVAL_STRATEGY,

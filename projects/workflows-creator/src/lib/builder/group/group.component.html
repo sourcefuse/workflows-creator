@@ -76,14 +76,14 @@
 
   <ng-template #inputs let-nodeWithInput="node">
     <ng-container *ngFor="let input of nodeWithInput.inputs || []">
-      {{
-        (input.prefix.state
-          ? nodeWithInput.node.state.get(input.prefix.state)
-          : input.prefix) || ''
-      }}
       <ng-container
-        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node.state))"
+        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node))"
       >
+        {{
+          (input.prefix.state
+            ? nodeWithInput.node.state.get(input.prefix.state)
+            : input.prefix) || ''
+        }}
         <div
           class="input-text"
           [popper]="inputPopper"
@@ -109,12 +109,12 @@
             {{ input.placeholder }}</span
           >
         </div>
+        {{
+          (input.suffix?.state
+            ? nodeWithInput.node.state.get(input.suffix?.state)
+            : input.suffix) || ''
+        }}
       </ng-container>
-      {{
-        (input.suffix?.state
-          ? nodeWithInput.node.state.get(input.suffix?.state)
-          : input.suffix) || ''
-      }}
       <popper-content #inputPopper>
         <ng-container
           *ngIf="

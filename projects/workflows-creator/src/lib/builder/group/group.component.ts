@@ -390,7 +390,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     this.enableActionIcon = true;
     if (
-      input.getIdentifier() === 'ValueInput' &&
+      (input.getIdentifier() === 'ValueTypeInput' ||
+        input.getIdentifier() === 'ValueInput') &&
       element.node.getIdentifier() === 'OnChangeEvent'
     ) {
       if ((value as AllowedValuesMap).value === ValueTypes.AnyValue) {

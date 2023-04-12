@@ -3,8 +3,9 @@ import {
   ConditionTypes,
   InputTypes,
   NotificationRecipientTypesEnum,
+  ValueTypes,
 } from '../../../enum';
-import {RecordOfAnyType} from '../../../types';
+import {BpmnEvent, BpmnNode, RecordOfAnyType} from '../../../types';
 
 export class ValueInput extends WorkflowListPrompt {
   prefix: string | {state: string} = '';
@@ -14,14 +15,23 @@ export class ValueInput extends WorkflowListPrompt {
   listValueField = 'value';
   placeholder = 'Something';
 
-  isHidden = <S extends RecordOfAnyType>(state: State<S>) => {
+  isHidden = (node: BpmnNode) => {
     return (
       [
         NotificationRecipientTypesEnum.NotifyMe,
         NotificationRecipientTypesEnum.NotifyEveryoneOnProject,
         NotificationRecipientTypesEnum.NotifyProjectOwners,
-      ].includes(state.get('emailTo')) ||
-      state.get('condition') === ConditionTypes.PastToday
+      ].includes(node.state.get('emailTo')) ||
+      node.state.get('condition') === ConditionTypes.PastToday ||
+      ((node as BpmnEvent).trigger &&
+        [
+          '',
+          InputTypes.Text,
+          InputTypes.Number,
+          InputTypes.People,
+          InputTypes.Percentage,
+        ].includes(node.state.get('valueInputType')) &&
+        node.state.get('valueType') !== ValueTypes.Custom)
     );
   };
 

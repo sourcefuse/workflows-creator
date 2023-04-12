@@ -24,7 +24,6 @@ export enum InputTypes {
 
 /* Defining the types of conditions that can be used in the application. */
 export enum ConditionTypes {
-  Changes = 'changes',
   ComingIn = 'comingin',
   DueInDays = 'dueindays',
   Equal = 'equal',
@@ -40,7 +39,7 @@ export enum ValueTypes {
   Today = 'today',
   PastToday = 'pasttoday',
   AnyValue = 'anyValue',
-  Custom = 'custom',
+  Custom = 'customValue',
 }
 
 /* Defining the types of nodes that can be used in the application. */
@@ -88,6 +87,7 @@ export enum LocalizedStringKeys {
   WhenThisHappens = 'whenThisHappensLbl',
   DoThis = 'doThisLbl',
   ColumnChanges = 'columnChangesLbl',
+  ChangesTo = 'triggerColumnSuffix',
   OnInterval = 'onIntervalLbl',
   OnAddItem = 'onAddItemLbl',
   ItemCreated = 'itemCreatedLbl',
