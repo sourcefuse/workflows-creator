@@ -1,4 +1,4 @@
-import {StartElementTypes} from '../../../enum';
+import {LocalizedStringKeys, StartElementTypes} from '../../../enum';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {GatewayElement} from '../../bpmn/elements/gateways/gateway.element';
 import {ReadColumnValue} from '../../bpmn/elements/tasks/read-column.task';
@@ -17,7 +17,7 @@ export class OnChangeEvent extends BpmnEvent {
     ReadColumnValue.identifier,
     GatewayElement.identifier,
   ];
-  name = 'On Column Value Change';
+  name = 'Column changes';
   statement = 'When ';
   properties = {};
   prompts = [
@@ -26,11 +26,18 @@ export class OnChangeEvent extends BpmnEvent {
     ValueInput.identifier,
   ];
   static identifier = 'OnChangeEvent';
-  constructor(id: string, groupType: string, groupId: string) {
+  constructor(
+    localizedStringMap: {[key: string]: string},
+    id: string,
+    groupType: string,
+    groupId: string,
+  ) {
     super();
     this.id = id;
     this.groupType = groupType;
     this.groupId = groupId;
+    this.name =
+      localizedStringMap[LocalizedStringKeys.ColumnChanges] ?? 'Column changes';
   }
 
   getIdentifier(): string {

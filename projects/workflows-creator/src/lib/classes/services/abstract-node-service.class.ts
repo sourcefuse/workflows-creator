@@ -4,14 +4,21 @@ import {Constructor, WorkflowNode} from '../../types/base.types';
 import {AbstractBaseGroup} from '../nodes';
 
 export abstract class NodeService<E> {
-  abstract getActions(): WorkflowNode<E>[];
-  abstract getEvents(trigger?: boolean): WorkflowNode<E>[];
+  abstract getActions(localizedStringMap: {
+    [key: string]: string;
+  }): WorkflowNode<E>[];
+  abstract getEvents(
+    localizedStringMap: {[key: string]: string},
+    trigger?: boolean,
+  ): WorkflowNode<E>[];
   abstract getGroups(
+    localizedStringMap: {[key: string]: string},
     trigger?: boolean,
     type?: NodeTypes,
     isElseGroup?: boolean,
   ): AbstractBaseGroup<E>[];
   abstract getNodeByName(
+    localizedStringMap: {[key: string]: string},
     name: string,
     groupType: string,
     groupId: string,
@@ -19,6 +26,7 @@ export abstract class NodeService<E> {
     isElseAction?: boolean,
   ): WorkflowNode<E>;
   abstract getGroupByName(
+    localizedStringMap: {[key: string]: string},
     name: string,
     nodeType: NodeTypes,
     id?: string,

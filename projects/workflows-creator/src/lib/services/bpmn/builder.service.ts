@@ -216,7 +216,7 @@ export class BpmnBuilderService extends BuilderService<
    *   - description: A string
    *   -
    */
-  async restore(xml: string) {
+  async restore(xml: string, localizedStringMap: {[key: string]: string} = {}) {
     const result = await this.moddle.fromXML(xml);
     this.root = result.rootElement;
     const process = this.root.get('rootElements')[0];
@@ -247,6 +247,7 @@ export class BpmnBuilderService extends BuilderService<
       // TODO: Refactor
       // sonarignore:start
       currentNode = this.nodes.getNodeByName(
+        localizedStringMap,
         nodeCtor,
         groupType,
         groupId,
@@ -256,6 +257,7 @@ export class BpmnBuilderService extends BuilderService<
       if (!groupIds.includes(groupId) && isElseAction !== 'true') {
         groupIds.push(groupId);
         let currentGroup = this.nodes.getGroupByName(
+          localizedStringMap,
           groupType,
           currentNode.type,
           groupId,

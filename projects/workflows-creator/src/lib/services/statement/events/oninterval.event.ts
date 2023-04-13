@@ -1,4 +1,4 @@
-import {StartElementTypes} from '../../../enum';
+import {LocalizedStringKeys, StartElementTypes} from '../../../enum';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {TriggerOnInterval} from '../../bpmn/elements/tasks/trigger-on-interval.task';
 import {IntervalInput} from '../inputs/interval.input';
@@ -15,11 +15,18 @@ export class OnIntervalEvent extends BpmnEvent {
   properties = {};
   prompts = [ValueInput.identifier, IntervalInput.identifier];
   static identifier = 'OnIntervalEvent';
-  constructor(id: string, groupType: string, groupId: string) {
+  constructor(
+    localizedStringMap: {[key: string]: string},
+    id: string,
+    groupType: string,
+    groupId: string,
+  ) {
     super();
     this.id = id;
     this.groupType = groupType;
     this.groupId = groupId;
+    this.name =
+      localizedStringMap[LocalizedStringKeys.OnInterval] ?? 'On Interval';
   }
 
   getIdentifier(): string {

@@ -1,3 +1,4 @@
+import {LocalizedStringKeys} from '../../../enum';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {GatewayElement} from '../../bpmn/elements/gateways/gateway.element';
 import {ReadColumnValue} from '../../bpmn/elements/tasks/read-column.task';
@@ -10,7 +11,7 @@ export class OnValueEvent extends BpmnEvent {
   groupId: string;
   trigger = false;
   elements = [ReadColumnValue.identifier, GatewayElement.identifier];
-  name = 'Check Value ';
+  name = 'Check value ';
   statement = 'check if ';
   properties = {};
   prompts = [
@@ -19,11 +20,18 @@ export class OnValueEvent extends BpmnEvent {
     ValueInput.identifier,
   ];
   static identifier = 'OnValueEvent';
-  constructor(id: string, groupType: string, groupId: string) {
+  constructor(
+    localizedStringMap: {[key: string]: string},
+    id: string,
+    groupType: string,
+    groupId: string,
+  ) {
     super();
     this.id = id;
     this.groupType = groupType;
     this.groupId = groupId;
+    this.name =
+      localizedStringMap[LocalizedStringKeys.CheckValue] ?? 'Check value ';
   }
 
   getIdentifier(): string {
