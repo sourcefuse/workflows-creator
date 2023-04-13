@@ -30,6 +30,7 @@ import {
 } from '../../types/base.types';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {
+  ChangeColumnValue,
   GatewayElement,
   ReadColumnValue,
   TriggerWhenColumnChanges,
@@ -111,6 +112,11 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   actions: WorkflowNode<E>[] = [];
 
   nodeList: WorkflowNode<E>[];
+
+  showsTooltip = false;
+  tooltipText = 'This is default parent component text';
+  topPosition: any;
+  leftPosition: any;
 
   public types = NodeTypes;
   public prevPopperRef: NgxPopperjsContentComponent;
@@ -361,6 +367,37 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     event.stopPropagation();
     this.prevPopperRef.show();
     popper?.popperInstance?.forceUpdate();
+  }
+
+  /**
+   * shows custom tooltip
+   * @param {MouseEvent} e - event object
+   * @param element - NodeWithInput<E>
+   * @param {WorkflowPrompt} input - WorkflowPrompt - this is the input object that was clicked on
+   */
+  showTooltip(e: MouseEvent, element: NodeWithInput<E>, input: WorkflowPrompt) {
+    if (
+      ['condition', 'value'].includes(input.inputKey) &&
+      (element.node.elements.includes(ChangeColumnValue.identifier) ||
+        element.node.elements.includes(ReadColumnValue.identifier) ||
+        element.node.elements.includes(ReadColumnValue.identifier)) &&
+      !element.node.state.get('column')
+    ) {
+      this.tooltipText =
+        this.localizedStringMap.selectColumnTooltip ?? 'Select a column first';
+      this.showsTooltip = true;
+      this.topPosition = e.clientY + 10;
+      this.leftPosition = e.clientX;
+    }
+  }
+
+  /**
+   * hides custom tooltip
+   */
+  hideTooltip() {
+    this.showsTooltip = false;
+    this.topPosition = null;
+    this.leftPosition = null;
   }
 
   /**

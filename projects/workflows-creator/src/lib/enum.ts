@@ -97,4 +97,5 @@ export enum LocalizedStringKeys {
   Else = 'elseLbl',
   TypeSubject = 'typeSubjectLbl',
   TypeEmail = 'typeEmailLbl',
+  SelectColumnTooltip = 'selectColumnTooltip'
 }

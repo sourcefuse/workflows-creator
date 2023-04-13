@@ -87,8 +87,9 @@ import {TriggerOnAddItem} from './services/bpmn/elements/tasks/trigger-on-add-it
 import {OnAddItemEvent} from './services/statement/events/onadditem.event';
 import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.input';
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
+import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 @NgModule({
-  declarations: [BuilderComponent, GroupComponent, NodeComponent],
+  declarations: [BuilderComponent, GroupComponent, NodeComponent, TooltipRenderComponent],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
   imports: [
     CommonModule,
