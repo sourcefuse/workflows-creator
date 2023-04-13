@@ -1,4 +1,8 @@
 <div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
+  <workflow-tooltip-render [showsTooltip]="showsTooltip"
+  [tooltipText]="tooltipText"
+  [topPosition]="topPosition"
+  [leftPosition]="leftPosition"></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
       <span *ngIf="!isFirst"> {{ group.name }} </span>
@@ -86,6 +90,8 @@
           [popperPlacement]="'bottom-start'"
           [popperApplyClass]="'workflow-popper'"
           (click)="onPoperClick($event, inputPopper)"
+          (mouseover)="showTooltip($event, nodeWithInput, input)"
+          (mouseout)="hideTooltip()"
         >
           <span
             class="value-text"

@@ -1,0 +1,7 @@
+<ng-container *ngIf="showsTooltip">
+    <div class="tooltip"
+    [style.top]="topPosition + 'px'"
+    [style.left]="leftPosition + 'px'">
+      {{ tooltipText }}
+    </div>
+  </ng-container>
