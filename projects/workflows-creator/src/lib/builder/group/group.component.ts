@@ -9,14 +9,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import {NgxPopperjsContentComponent} from 'ngx-popperjs';
-import {
-  isSelectInput,
-  NodeService,
-  WorkflowElement,
-  WorkflowPrompt,
-} from '../../classes';
+import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
-import {ConditionTypes, InputTypes, NodeTypes, NUMBER} from '../../enum';
+import {InputTypes, NodeTypes, NUMBER, ValueTypes} from '../../enum';
 import {InvalidEntityError} from '../../errors/base.error';
 import {
   AllowedValues,
@@ -31,7 +26,6 @@ import {
   DateTime,
   EmailInput,
   Select,
-  Constructor,
   DateType,
 } from '../../types/base.types';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
@@ -68,7 +62,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   nodeType: NodeTypes;
 
   @Input()
-  localizedStringMap: {[key: string]: string};
+  localizedStringMap: RecordOfAnyType;
 
   /* A decorator that tells Angular that the popupTemplate property is an input property. */
   @Input()
@@ -304,7 +298,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         id,
         this.group.isElseGroup,
       ),
-      inputs: this.nodes.mapInputs(node.prompts),
+      inputs: this.nodes.mapInputs(node),
     };
     if (node.type === NodeTypes.EVENT) {
       this.eventAdded.emit({
@@ -433,15 +427,16 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     this.enableActionIcon = true;
     if (
-      input.getIdentifier() === 'ConditionInput' &&
+      (input.getIdentifier() === 'ValueTypeInput' ||
+        input.getIdentifier() === 'ValueInput') &&
       element.node.getIdentifier() === 'OnChangeEvent'
     ) {
-      if ((value as AllowedValuesMap).value === ConditionTypes.Changes) {
+      if ((value as AllowedValuesMap).value === ValueTypes.AnyValue) {
         /**
          * Remove node on changes event
          */
         element.node.elements.splice(-NUMBER.TWO, NUMBER.TWO);
-        element.inputs[1].prefix = '';
+        // element.inputs[1].prefix = '';
         this.enableActionIcon = false;
       } else {
         element.node.elements = [
@@ -487,7 +482,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       element: element,
     });
     this.enableActionIcon =
-      element.node.state.get('condition') !== ConditionTypes.Changes;
+      element.node.state.get('value') !== ValueTypes.AnyValue;
   }
 
   /**

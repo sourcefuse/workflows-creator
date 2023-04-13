@@ -1,4 +1,5 @@
 import {LocalizedStringKeys} from '../../../enum';
+import {RecordOfAnyType} from '../../../types';
 import {BpmnAction} from '../../../types/bpmn.types';
 import {SendEmail} from '../../bpmn/elements/tasks/send-email.task';
 import {
@@ -21,7 +22,7 @@ export class SendEmailAction extends BpmnAction {
   ];
   static identifier = 'SendEmailAction';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,

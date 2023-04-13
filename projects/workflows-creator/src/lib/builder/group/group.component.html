@@ -17,8 +17,16 @@
         [popperPlacement]="'bottom'"
         (click)="openPopup(group.nodeType)"
       >
-        <span *ngIf="group.nodeType === types.EVENT">{{localizedStringMap.whenThisHappensLbl ? localizedStringMap.whenThisHappensLbl : 'When this happens'}}</span>
-        <span *ngIf="group.nodeType === types.ACTION">{{localizedStringMap.doThisLbl ? localizedStringMap.doThisLbl : 'Then do this'}}</span>
+        <span *ngIf="group.nodeType === types.EVENT">{{
+          localizedStringMap.whenThisHappensLbl
+            ? localizedStringMap.whenThisHappensLbl
+            : 'When this happens'
+        }}</span>
+        <span *ngIf="group.nodeType === types.ACTION">{{
+          localizedStringMap.doThisLbl
+            ? localizedStringMap.doThisLbl
+            : 'Then do this'
+        }}</span>
       </span>
     </div>
 
@@ -72,14 +80,14 @@
 
   <ng-template #inputs let-nodeWithInput="node">
     <ng-container *ngFor="let input of nodeWithInput.inputs || []">
-      {{
-        (input.prefix.state
-          ? nodeWithInput.node.state.get(input.prefix.state)
-          : input.prefix) || ''
-      }}
       <ng-container
-        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node.state))"
+        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node))"
       >
+        {{
+          (input.prefix.state
+            ? nodeWithInput.node.state.get(input.prefix.state)
+            : input.prefix) || ''
+        }}
         <div
           class="input-text"
           [popper]="inputPopper"
@@ -104,15 +112,18 @@
             class="placeholder-text"
             *ngIf="!input.getValueName(nodeWithInput.node.state)"
           >
-            {{ input.placeholder }}</span
-          >
+            {{
+              nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
+                input.placeholder
+            }}
+          </span>
         </div>
+        {{
+          (input.suffix?.state
+            ? nodeWithInput.node.state.get(input.suffix?.state)
+            : input.suffix) || ''
+        }}
       </ng-container>
-      {{
-        (input.suffix?.state
-          ? nodeWithInput.node.state.get(input.suffix?.state)
-          : input.suffix) || ''
-      }}
       <popper-content #inputPopper>
         <ng-container
           *ngIf="
@@ -283,11 +294,19 @@
         id="email-subject"
         autofocus
         (focus)="setFocusKey(emailInput, 'subject')"
-        [placeholder]="localizedStringMap.typeSubjectLbl ? localizedStringMap.typeSubjectLbl : 'Type your subject'"
+        [placeholder]="
+          localizedStringMap.typeSubjectLbl
+            ? localizedStringMap.typeSubjectLbl
+            : 'Type your subject'
+        "
         [(ngModel)]="emailInput.subject"
       />
       <textarea
-        [placeholder]="localizedStringMap.typeEmailLbl ? localizedStringMap.typeEmailLbl : 'Type your email'"
+        [placeholder]="
+          localizedStringMap.typeEmailLbl
+            ? localizedStringMap.typeEmailLbl
+            : 'Type your email'
+        "
         id="email-body"
         class="email-input email-body-input"
         (focus)="setFocusKey(emailInput, 'body')"

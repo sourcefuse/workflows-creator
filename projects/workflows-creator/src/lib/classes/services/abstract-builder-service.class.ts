@@ -14,7 +14,7 @@ export abstract class BuilderService<E, S extends RecordOfAnyType> {
   ): Promise<string>;
   abstract restore(
     model: string,
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
   ): Promise<{
     actions: ActionWithInput<E>[];
     elseActions: ActionWithInput<E>[];

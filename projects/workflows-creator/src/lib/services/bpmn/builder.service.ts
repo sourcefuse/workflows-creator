@@ -216,7 +216,7 @@ export class BpmnBuilderService extends BuilderService<
    *   - description: A string
    *   -
    */
-  async restore(xml: string, localizedStringMap: {[key: string]: string} = {}) {
+  async restore(xml: string, localizedStringMap: RecordOfAnyType = {}) {
     const result = await this.moddle.fromXML(xml);
     this.root = result.rootElement;
     const process = this.root.get('rootElements')[0];
@@ -273,7 +273,7 @@ export class BpmnBuilderService extends BuilderService<
         if (currentNode.type === NodeTypes.ACTION) {
           const nodeWithInput = {
             node: currentNode as BpmnAction,
-            inputs: this.nodes.mapInputs(currentNode.prompts),
+            inputs: this.nodes.mapInputs(currentNode),
           };
           (currentNode as BpmnAction).isElseAction
             ? elseActions.push(nodeWithInput)
@@ -281,7 +281,7 @@ export class BpmnBuilderService extends BuilderService<
         } else {
           events.push({
             node: currentNode,
-            inputs: this.nodes.mapInputs(currentNode.prompts),
+            inputs: this.nodes.mapInputs(currentNode),
           } as EventWithInput<ModdleElement>);
         }
       }

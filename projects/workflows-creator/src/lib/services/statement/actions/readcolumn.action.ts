@@ -1,3 +1,4 @@
+import {RecordOfAnyType} from '../../../types';
 import {BpmnAction} from '../../../types/bpmn.types';
 
 export class ReadColumnValueAction extends BpmnAction {
@@ -10,7 +11,7 @@ export class ReadColumnValueAction extends BpmnAction {
   prompts = [];
   static identifier = 'ReadColumnValueAction';
   constructor(
-    localizedStringMap: {[key: string]: string},
+    localizedStringMap: RecordOfAnyType,
     id: string,
     groupType: string,
     groupId: string,

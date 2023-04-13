@@ -85,7 +85,9 @@ import {TriggerOnInterval} from './services/bpmn/elements/tasks/trigger-on-inter
 import {StartOnIntervalElement} from './services/bpmn/elements/base/start-on-interval.element';
 import {TriggerOnAddItem} from './services/bpmn/elements/tasks/trigger-on-add-item.task';
 import {OnAddItemEvent} from './services/statement/events/onadditem.event';
-import { TooltipRenderComponent } from './builder/tooltip-render/tooltip-render.component';
+import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.input';
+import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
+import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 @NgModule({
   declarations: [BuilderComponent, GroupComponent, NodeComponent, TooltipRenderComponent],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
@@ -134,6 +136,7 @@ import { TooltipRenderComponent } from './builder/tooltip-render/tooltip-render.
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},
@@ -142,6 +145,7 @@ import { TooltipRenderComponent } from './builder/tooltip-render/tooltip-render.
     {provide: BPMN_INPUTS, useClass: ToColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ToValueInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ValueInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ValueTypeInput, multi: true},
     {provide: CREATE_BASIC_STRATEGY, useClass: CreateBasicStrategy},
     {
       provide: CREATE_BASIC_INTERVAL_STRATEGY,
