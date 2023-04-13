@@ -106,8 +106,11 @@
             class="placeholder-text"
             *ngIf="!input.getValueName(nodeWithInput.node.state)"
           >
-            {{ input.placeholder }}</span
-          >
+            {{
+              nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
+                input.placeholder
+            }}
+          </span>
         </div>
         {{
           (input.suffix?.state

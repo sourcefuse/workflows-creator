@@ -1,11 +1,12 @@
 import {State, WorkflowListPrompt} from '../../../classes';
 import {
   ConditionTypes,
+  EventTypes,
   InputTypes,
   NotificationRecipientTypesEnum,
   ValueTypes,
 } from '../../../enum';
-import {BpmnEvent, BpmnNode, RecordOfAnyType} from '../../../types';
+import {BpmnNode, RecordOfAnyType} from '../../../types';
 
 export class ValueInput extends WorkflowListPrompt {
   prefix: string | {state: string} = '';
@@ -14,6 +15,7 @@ export class ValueInput extends WorkflowListPrompt {
   listNameField = 'text';
   listValueField = 'value';
   placeholder = 'Something';
+  customPlaceholder: string | {state: string} = {state: 'valuePlaceholder'};
 
   isHidden = (node: BpmnNode) => {
     return (
@@ -23,7 +25,7 @@ export class ValueInput extends WorkflowListPrompt {
         NotificationRecipientTypesEnum.NotifyProjectOwners,
       ].includes(node.state.get('emailTo')) ||
       node.state.get('condition') === ConditionTypes.PastToday ||
-      ((node as BpmnEvent).trigger &&
+      (node.getIdentifier() === EventTypes.OnChangeEvent &&
         [
           '',
           InputTypes.Text,
