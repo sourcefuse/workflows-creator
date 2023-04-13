@@ -1,0 +1,14 @@
+@import '../../../assets/styles/colors';
+
+.tooltip {
+    position: absolute; // enables it to appear where we want it later
+    font-size: 14px;
+    line-height: 14px;
+    padding: 5px 10px;
+    color:$black;
+    display: inline-block;
+    box-shadow: 4px 6px 12px $grey2;
+    background-color: $white;
+    border: 1px solid $grey2;
+    border-radius: 5px;
+  }
