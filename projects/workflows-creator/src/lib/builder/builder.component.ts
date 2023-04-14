@@ -100,7 +100,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   // sonarignore:start
   // TODO: Refactor this code to be more flexible
   // sonarignore:start
-  showElseBlock = true;
+  elseBlockHidden = false;
+  elseBlockRemoved = false;
   public types = NodeTypes;
 
   /**
@@ -193,6 +194,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.eventGroups.splice(index, 1);
   }
 
+  removeElseBlock() {
+    this.elseBlockRemoved = true;
+  }
+
   /**
    * The function is called when an event is added to the workflow. It emits an eventAdded event,
    * updates the diagram, updates the state, and shows the else block
@@ -205,9 +210,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateDiagram();
     this.updateState(event.node, event.newNode.inputs);
-    this.showElseBlock =
-      event.node.getIdentifier() !== EventTypes.OnIntervalEvent &&
-      event.node.getIdentifier() !== EventTypes.OnAddItemEvent;
+    this.elseBlockHidden =
+      !this.eventGroups[0]?.children?.length &&
+      (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
+        event.node.getIdentifier() === EventTypes.OnAddItemEvent);
   }
 
   /**
@@ -237,10 +243,12 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateState(item.element.node, item.element.inputs);
     // TODO: to be refactored
-    if (this.eventGroups[0].children?.length) {
-      this.showElseBlock =
-        item.element.node.state.get('value') !== ValueTypes.AnyValue;
-    }
+    this.elseBlockHidden =
+      this.eventGroups[0].children?.length === 1 &&
+      this.eventGroups[0].children[0].node.getIdentifier() ===
+        EventTypes.OnChangeEvent &&
+      this.eventGroups[0].children[0].node.state.get('value') ===
+        ValueTypes.AnyValue;
     this.updateDiagram();
   }
 

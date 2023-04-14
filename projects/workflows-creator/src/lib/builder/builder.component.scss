@@ -63,3 +63,21 @@
     background: rgb(240, 239, 239);
   }
 }
+
+.else-block {
+  display: flex;
+  justify-content: space-between;
+  .action-icons {
+    cursor: pointer;
+    display: inline !important;
+    margin: 0 15px;
+    font-size: 18px;
+    padding: 5px;
+    &:hover {
+      &.icon-workflow-delete {
+        background: $grey2;
+        border-radius: 5px;
+      }
+    }
+  }
+}

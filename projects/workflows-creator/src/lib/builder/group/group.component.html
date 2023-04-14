@@ -1,8 +1,10 @@
 <div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
-  <workflow-tooltip-render [showsTooltip]="showsTooltip"
-  [tooltipText]="tooltipText"
-  [topPosition]="topPosition"
-  [leftPosition]="leftPosition"></workflow-tooltip-render>
+  <workflow-tooltip-render
+    [showsTooltip]="showsTooltip"
+    [tooltipText]="tooltipText"
+    [topPosition]="topPosition"
+    [leftPosition]="leftPosition"
+  ></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
       <span *ngIf="!isFirst"> {{ group.name }} </span>

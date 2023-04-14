@@ -89,7 +89,12 @@ import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.inpu
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 @NgModule({
-  declarations: [BuilderComponent, GroupComponent, NodeComponent, TooltipRenderComponent],
+  declarations: [
+    BuilderComponent,
+    GroupComponent,
+    NodeComponent,
+    TooltipRenderComponent,
+  ],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
   imports: [
     CommonModule,

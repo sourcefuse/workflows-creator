@@ -34,8 +34,17 @@
       [localizedStringMap]="localizedStringMap"
     ></workflow-group>
   </span>
-  <ng-container *ngIf="showElseBlock">
-    {{ localizedStringMap.elseLbl ? localizedStringMap.elseLbl : 'Else' }}
+  <ng-container *ngIf="!elseBlockRemoved && !elseBlockHidden">
+    <div class="else-block">
+      <span>{{
+        localizedStringMap.elseLbl ? localizedStringMap.elseLbl : 'Else'
+      }}</span>
+      <span
+        class="action-icons icon-workflow-delete"
+        title="Delete else block"
+        (click)="removeElseBlock()"
+      ></span>
+    </div>
     <div class="down-arrow">
       <span class="icon-workflow-down-arrow red"></span>
     </div>
