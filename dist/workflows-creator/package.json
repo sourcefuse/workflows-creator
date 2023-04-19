@@ -1,6 +1,6 @@
 {
   "name": "@sourceloop/workflows-creator",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Library for providing a smooth user workflow",
   "keywords": [
     "angular-library"

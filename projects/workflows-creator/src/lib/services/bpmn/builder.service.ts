@@ -24,6 +24,7 @@ import {
 import {ProcessPropertiesElement} from './elements/process/process-properties.element';
 import {ActionWithInput, EventWithInput} from '../../types/base.types';
 import {UtilsService} from '../utils.service';
+import {LocalizationProviderService} from '../localization-provider.service';
 
 @Injectable()
 export class BpmnBuilderService extends BuilderService<
@@ -40,6 +41,7 @@ export class BpmnBuilderService extends BuilderService<
     private readonly nodes: NodeService<ModdleElement>,
     private readonly layout: AutoLayoutService,
     private readonly utils: UtilsService,
+    private readonly localizationSvc: LocalizationProviderService,
   ) {
     super();
   }
@@ -216,7 +218,7 @@ export class BpmnBuilderService extends BuilderService<
    *   - description: A string
    *   -
    */
-  async restore(xml: string, localizedStringMap: RecordOfAnyType = {}) {
+  async restore(xml: string) {
     const result = await this.moddle.fromXML(xml);
     this.root = result.rootElement;
     const process = this.root.get('rootElements')[0];
@@ -247,7 +249,6 @@ export class BpmnBuilderService extends BuilderService<
       // TODO: Refactor
       // sonarignore:start
       currentNode = this.nodes.getNodeByName(
-        localizedStringMap,
         nodeCtor,
         groupType,
         groupId,
@@ -257,7 +258,6 @@ export class BpmnBuilderService extends BuilderService<
       if (!groupIds.includes(groupId) && isElseAction !== 'true') {
         groupIds.push(groupId);
         let currentGroup = this.nodes.getGroupByName(
-          localizedStringMap,
           groupType,
           currentNode.type,
           groupId,

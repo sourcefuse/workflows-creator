@@ -88,12 +88,14 @@ import {OnAddItemEvent} from './services/statement/events/onadditem.event';
 import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.input';
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
+import {LocalizationPipe} from './pipes/localization.pipe';
 @NgModule({
   declarations: [
     BuilderComponent,
     GroupComponent,
     NodeComponent,
     TooltipRenderComponent,
+    LocalizationPipe,
   ],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
   imports: [

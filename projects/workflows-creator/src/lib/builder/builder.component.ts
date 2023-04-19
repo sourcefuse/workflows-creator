@@ -20,7 +20,7 @@ import {
 } from '../classes';
 import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
-import {EventTypes, NodeTypes, ValueTypes} from '../enum';
+import {EventTypes, LocalizedStringKeys, NodeTypes, ValueTypes} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
 import {
   ActionAddition,
@@ -37,6 +37,7 @@ import {
   StateMap,
   WorkflowNode,
 } from '../types';
+import {LocalizationProviderService} from '../services/localization-provider.service';
 
 @Component({
   selector: 'workflow-builder',
@@ -53,6 +54,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly nodes: NodeService<E>,
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
+    private readonly localizationSvc: LocalizationProviderService,
   ) {}
 
   @Input()
@@ -104,19 +106,23 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   elseBlockRemoved = false;
   public types = NodeTypes;
 
+  localizedStringKeys = LocalizedStringKeys;
+
   /**
    * We're getting all the groups from the node service, and then we're adding them to the list of groups
    */
   ngOnInit(): void {
     this.nodes
-      .getGroups(this.localizedStringMap, true, NodeTypes.EVENT)
+      .getGroups(true, NodeTypes.EVENT)
       .forEach(group => this.onGroupAdd(group));
     this.nodes
-      .getGroups(this.localizedStringMap, true, NodeTypes.ACTION)
+      .getGroups(true, NodeTypes.ACTION)
       .forEach(group => this.onGroupAdd(group));
     this.nodes
-      .getGroups(this.localizedStringMap, true, NodeTypes.ACTION, true)
+      .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
+
+    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
   }
 
   /**
@@ -126,7 +132,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
       const {events, actions, elseActions, groups, process, state} =
-        await this.builder.restore(this.diagram, this.localizedStringMap);
+        await this.builder.restore(this.diagram);
       this.processId = process.id;
       this.selectedActions = actions;
       this.selectedEvents = events;
@@ -279,7 +285,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   openPopup(type: NodeTypes) {
     if (type === NodeTypes.GROUP) {
-      this.nodeList = this.nodes.getGroups(this.localizedStringMap);
+      this.nodeList = this.nodes.getGroups();
     } else {
       throw new InvalidEntityError('' + type);
     }

@@ -14,7 +14,6 @@
       (eventRemoved)="onEventRemoved()"
       (actionAdded)="onActionAdded($event)"
       (itemChanged)="onItemChanged($event)"
-      [localizedStringMap]="localizedStringMap"
     ></workflow-group>
   </span>
   <div class="down-arrow">
@@ -32,14 +31,11 @@
       (eventAdded)="onEventAdded($event)"
       (actionAdded)="onActionAdded($event)"
       (itemChanged)="onItemChanged($event)"
-      [localizedStringMap]="localizedStringMap"
     ></workflow-group>
   </span>
   <ng-container *ngIf="!elseBlockRemoved && !elseBlockHidden">
     <div class="else-block">
-      <span>{{
-        localizedStringMap.elseLbl ? localizedStringMap.elseLbl : 'Else'
-      }}</span>
+      <span>{{ localizedStringKeys.Else | localization }}</span>
       <span
         class="action-icons icon-workflow-delete"
         title="Delete else block"
@@ -62,7 +58,6 @@
         (eventAdded)="onEventAdded($event)"
         (actionAdded)="onActionAdded($event)"
         (itemChanged)="onItemChanged($event)"
-        [localizedStringMap]="localizedStringMap"
       ></workflow-group>
     </span>
   </ng-container>

@@ -11,7 +11,13 @@ import {
 import {NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
-import {InputTypes, NodeTypes, NUMBER, ValueTypes} from '../../enum';
+import {
+  InputTypes,
+  LocalizedStringKeys,
+  NodeTypes,
+  NUMBER,
+  ValueTypes,
+} from '../../enum';
 import {InvalidEntityError} from '../../errors/base.error';
 import {
   AllowedValues,
@@ -32,9 +38,11 @@ import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {
   ChangeColumnValue,
   GatewayElement,
+  LocalizationProviderService,
   ReadColumnValue,
   TriggerWhenColumnChanges,
 } from '../../services';
+
 @Component({
   selector: 'workflow-group',
   templateUrl: './group.component.html',
@@ -44,7 +52,10 @@ import {
   ],
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
-  constructor(private readonly nodes: NodeService<E>) {}
+  constructor(
+    private readonly nodes: NodeService<E>,
+    private readonly localizationSvc: LocalizationProviderService,
+  ) {}
 
   @Input()
   group: AbstractBaseGroup<E>;
@@ -60,9 +71,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   @Input()
   nodeType: NodeTypes;
-
-  @Input()
-  localizedStringMap: RecordOfAnyType;
 
   /* A decorator that tells Angular that the popupTemplate property is an input property. */
   @Input()
@@ -124,6 +132,11 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   public types = NodeTypes;
   public prevPopperRef: NgxPopperjsContentComponent;
 
+  typeSubjectPlaceholder = '';
+  typeEmailPlaceholder = '';
+
+  localizedStringKeys = LocalizedStringKeys;
+
   @Input()
   templateMap?: {
     [key: string]: TemplateRef<RecordOfAnyType>;
@@ -157,9 +170,15 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * variables
    */
   ngOnInit(): void {
-    this.events = this.nodes.getEvents(this.localizedStringMap);
-    this.triggerEvents = this.nodes.getEvents(this.localizedStringMap, true);
-    this.actions = this.nodes.getActions(this.localizedStringMap);
+    this.events = this.nodes.getEvents();
+    this.triggerEvents = this.nodes.getEvents(true);
+    this.actions = this.nodes.getActions();
+    this.typeSubjectPlaceholder = this.localizationSvc.getLocalizedString(
+      LocalizedStringKeys.TypeSubject,
+    );
+    this.typeEmailPlaceholder = this.localizationSvc.getLocalizedString(
+      LocalizedStringKeys.TypeEmail,
+    );
   }
 
   /**
@@ -294,7 +313,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ) {
     const newNode = {
       node: this.nodes.getNodeByName(
-        this.localizedStringMap,
         node.getIdentifier(),
         groupType,
         groupId,
@@ -387,8 +405,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         element.node.elements.includes(ReadColumnValue.identifier)) &&
       !element.node.state.get('column')
     ) {
-      this.tooltipText =
-        this.localizedStringMap.selectColumnTooltip ?? 'Select a column first';
+      this.tooltipText = this.localizationSvc.getLocalizedString(
+        LocalizedStringKeys.SelectColumnTooltip,
+      );
       this.showsTooltip = true;
       this.topPosition = e.clientY + 10;
       this.leftPosition = e.clientX;
