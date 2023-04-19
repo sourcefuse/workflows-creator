@@ -1,7 +1,8 @@
 import {ValueInput} from './value.input';
 import {State, WorkflowPrompt} from '../../../classes';
-import {InputTypes} from '../../../enum';
+import {InputTypes, NotificationRecipientTypesEnum} from '../../../enum';
 import {RecordOfAnyType} from '../../../types/base.types';
+import {BpmnNode} from '../../../types';
 
 export class EmailDataInput extends WorkflowPrompt {
   prefix = '';
@@ -37,6 +38,15 @@ export class EmailToInput extends WorkflowPrompt {
 
 export class EmailRecepientInput extends ValueInput {
   inputKey = 'specificRecepient';
+  placeholder = 'recipients';
+
+  isHidden = (node: BpmnNode) => {
+    return ![
+      NotificationRecipientTypesEnum.NotifySpecificPeople,
+      NotificationRecipientTypesEnum.NotifySpecificColumn,
+    ].includes(node.state.get('emailTo'));
+  };
+
   static identifier = 'EmailRecepientInput';
 
   getIdentifier(): string {

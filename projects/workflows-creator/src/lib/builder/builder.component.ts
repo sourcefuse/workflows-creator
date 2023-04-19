@@ -100,7 +100,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   // sonarignore:start
   // TODO: Refactor this code to be more flexible
   // sonarignore:start
-  showElseBlock = true;
+  elseBlockHidden = false;
+  elseBlockRemoved = false;
   public types = NodeTypes;
 
   /**
@@ -193,6 +194,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.eventGroups.splice(index, 1);
   }
 
+  removeElseBlock() {
+    this.elseBlockRemoved = true;
+  }
+
   /**
    * The function is called when an event is added to the workflow. It emits an eventAdded event,
    * updates the diagram, updates the state, and shows the else block
@@ -205,9 +210,26 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateDiagram();
     this.updateState(event.node, event.newNode.inputs);
-    this.showElseBlock =
-      event.node.getIdentifier() !== EventTypes.OnIntervalEvent &&
-      event.node.getIdentifier() !== EventTypes.OnAddItemEvent;
+    this.elseBlockHidden =
+      !this.eventGroups[0]?.children?.length &&
+      (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
+        event.node.getIdentifier() === EventTypes.OnAddItemEvent);
+  }
+
+  /**
+   * The function is called when an event is removed from the workflow.
+   * Hides the else block when it is not needed.
+   */
+  onEventRemoved() {
+    const events = this.eventGroups[0].children;
+
+    this.elseBlockHidden =
+      events.length === 1 &&
+      (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
+        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
+        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
+          (events[0].node.state.get('value') === ValueTypes.AnyValue ||
+            events[0].node.state.get('valueType') === ValueTypes.AnyValue)));
   }
 
   /**
@@ -237,10 +259,15 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateState(item.element.node, item.element.inputs);
     // TODO: to be refactored
-    if (this.eventGroups[0].children?.length) {
-      this.showElseBlock =
-        item.element.node.state.get('value') !== ValueTypes.AnyValue;
-    }
+    // to hide else block when anything is selected in ValueInput or ValueTypeInput
+    this.elseBlockHidden =
+      this.eventGroups[0].children?.length === 1 &&
+      this.eventGroups[0].children[0].node.getIdentifier() ===
+        EventTypes.OnChangeEvent &&
+      (this.eventGroups[0].children[0].node.state.get('value') ===
+        ValueTypes.AnyValue ||
+        this.eventGroups[0].children[0].node.state.get('valueType') ===
+          ValueTypes.AnyValue);
     this.updateDiagram();
   }
 

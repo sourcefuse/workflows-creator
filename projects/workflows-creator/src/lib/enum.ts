@@ -68,6 +68,7 @@ export enum NotificationRecipientTypesEnum {
   NotifyEveryoneOnProject = 'everyone_on_project',
   NotifyProjectOwners = 'project_owners',
   NotifySpecificPeople = 'specific_people',
+  NotifySpecificColumn = 'contact_in_cell',
 }
 
 /* Defining the types of events that can be used in the application. */
@@ -97,5 +98,5 @@ export enum LocalizedStringKeys {
   Else = 'elseLbl',
   TypeSubject = 'typeSubjectLbl',
   TypeEmail = 'typeEmailLbl',
-  SelectColumnTooltip = 'selectColumnTooltip'
+  SelectColumnTooltip = 'selectColumnTooltip',
 }
