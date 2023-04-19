@@ -78,6 +78,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   eventAdded = new EventEmitter<unknown>();
 
   @Output()
+  eventRemoved = new EventEmitter<unknown>();
+
+  @Output()
   actionAdded = new EventEmitter<unknown>();
 
   @Output()
@@ -326,6 +329,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   onNodeRemove(index: number) {
     this.group.children.splice(index, 1);
+    this.eventRemoved.emit();
   }
 
   /**

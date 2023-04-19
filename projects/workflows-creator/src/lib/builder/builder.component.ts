@@ -217,6 +217,22 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   }
 
   /**
+   * The function is called when an event is removed from the workflow.
+   * Hides the else block when it is not needed.
+   */
+  onEventRemoved() {
+    const events = this.eventGroups[0].children;
+
+    this.elseBlockHidden =
+      events.length === 1 &&
+      (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
+        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
+        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
+          (events[0].node.state.get('value') === ValueTypes.AnyValue ||
+            events[0].node.state.get('valueType') === ValueTypes.AnyValue)));
+  }
+
+  /**
    * When an action is added, emit an event with the name of the action and the action itself, update
    * the diagram, and update the state of the action
    * @param action - ElementsWithInput<E>
@@ -243,12 +259,15 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateState(item.element.node, item.element.inputs);
     // TODO: to be refactored
+    // to hide else block when anything is selected in ValueInput or ValueTypeInput
     this.elseBlockHidden =
       this.eventGroups[0].children?.length === 1 &&
       this.eventGroups[0].children[0].node.getIdentifier() ===
         EventTypes.OnChangeEvent &&
-      this.eventGroups[0].children[0].node.state.get('value') ===
-        ValueTypes.AnyValue;
+      (this.eventGroups[0].children[0].node.state.get('value') ===
+        ValueTypes.AnyValue ||
+        this.eventGroups[0].children[0].node.state.get('valueType') ===
+          ValueTypes.AnyValue);
     this.updateDiagram();
   }
 

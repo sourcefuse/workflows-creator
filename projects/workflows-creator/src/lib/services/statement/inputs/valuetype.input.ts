@@ -16,7 +16,6 @@ export class ValueTypeInput extends WorkflowListPrompt {
 
   isHidden = (node: BpmnNode) => {
     return ![
-      '',
       InputTypes.Text,
       InputTypes.Number,
       InputTypes.People,
