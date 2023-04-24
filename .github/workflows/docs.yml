@@ -3,7 +3,7 @@ name: Build and Push Docs
 on:
   release:
     types: [published]
-    branches: [main]
+    branches: [master]
 
 jobs:
   build-and-push-docs:
