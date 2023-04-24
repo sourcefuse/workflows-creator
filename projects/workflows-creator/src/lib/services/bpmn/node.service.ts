@@ -12,6 +12,7 @@ import {
   WorkflowNode,
 } from '../../types';
 import {UtilsService} from '../utils.service';
+import {LocalizationProviderService} from '../localization-provider.service';
 @Injectable()
 export class BpmnNodesService<E> extends NodeService<E> {
   actions = new Map<string, Constructor<WorkflowAction<E>>>();
@@ -24,6 +25,7 @@ export class BpmnNodesService<E> extends NodeService<E> {
     @Inject(BPMN_INPUTS)
     private readonly inputs: BpmnNodePrompt[],
     private readonly utils: UtilsService,
+    private readonly localizationSvc: LocalizationProviderService,
   ) {
     super();
   }
@@ -34,9 +36,15 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * The function is a bit more complicated than that, but that's the gist of it
    * @returns An array of action nodes.
    */
-  getActions(localizedStringMap = {}) {
+  getActions() {
     return this.nodes
-      .map(Node => new Node(localizedStringMap, this.utils.uuid()))
+      .map(
+        Node =>
+          new Node(
+            this.localizationSvc.getLocalizedStringMap(),
+            this.utils.uuid(),
+          ),
+      )
       .filter(n => n.type === NodeTypes.ACTION);
   }
 
@@ -47,9 +55,15 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * return events that are not triggers.
    * @returns An array of WorkflowEvent<E> instances.
    */
-  getEvents(localizedStringMap = {}, trigger = false) {
+  getEvents(trigger = false) {
     return this.nodes
-      .map(Node => new Node(localizedStringMap, this.utils.uuid()))
+      .map(
+        Node =>
+          new Node(
+            this.localizationSvc.getLocalizedStringMap(),
+            this.utils.uuid(),
+          ),
+      )
       .filter(n => n.type === NodeTypes.EVENT)
       .filter(instance => trigger === (instance as WorkflowEvent<E>).trigger);
   }
@@ -63,17 +77,17 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * group or not.
    * @returns An array of groups
    */
-  getGroups(
-    localizedStringMap = {},
-    trigger = false,
-    type = NodeTypes.EVENT,
-    isElseGroup = false,
-  ) {
+  getGroups(trigger = false, type = NodeTypes.EVENT, isElseGroup = false) {
     if (trigger) {
       return this.groups
         .map(
           Group =>
-            new Group(localizedStringMap, this.utils.uuid(), type, isElseGroup),
+            new Group(
+              this.localizationSvc.getLocalizedStringMap(),
+              this.utils.uuid(),
+              type,
+              isElseGroup,
+            ),
         )
         .filter(n => n.type === NodeTypes.GROUP)
         .filter(instance => trigger === instance.trigger);
@@ -81,7 +95,12 @@ export class BpmnNodesService<E> extends NodeService<E> {
       return this.groups
         .map(
           Group =>
-            new Group(localizedStringMap, this.utils.uuid(), type, isElseGroup),
+            new Group(
+              this.localizationSvc.getLocalizedStringMap(),
+              this.utils.uuid(),
+              type,
+              isElseGroup,
+            ),
         )
         .filter(n => n.type === NodeTypes.GROUP);
     }
@@ -98,7 +117,6 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * @returns A new instance of the node class that matches the name passed in.
    */
   getNodeByName(
-    localizedStringMap = {},
     name: string,
     groupName: string,
     groupId: string,
@@ -112,7 +130,13 @@ export class BpmnNodesService<E> extends NodeService<E> {
     if (!ctor) {
       throw new InvalidEntityError(name);
     }
-    return new ctor(localizedStringMap, id, groupName, groupId, isElseAction);
+    return new ctor(
+      this.localizationSvc.getLocalizedStringMap(),
+      id,
+      groupName,
+      groupId,
+      isElseAction,
+    );
   }
 
   /**
@@ -127,7 +151,6 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * @returns A new instance of the group class that matches the name passed in.
    */
   getGroupByName(
-    localizedStringMap = {},
     name: string,
     nodeType: NodeTypes,
     id?: string,
@@ -140,7 +163,12 @@ export class BpmnNodesService<E> extends NodeService<E> {
     if (!ctor) {
       throw new InvalidEntityError(name);
     }
-    return new ctor(localizedStringMap, id, nodeType, isElseGroup);
+    return new ctor(
+      this.localizationSvc.getLocalizedStringMap(),
+      id,
+      nodeType,
+      isElseGroup,
+    );
   }
 
   /**

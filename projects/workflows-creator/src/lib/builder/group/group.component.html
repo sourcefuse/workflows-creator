@@ -19,16 +19,12 @@
         [popperPlacement]="'bottom'"
         (click)="openPopup(group.nodeType)"
       >
-        <span *ngIf="group.nodeType === types.EVENT">{{
-          localizedStringMap.whenThisHappensLbl
-            ? localizedStringMap.whenThisHappensLbl
-            : 'When this happens'
-        }}</span>
-        <span *ngIf="group.nodeType === types.ACTION">{{
-          localizedStringMap.doThisLbl
-            ? localizedStringMap.doThisLbl
-            : 'Then do this'
-        }}</span>
+        <span *ngIf="group.nodeType === types.EVENT">
+          {{ localizedStringKeys.WhenThisHappens | localization }}
+        </span>
+        <span *ngIf="group.nodeType === types.ACTION">
+          {{ localizedStringKeys.DoThis | localization }}
+        </span>
       </span>
     </div>
 
@@ -296,19 +292,11 @@
         id="email-subject"
         autofocus
         (focus)="setFocusKey(emailInput, 'subject')"
-        [placeholder]="
-          localizedStringMap.typeSubjectLbl
-            ? localizedStringMap.typeSubjectLbl
-            : 'Type your subject'
-        "
+        [placeholder]="typeSubjectPlaceholder"
         [(ngModel)]="emailInput.subject"
       />
       <textarea
-        [placeholder]="
-          localizedStringMap.typeEmailLbl
-            ? localizedStringMap.typeEmailLbl
-            : 'Type your email'
-        "
+        [placeholder]="typeEmailPlaceholder"
         id="email-body"
         class="email-input email-body-input"
         (focus)="setFocusKey(emailInput, 'body')"
@@ -327,7 +315,7 @@
           (click)="callback(emailInput)"
           [disabled]="!emailInput.subject || !emailInput.body"
         >
-          Set
+          {{ localizedStringKeys.SetLbl | localization }}
         </button>
       </div>
     </div>
