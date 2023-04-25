@@ -470,32 +470,26 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
     }
     if (select && isSelectInput(input)) {
-      if (
+      element.node.state.change(
+        `${input.inputKey}Name`,
+        (value as AllowedValuesMap)[input.listNameField],
+      );
+      value =
         element.node.state.get('columnName') === 'Priority' &&
-        input.inputKey !== 'condition'
-      ) {
-        element.node.state.change(
-          `${input.inputKey}Name`,
-          value as AllowedValuesMap,
-        );
-        this.itemChanged.emit({
-          field: input.getIdentifier(),
-          value: value as AllowedValuesMap,
-          element: element,
-        });
-        value = value as AllowedValuesMap;
-      } else {
-        element.node.state.change(
-          `${input.inputKey}Name`,
-          (value as AllowedValuesMap)[input.listNameField],
-        );
-        this.itemChanged.emit({
-          field: input.getIdentifier(),
-          value: (value as AllowedValuesMap)[input.listValueField],
-          element: element,
-        });
-        value = (value as AllowedValuesMap)[input.listValueField];
-      }
+        input.inputKey === 'value'
+          ? value
+          : (value as AllowedValuesMap)[input.listValueField];
+      element.node.state.change(input.inputKey, value);
+      this.handleSubsequentInputs(element, input);
+      this.itemChanged.emit({
+        field: input.getIdentifier(),
+        value:
+          element.node.state.get('columnName') === 'Priority' &&
+          input.inputKey === 'value'
+            ? (value as AllowedValuesMap)[input.listValueField]
+            : value,
+        element: element,
+      });
     }
     element.node.state.change(input.inputKey, value);
     this.handleSubsequentInputs(element, input);
