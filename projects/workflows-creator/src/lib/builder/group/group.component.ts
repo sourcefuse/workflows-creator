@@ -86,7 +86,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   eventAdded = new EventEmitter<unknown>();
 
   @Output()
-  eventRemoved = new EventEmitter<unknown>();
+  nodeRemoved = new EventEmitter<unknown>();
 
   @Output()
   actionAdded = new EventEmitter<unknown>();
@@ -322,20 +322,20 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       inputs: this.nodes.mapInputs(node),
     };
     if (node.type === NodeTypes.EVENT) {
-      this.eventAdded.emit({
-        node: node,
-        newNode: newNode,
-      });
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
       this.group.children.push(newNode as EventWithInput<E>);
+      this.eventAdded.emit({
+        node: node,
+        newNode: newNode,
+      });
     } else if (node.type === NodeTypes.ACTION) {
+      this.group.children.push(newNode as ActionWithInput<E>);
       this.actionAdded.emit({
         node: node,
         newNode: newNode,
       });
-      this.group.children.push(newNode as ActionWithInput<E>);
     } else {
       throw new InvalidEntityError('Node');
     }
@@ -347,7 +347,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   onNodeRemove(index: number) {
     this.group.children.splice(index, 1);
-    this.eventRemoved.emit();
+    this.nodeRemoved.emit();
   }
 
   /**
@@ -475,7 +475,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         (value as AllowedValuesMap)[input.listNameField],
       );
       value =
-        element.node.state.get('columnName') === 'Priority' &&
         input.inputKey === 'value'
           ? value
           : (value as AllowedValuesMap)[input.listValueField];
@@ -484,7 +483,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       this.itemChanged.emit({
         field: input.getIdentifier(),
         value:
-          element.node.state.get('columnName') === 'Priority' &&
           input.inputKey === 'value'
             ? (value as AllowedValuesMap)[input.listValueField]
             : value,

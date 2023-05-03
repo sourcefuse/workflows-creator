@@ -8,6 +8,7 @@ import {CREATE_TASK_STRATEGY} from '../../strategies/create';
 import {LINK_BASIC_STRATEGY} from '../../strategies/link';
 import {ServiceTaskElement} from './service-task.task';
 import {ENV_TOKEN} from '../../../../token';
+import {InputTypes} from '../../../../enum';
 
 @Injectable()
 export class ChangeColumnValue extends ServiceTaskElement {
@@ -41,12 +42,24 @@ export class ChangeColumnValue extends ServiceTaskElement {
       },
       changedValue: {
         formatter: <S extends RecordOfAnyType>(state: State<S>) => {
-          if (typeof state.get('value') === 'object') {
-            return `'${JSON.stringify(state.get('value'))}'`;
+          switch (state.get('valueInputType')) {
+            case InputTypes.People:
+              return `'${JSON.stringify(state.get('value'))}'`;
+            case InputTypes.List:
+              if (!state.get('value')) return '';
+              return `'${JSON.stringify({
+                displayValue: state.get('value').text?.split('"').join(''),
+                value: state.get('value').value,
+                iconClass: state.get('value').iconClass,
+                color: state.get('value').color,
+                bgColor: state.get('value').bgColor,
+              })}'`;
+            default:
+              return `'{"displayValue": "${
+                state.get('valueName')?.split('"').join('') ??
+                state.get('value')
+              }", "value": "${state.get('value')}"}'`;
           }
-          return `'{"displayValue": "${
-            state.get('valueName') ?? state.get('value')
-          }", "value": "${state.get('value')}"}'`;
         },
       },
     },
