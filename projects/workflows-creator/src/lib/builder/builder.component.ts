@@ -22,6 +22,7 @@ import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
 import {
   ActionTypes,
+  ConditionTypes,
   EventTypes,
   LocalizedStringKeys,
   NodeTypes,
@@ -458,7 +459,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           case EventTypes.OnValueEvent:
           case ActionTypes.ChangeColumnValueAction:
             const columnExists = !!node.node.state.get('column');
-            const valueExists = !!node.node.state.get('value');
+            const valueExists =
+              node.node.state.get('condition') === ConditionTypes.PastToday
+                ? true
+                : !!node.node.state.get('value');
             const valueTypeIsAnyValue =
               node.node.state.get('valueType') === ValueTypes.AnyValue;
             isValid = columnExists && (valueExists || valueTypeIsAnyValue);
