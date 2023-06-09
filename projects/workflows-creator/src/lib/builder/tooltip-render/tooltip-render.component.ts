@@ -5,13 +5,11 @@ import {Component, Input, OnInit} from '@angular/core';
   templateUrl: './tooltip-render.component.html',
   styleUrls: ['./tooltip-render.component.scss'],
 })
-export class TooltipRenderComponent implements OnInit {
+export class TooltipRenderComponent {
   @Input() showsTooltip = true;
   @Input() tooltipText = 'Default tooltip text';
   @Input() topPosition = 215;
   @Input() leftPosition = 400;
 
   constructor() {}
-
-  ngOnInit(): void {}
 }

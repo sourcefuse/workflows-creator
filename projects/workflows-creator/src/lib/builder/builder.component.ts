@@ -57,37 +57,67 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
 
+  private _state: StateMap<RecordOfAnyType> = {};
+  public get state(): StateMap<RecordOfAnyType> {
+    return this._state;
+  }
   @Input()
-  state: StateMap<RecordOfAnyType> = {};
+  public set state(value: StateMap<RecordOfAnyType>) {
+    this._state = value;
+  }
+
+  private _localizedStringMap: RecordOfAnyType = {};
+  public get localizedStringMap() {
+    return this._localizedStringMap;
+  }
+  @Input()
+  public set localizedStringMap(value: RecordOfAnyType) {
+    this._localizedStringMap = value;
+  }
 
   @Input()
-  localizedStringMap: RecordOfAnyType;
+  public diagram: string = '';
 
-  @Input()
-  diagram = '';
-
-  @Input()
-  templateMap?: {
+  private _templateMap: {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
-
+  public get templateMap() {
+    return this._templateMap;
+  }
   @Input()
-  allColumns: Select[];
+  public set templateMap(value: {[key: string]: TemplateRef<RecordOfAnyType>}) {
+    this._templateMap = value;
+  }
+  private _allColumns: Select[] = [];
+  public get allColumns() {
+    return this._allColumns;
+  }
+  @Input()
+  public set allColumns(value: Select[]) {
+    this._allColumns = value;
+  }
 
   @Output()
-  stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
+  public stateChange: EventEmitter<StateMap<RecordOfAnyType>> =
+    new EventEmitter<StateMap<RecordOfAnyType>>();
 
   @Output()
-  diagramChange = new EventEmitter<string>();
+  public diagramChange: EventEmitter<string> = new EventEmitter<string>();
 
   @Output()
-  eventAdded = new EventEmitter<EventAddition<E>>();
+  public eventAdded: EventEmitter<EventAddition<E>> = new EventEmitter<
+    EventAddition<E>
+  >();
 
   @Output()
-  actionAdded = new EventEmitter<ActionAddition<E>>();
+  public actionAdded: EventEmitter<ActionAddition<E>> = new EventEmitter<
+    ActionAddition<E>
+  >();
 
   @Output()
-  itemChanged = new EventEmitter<InputChanged<E>>();
+  public itemChanged: EventEmitter<InputChanged<E>> = new EventEmitter<
+    InputChanged<E>
+  >();
 
   selectedElseActions: ActionWithInput<E>[] = [];
   selectedEvents: EventWithInput<E>[] = [];

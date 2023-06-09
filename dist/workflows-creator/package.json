@@ -1,90 +1,89 @@
 {
-  "name": "@sourceloop/workflows-creator",
-  "version": "1.0.0",
-  "description": "Library for providing a smooth user workflow",
-  "keywords": [
-    "angular-library"
-  ],
-  "peerDependencies": {
-    "@angular/common": "~13.3.11",
-    "@angular/core": "~13.3.11",
-    "@angular/forms": "~13.3.11",
-    "@popperjs/core": "^2.11.6",
-    "bpmn-moddle": "^8.0.0",
-    "lodash": "^4.17.21",
-    "ngx-popperjs": "^13.3.0"
-  },
-  "dependencies": {
-    "@ng-bootstrap/ng-bootstrap": "^12.1.2",
-    "moment": "^2.29.4",
-    "ng-multiselect-dropdown": "^0.3.9",
-    "tslib": "^2.2.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sourcefuse/workflows-creator.git"
-  },
-  "author": "Sourcefuse",
-  "license": "MIT",
-  "private": false,
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public",
-    "directory": "dist"
-  },
-  "release": {
-    "branches": [
-      "master"
+    "name": "@sourceloop/workflows-creator",
+    "version": "1.0.0",
+    "description": "Library for providing a smooth user workflow",
+    "keywords": [
+        "angular-library"
     ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "angular",
-          "releaseRules": [
-            {
-              "type": "chore",
-              "scope": "deps",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "package.json",
-            "CHANGELOG.md"
-          ],
-          "message": "chore(release): ${nextRelease.version} semantic"
-        }
-      ],
-      "@semantic-release/github"
-    ],
-    "repositoryUrl": "git@github.com:sourcefuse/workflows-creator.git"
-  },
-  "module": "fesm2015/sourceloop-workflows-creator.mjs",
-  "es2020": "fesm2020/sourceloop-workflows-creator.mjs",
-  "esm2020": "esm2020/sourceloop-workflows-creator.mjs",
-  "fesm2020": "fesm2020/sourceloop-workflows-creator.mjs",
-  "fesm2015": "fesm2015/sourceloop-workflows-creator.mjs",
-  "typings": "sourceloop-workflows-creator.d.ts",
-  "exports": {
-    "./package.json": {
-      "default": "./package.json"
+    "peerDependencies": {
+        "@angular/common": "~13.3.11",
+        "@angular/core": "~13.3.11",
+        "@angular/elements": "^16.0.3",
+        "@angular/forms": "~13.3.11",
+        "@popperjs/core": "^2.11.6",
+        "bpmn-moddle": "^8.0.0",
+        "lodash": "^4.17.21",
+        "ngx-popperjs": "^13.3.0"
     },
-    ".": {
-      "types": "./sourceloop-workflows-creator.d.ts",
-      "esm2020": "./esm2020/sourceloop-workflows-creator.mjs",
-      "es2020": "./fesm2020/sourceloop-workflows-creator.mjs",
-      "es2015": "./fesm2015/sourceloop-workflows-creator.mjs",
-      "node": "./fesm2015/sourceloop-workflows-creator.mjs",
-      "default": "./fesm2020/sourceloop-workflows-creator.mjs"
-    }
-  },
-  "sideEffects": false
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sourcefuse/workflows-creator.git"
+    },
+    "author": "Sourcefuse",
+    "license": "MIT",
+    "private": false,
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public",
+        "directory": "dist"
+    },
+    "release": {
+        "branches": [
+            "master"
+        ],
+        "plugins": [
+            [
+                "@semantic-release/commit-analyzer",
+                {
+                    "preset": "angular",
+                    "releaseRules": [
+                        {
+                            "type": "chore",
+                            "scope": "deps",
+                            "release": "patch"
+                        }
+                    ]
+                }
+            ],
+            "@semantic-release/release-notes-generator",
+            "@semantic-release/changelog",
+            "@semantic-release/npm",
+            [
+                "@semantic-release/git",
+                {
+                    "assets": [
+                        "package.json",
+                        "CHANGELOG.md"
+                    ],
+                    "message": "chore(release): ${nextRelease.version} semantic"
+                }
+            ],
+            "@semantic-release/github"
+        ],
+        "repositoryUrl": "git@github.com:sourcefuse/workflows-creator.git"
+    },
+    "module": "fesm2015/sourceloop-workflows-creator.mjs",
+    "es2020": "fesm2020/sourceloop-workflows-creator.mjs",
+    "esm2020": "esm2020/sourceloop-workflows-creator.mjs",
+    "fesm2020": "fesm2020/sourceloop-workflows-creator.mjs",
+    "fesm2015": "fesm2015/sourceloop-workflows-creator.mjs",
+    "typings": "sourceloop-workflows-creator.d.ts",
+    "exports": {
+        "./package.json": {
+            "default": "./package.json"
+        },
+        ".": {
+            "types": "./sourceloop-workflows-creator.d.ts",
+            "esm2020": "./esm2020/sourceloop-workflows-creator.mjs",
+            "es2020": "./fesm2020/sourceloop-workflows-creator.mjs",
+            "es2015": "./fesm2015/sourceloop-workflows-creator.mjs",
+            "node": "./fesm2015/sourceloop-workflows-creator.mjs",
+            "default": "./fesm2020/sourceloop-workflows-creator.mjs"
+        }
+    },
+    "sideEffects": false,
+    "dependencies": {
+        "tslib": "^2.3.0"
+    },
+    "hash": "5cf8fd0a4f1fe0a48b8538cfe92f3566584b4554b7f47bbae4e59b9f5cf55e62"
 }

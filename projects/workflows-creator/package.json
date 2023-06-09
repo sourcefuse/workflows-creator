@@ -8,6 +8,7 @@
   "peerDependencies": {
     "@angular/common": "~13.3.11",
     "@angular/core": "~13.3.11",
+    "@angular/elements": "^16.0.3",
     "@angular/forms": "~13.3.11",
     "@popperjs/core": "^2.11.6",
     "bpmn-moddle": "^8.0.0",
@@ -18,14 +19,20 @@
     "checkIfNodeModulesExist": "[ -d \"../../node_modules\" ]",
     "installNodeModules": "cd ../../ && npm i",
     "prebuild": "npm run checkIfNodeModulesExist || npm run installNodeModules",
-    "build": "ng build",
-    "prepublishOnly": "npm run build"
+    "libraryBuild": "ng build",
+    "elementBuild": "ng build workflows-element",
+    "postbuild": "ts-node bundle-element.ts",
+    "build": "npm run libraryBuild && npm run elementBuild",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build",
+    "test": "echo \"No tests available !\""
   },
   "devDependencies": {
     "@angular-eslint/schematics": "^13.5.0",
     "@angular/common": "~13.3.11",
     "@angular/core": "~13.3.11",
     "@angular/forms": "~13.3.11",
+    "@angular/platform-browser": "~13.3.11",
     "@angular/platform-browser-dynamic": "~13.3.11",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/commit-analyzer": "^9.0.2",
@@ -33,22 +40,21 @@
     "@semantic-release/npm": "^9.0.2",
     "@semantic-release/release-notes-generator": "^10.0.3",
     "@types/bpmn-moddle": "^5.1.6",
+    "@types/fs-extra": "^11.0.1",
     "@types/lodash": "^4.14.182",
+    "@types/node": "^20.2.5",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
     "bpmn-moddle": "^8.0.0",
+    "concat": "^1.0.3",
     "eslint": "^8.17.0",
+    "husky": "^8.0.3",
     "lodash": "^4.17.21",
+    "ng-packagr": "^13.0.0",
     "ngx-popperjs": "^13.3.0",
     "semantic-release": "^19.0.3",
     "tslib": "^2.0.0",
     "typedoc-umlclass": "^0.6.1"
-  },
-  "dependencies": {
-    "@ng-bootstrap/ng-bootstrap": "^12.1.2",
-    "moment": "^2.29.4",
-    "ng-multiselect-dropdown": "^0.3.9",
-    "tslib": "^2.2.0"
   },
   "repository": {
     "type": "git",
