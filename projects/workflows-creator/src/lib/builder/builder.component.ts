@@ -25,6 +25,7 @@ import {
   ConditionTypes,
   EventTypes,
   LocalizedStringKeys,
+  NUMBER,
   NodeTypes,
   NotificationRecipientTypesEnum,
   ValueTypes,
@@ -46,6 +47,11 @@ import {
   WorkflowNode,
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
+import {
+  ReadColumnValue,
+  TriggerWhenColumnChanges,
+} from '../services/bpmn/elements/tasks';
+import {GatewayElement} from '../services/bpmn/elements/gateways';
 
 @Component({
   selector: 'workflow-builder',
@@ -360,6 +366,30 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     value: AllowedValues | AllowedValuesMap,
     select = false,
   ) {
+    if (
+      (input.getIdentifier() === 'ValueTypeInput' ||
+        input.getIdentifier() === 'ValueInput') &&
+      element.node.getIdentifier() === 'OnChangeEvent'
+    ) {
+      if (
+        ((value as AllowedValuesMap)?.value as AllowedValuesMap)?.value ===
+        ValueTypes.AnyValue
+      ) {
+        /**
+         * Remove node on changes event
+         */
+        element.node.elements.splice(-NUMBER.TWO, NUMBER.TWO);
+        // element.inputs[1].prefix = '';
+        //this.enableActionIcon = false;
+      } else {
+        element.node.elements = [
+          TriggerWhenColumnChanges.identifier,
+          ReadColumnValue.identifier,
+          GatewayElement.identifier,
+        ];
+      }
+    }
+
     if (select && isSelectInput(input)) {
       element.node.state.change(
         `${input.inputKey}Name`,
