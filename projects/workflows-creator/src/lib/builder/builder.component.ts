@@ -22,6 +22,7 @@ import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
 import {EventTypes, LocalizedStringKeys, NodeTypes, ValueTypes} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
+
 import {
   ActionAddition,
   ActionWithInput,
@@ -89,35 +90,28 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this._templateMap = value;
   }
   private _allColumns: Select[] = [];
-  public get allColumns() {
-    return this._allColumns;
-  }
   @Input()
   public set allColumns(value: Select[]) {
     this._allColumns = value;
   }
+  public get allColumns() {
+    return this._allColumns;
+  }
 
   @Output()
-  public stateChange: EventEmitter<StateMap<RecordOfAnyType>> =
-    new EventEmitter<StateMap<RecordOfAnyType>>();
+  stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
 
   @Output()
-  public diagramChange: EventEmitter<string> = new EventEmitter<string>();
+  diagramChange = new EventEmitter<string>();
 
   @Output()
-  public eventAdded: EventEmitter<EventAddition<E>> = new EventEmitter<
-    EventAddition<E>
-  >();
+  eventAdded = new EventEmitter<EventAddition<E>>();
 
   @Output()
-  public actionAdded: EventEmitter<ActionAddition<E>> = new EventEmitter<
-    ActionAddition<E>
-  >();
+  actionAdded = new EventEmitter<ActionAddition<E>>();
 
   @Output()
-  public itemChanged: EventEmitter<InputChanged<E>> = new EventEmitter<
-    InputChanged<E>
-  >();
+  itemChanged = new EventEmitter<InputChanged<E>>();
 
   selectedElseActions: ActionWithInput<E>[] = [];
   selectedEvents: EventWithInput<E>[] = [];

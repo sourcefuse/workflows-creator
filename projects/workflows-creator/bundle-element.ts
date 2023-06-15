@@ -5,7 +5,7 @@ const concat = require('concat');
 async function elementsBundler() {
   const space = 4;
   const files = [
-    '../../dist/workflows-element/main.js',
+    '../../dist/workflows-element/runtime.js',
     '../../dist/workflows-element/polyfills.js',
     '../../dist/workflows-element/main.js',
   ];

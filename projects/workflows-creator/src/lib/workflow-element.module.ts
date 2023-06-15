@@ -1,6 +1,8 @@
 /* eslint-disable @angular-eslint/use-lifecycle-interface */
 import {NgModule, TemplateRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Injector} from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 import BPMNModdle from 'bpmn-moddle';
@@ -13,6 +15,7 @@ import {FormsModule} from '@angular/forms';
 import {GroupComponent} from './builder/group/group.component';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
+import {WorkflowBuilderModule} from './workflow-builder.module';
 import {
   NgbDatepickerModule,
   NgbTimepickerModule,
@@ -20,6 +23,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {createCustomElement} from '@angular/elements';
+
 import {
   StateMap,
   RecordOfAnyType,
@@ -30,6 +34,7 @@ import {
 } from './types';
 import {Input, Output, EventEmitter} from '@angular/core';
 import {ElementService, NodeService, BuilderService} from './classes';
+
 import {
   BASE_XML,
   BASE_XML_VALUE,
@@ -98,20 +103,18 @@ import {
   NoLinkStrategy,
 } from './services';
 @NgModule({
-  declarations: [
-    BuilderComponent,
-    GroupComponent,
-    NodeComponent,
-    TooltipRenderComponent,
-    LocalizationPipe,
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     FormsModule,
+    BrowserModule,
+    HttpClientModule,
     NgxPopperjsModule,
     NgbDatepickerModule,
     NgbTimepickerModule,
     NgbPopoverModule,
+    WorkflowBuilderModule,
+    BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
   ],
   entryComponents: [BuilderComponent],
@@ -176,25 +179,6 @@ import {
     {provide: LINK_NONE_STRATEGY, useClass: NoLinkStrategy},
     {provide: CONDITION_LIST, useValue: typeTuppleList},
   ],
-})
-@NgModule({
-  declarations: [
-    BuilderComponent,
-    GroupComponent,
-    NodeComponent,
-    TooltipRenderComponent,
-    LocalizationPipe,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    NgxPopperjsModule,
-    NgbDatepickerModule,
-    NgbTimepickerModule,
-    NgbPopoverModule,
-    NgMultiSelectDropDownModule.forRoot(),
-  ],
-  entryComponents: [BuilderComponent],
 })
 export class WorkflowElementModule {
   [x: string]: any;

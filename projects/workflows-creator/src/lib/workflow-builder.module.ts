@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+
 import BPMNModdle from 'bpmn-moddle';
+import {BrowserModule} from '@angular/platform-browser';
 import {CustomBpmnModdle} from './types/bpmn.types';
 import {CAMUNDA} from './schema/camunda.json';
 import {BpmnElementService} from './services/bpmn/element.service';
@@ -89,6 +91,7 @@ import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.inpu
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
+import {ENV_TOKEN} from './token';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -105,6 +108,7 @@ import {LocalizationPipe} from './pipes/localization.pipe';
     NgbDatepickerModule,
     NgbTimepickerModule,
     NgbPopoverModule,
+    BrowserModule,
     NgMultiSelectDropDownModule.forRoot(),
   ],
   providers: [
@@ -167,6 +171,7 @@ import {LocalizationPipe} from './pipes/localization.pipe';
     {provide: LINK_OR_GATEWAY_STRATEGY, useClass: OrGatewayLinkStrategy},
     {provide: LINK_NONE_STRATEGY, useClass: NoLinkStrategy},
     {provide: CONDITION_LIST, useValue: typeTuppleList},
+    {provide: ENV_TOKEN, useValue: 'local'},
   ],
 })
 export class WorkflowBuilderModule {}
