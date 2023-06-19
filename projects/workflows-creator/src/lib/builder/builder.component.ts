@@ -198,6 +198,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       });
       this.updateDiagram();
     }
+    if (changes['localizedStringMap'] && this.localizedStringMap) {
+      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+      this.updateDiagram();
+    }
   }
 
   /**

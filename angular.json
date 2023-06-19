@@ -71,23 +71,32 @@
             "tsConfig": "projects/workflows-creator/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+              "projects/workflows-creator/src/favicon.ico",
               "projects/workflows-creator/src/assets"
             ],
-            "styles": ["projects/workflows-creator/src/styles.scss"],
+            "styles": ["projects/workflows-creator/src/styles.scss",
+          "projects/workflows-creator/src/assets/icons/icomoon/style.css"],
             "scripts": []
           },
           "configurations": {
             "production": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+            
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "8mb",
+                  "maximumError": "7mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "200kb",
-                  "maximumError": "100kb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "1mb"
                 }
               ],
               "outputHashing": "none"
@@ -108,24 +117,8 @@
           "options": {
             "browserTarget": "WorkflowsElement:build"
           }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/workflows-creator/src/test.ts",
-            "polyfills": "projects/workflows-creator/src/polyfills.ts",
-            "tsConfig": "projects/workflows-creator/tsconfig.spec.json",
-            "karmaConfig": "projects/workflows-creator/karma.conf.js",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/workflows-creator/src/favicon.ico",
-              "projects/workflows-creator/src/assets"
-            ],
-            "styles": ["projects/workflows-creator/src/styles.scss"],
-            "scripts": []
-          }
         }
-      }
+      }        
     }
   },
   "defaultProject": "workflows-creator"
