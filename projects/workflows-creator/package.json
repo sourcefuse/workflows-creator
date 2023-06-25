@@ -54,6 +54,7 @@
     "ng-packagr": "^13.0.0",
     "ngx-popperjs": "^13.3.0",
     "semantic-release": "^19.0.3",
+    "ts-node": "^10.9.1",
     "tslib": "^2.0.0",
     "typedoc-umlclass": "^0.6.1"
   },

@@ -42,6 +42,7 @@ import {
   ReadColumnValue,
   TriggerWhenColumnChanges,
 } from '../../services';
+import { LocalizationPipe } from '../../pipes/localization.pipe';
 
 @Component({
   selector: 'workflow-group',
@@ -50,6 +51,9 @@ import {
     './group.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
+  providers:[LocalizationPipe]
+  
+  
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
@@ -104,6 +108,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     body: '',
     focusKey: '',
   };
+
+  
   dropdownSettings: IDropdownSettings = {
     singleSelection: false,
     idField: 'id',
@@ -120,7 +126,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
   triggerEvents: WorkflowNode<E>[] = [];
-  actions: WorkflowNode<E>[] = [];
+  actions: WorkflowNode<E>[] = []; 
 
   nodeList: WorkflowNode<E>[];
 
@@ -134,6 +140,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
+  doThisLbl='';
+  whenThisHappensLbl='';
+  setLbl='';
+
 
   localizedStringKeys = LocalizedStringKeys;
 
@@ -179,6 +189,15 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.typeEmailPlaceholder = this.localizationSvc.getLocalizedString(
       LocalizedStringKeys.TypeEmail,
     );
+    // this.doThisLbl = this.localizationSvc.getLocalizedString(
+    //   LocalizedStringKeys.DoThis,
+    // );
+    // this.whenThisHappensLbl = this.localizationSvc.getLocalizedString(
+    //   LocalizedStringKeys.WhenThisHappens,
+    // );
+    // this.setLbl = this.localizationSvc.getLocalizedString(
+    //   LocalizedStringKeys.SetLbl,
+    // );
   }
 
   /**

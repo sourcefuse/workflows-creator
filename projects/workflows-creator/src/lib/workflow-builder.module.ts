@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import BPMNModdle from 'bpmn-moddle';
@@ -100,6 +100,7 @@ import {ENV_TOKEN} from './token';
     TooltipRenderComponent,
     LocalizationPipe,
   ],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
   imports: [
     CommonModule,
@@ -172,6 +173,7 @@ import {ENV_TOKEN} from './token';
     {provide: LINK_NONE_STRATEGY, useClass: NoLinkStrategy},
     {provide: CONDITION_LIST, useValue: typeTuppleList},
     {provide: ENV_TOKEN, useValue: 'local'},
+    LocalizationPipe,
   ],
 })
 export class WorkflowBuilderModule {}

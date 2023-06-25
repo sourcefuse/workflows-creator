@@ -9,6 +9,7 @@ import {
   Output,
   SimpleChanges,
   TemplateRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   isSelectInput,
@@ -39,6 +40,7 @@ import {
   WorkflowNode,
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
+import { LocalizationPipe } from '../pipes/localization.pipe';
 
 @Component({
   selector: 'workflow-builder',
@@ -47,6 +49,8 @@ import {LocalizationProviderService} from '../services/localization-provider.ser
     './builder.component.scss',
     '../../assets/icons/icomoon/style.css',
   ],
+  providers:[LocalizationPipe],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuilderComponent<E> implements OnInit, OnChanges {
@@ -145,8 +149,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.nodes
       .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
-
+    
     this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.cdr.detectChanges();
   }
 
   /**
