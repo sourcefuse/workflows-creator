@@ -140,9 +140,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
-  doThisLbl='';
-  whenThisHappensLbl='';
-  setLbl='';
 
 
   localizedStringKeys = LocalizedStringKeys;
@@ -189,15 +186,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.typeEmailPlaceholder = this.localizationSvc.getLocalizedString(
       LocalizedStringKeys.TypeEmail,
     );
-    // this.doThisLbl = this.localizationSvc.getLocalizedString(
-    //   LocalizedStringKeys.DoThis,
-    // );
-    // this.whenThisHappensLbl = this.localizationSvc.getLocalizedString(
-    //   LocalizedStringKeys.WhenThisHappens,
-    // );
-    // this.setLbl = this.localizationSvc.getLocalizedString(
-    //   LocalizedStringKeys.SetLbl,
-    // );
   }
 
   /**
