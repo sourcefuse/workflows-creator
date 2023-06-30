@@ -103,6 +103,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     subject: '',
     body: '',
     focusKey: '',
+    caretPos: 0,
   };
   dropdownSettings: IDropdownSettings = {
     singleSelection: false,
@@ -134,6 +135,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
+  doThisLbl = '';
+  whenThisHappensLbl = '';
+  setLbl = '';
 
   localizedStringKeys = LocalizedStringKeys;
 
@@ -261,11 +265,21 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   appendEmailBody(item: Select, emailInput: EmailInput) {
     if (emailInput.focusKey === 'subject') {
-      emailInput.subject += ` ${item.value}`;
+      emailInput.subject = [
+        emailInput.subject.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.subject.slice(emailInput.caretPos),
+      ].join('');
     }
     if (emailInput.focusKey === 'body') {
-      emailInput.body += ` ${item.value}`;
+      emailInput.body = [
+        emailInput.body.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.body.slice(emailInput.caretPos),
+      ].join('');
     }
+
+    emailInput.caretPos += `${item.value}`.length;
   }
 
   /**
@@ -276,6 +290,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   setFocusKey(emailInput: EmailInput, key: string) {
     emailInput.focusKey = key;
+  }
+
+  /**
+   * @emailInput this is the object that contains the email input
+   * @caretPosition pos caret position
+   */
+  setFocusOutPos(emailInput: EmailInput, caretPosition: number) {
+    emailInput.caretPos = caretPosition;
   }
 
   /**

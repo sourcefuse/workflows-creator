@@ -144,7 +144,8 @@
                 emailInput: emailInput,
                 appendEmailBody: appendEmailBody,
                 setFocusKey: setFocusKey,
-                hide: hidePopper()
+                hide: hidePopper(),
+                setFocusOutPos: setFocusOutPos
               }
             "
           ></ng-container>
@@ -284,6 +285,7 @@
     let-appendEmailBody="appendEmailBody"
     let-setFocusKey="setFocusKey"
     let-hide="hide"
+    let-setFocusOutPos="setFocusOutPos"
   >
     <div class="email-template" (document:click)="hide()">
       <input
@@ -292,6 +294,7 @@
         id="email-subject"
         autofocus
         (focus)="setFocusKey(emailInput, 'subject')"
+        (focusout)="setFocusOutPos(emailInput, $event.target.selectionStart)"
         [placeholder]="typeSubjectPlaceholder"
         [(ngModel)]="emailInput.subject"
       />
@@ -299,7 +302,7 @@
         [placeholder]="typeEmailPlaceholder"
         id="email-body"
         class="email-input email-body-input"
-        (focus)="setFocusKey(emailInput, 'body')"
+        (focusout)="setFocusOutPos(emailInput, $event.target.selectionStart)"
         [(ngModel)]="emailInput.body"
       ></textarea>
       <div class="auto-populate">
@@ -315,7 +318,7 @@
           (click)="callback(emailInput)"
           [disabled]="!emailInput.subject || !emailInput.body"
         >
-          {{ localizedStringKeys.SetLbl | localization }}
+          {{ setLbl }}
         </button>
       </div>
     </div>
