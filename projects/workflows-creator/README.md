@@ -77,3 +77,110 @@ npm i @sourceloop/workflows-creator
 ```typescript
 {provide: BPMN_INPUTS, useValue: CustomInput, multi: true},
 ```
+
+## Web Component
+
+- This library is also available as a [Web Component](https://developer.mozilla.org/en-US/docs/Web/Web_Components) so users of frameworks like React and Vue
+  can also integrate this workflow creator element in their application with minimal effort.
+
+### Installation
+
+```bash
+npm i @sourceloop/workflows-creator
+```
+
+- In the node modules you can find two files relevant to the element - `workflows-element/dist/workflows-element.js` & `workflows-element/dist/style.css`.
+  How you serve and include these files in your non Angular project depend on the framework that you are using. For example, for Vanilla JS and HTML you can simply import the js and styles in your HTML ->
+
+```html
+<script type="text/javascript" src="workflows-element.js"></script>
+```
+
+### Usage
+
+The web component accepts all the same inputs and services as the regular Angular Module, but instead of passing them through bindings and DI, you pass them as properties of the element as shown below.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="stylesheet" type="text/css" href="/assets/icons/icomoon/style.css"/>
+      <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+  <body>
+     <sourceloop-workflow-element></sourceloop-workflow-element>
+     <script type="text/javascript" src="workflows-element.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const element = document.querySelector("sourceloop-workflow-element");
+
+        element.allColumns = [
+        {
+          text: 'Status',
+          value: '{{Status}}',
+        },
+        {
+          text: 'People',
+          value: '{{People}}',
+        },
+        {
+          text: 'Text',
+          value: '{{Text}}',
+        },
+      ];
+
+      const NORMALIZED_COLUMN = [
+          {
+            text: "Status",
+            value: "1952177d-9a3e-6ef4-ae8f-522c08153026",
+          },
+          {
+            text: "Priority",
+            value: "1952177d-9a3e-6ef4-ae8f-522c08153026",
+          },
+          {
+            text: "Text",
+            value: "2069d144-db46-0737-2c9d-bc339949d684",
+          },
+          
+        ];
+
+        const CONDITIONS = {
+          date: DATE_CONDITIONS,
+          datetime: DATE_CONDITIONS,
+        };
+
+        const DEFAULT_CONDITION = [
+          { text: "Equal", value: "equal" },
+          { text: "Not Equal", value: "notequal" },
+
+        ];
+        const DATE_CONDITIONS = [
+          { text: "Past Today", value: "pastToday" },
+          { text: "Coming In", value: "comingIn" },
+          { text: "Past by", value: "pastby" },
+
+        ];
+         const VALUE_TYPES = [
+          {
+            text: "ANYTHING",
+            value: "anyValue",
+          },
+          {
+            text: "CUSTOM_VALUE",
+            value: "customValue",
+          },
+        ];
+        element.state={
+          columns: NORMALIZED_COLUMN,
+          conditions: [],
+          values: [],
+        };
+      })
+       </script>
+        </body>
+      </html>
+```
+      
+
