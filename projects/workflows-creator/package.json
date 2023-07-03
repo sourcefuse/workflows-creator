@@ -6,14 +6,7 @@
     "angular-library"
   ],
   "peerDependencies": {
-    "@angular/common": "~13.3.11",
-    "@angular/core": "~13.3.11",
-    "@angular/elements": "^16.0.3",
-    "@angular/forms": "~13.3.11",
-    "@popperjs/core": "^2.11.6",
-    "bpmn-moddle": "^8.0.0",
-    "lodash": "^4.17.21",
-    "ngx-popperjs": "^13.3.0"
+    "@popperjs/core": "^2.11.6"
   },
   "scripts": {
     "checkIfNodeModulesExist": "[ -d \"../../node_modules\" ]",

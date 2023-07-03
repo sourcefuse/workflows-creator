@@ -9,16 +9,16 @@ async function elementsBundler() {
     '../../dist/workflows-element/polyfills.js',
     '../../dist/workflows-element/main.js',
   ];
-  await ensureDir('../../dist/workflows-element/dist');
-  await concat(files, '../../dist/workflows-element/dist/workflows-element.js');
+  await ensureDir('../../dist/workflows-element/element');
+  await concat(files, '../../dist/workflows-element/element/workflows-element.js');
   await copyFile(
     '../../dist/workflows-element/styles.css',
-    '../../dist/workflows-element/dist/styles.css',
+    '../../dist/workflows-element/element/styles.css',
   );
 
   await copyFile(
     '../../dist/workflows-creator/README.md',
-    '../../dist/workflows-element/dist/README.md',
+    '../../dist/workflows-element/element/README.md',
   );
   // await rm('../../dist/workflows-element', {recursive: true});
 
@@ -26,7 +26,7 @@ async function elementsBundler() {
   // whenever any changes are made in the element the corresponding js file will
   // resulting in changing its hash, so the element will also be published
 
-  const file = '../../dist/workflows-element/dist/workflows-element.js';
+  const file = '../../dist/workflows-element/element/workflows-element.js';
   const data = readFileSync(file);
   const hash = crypto.createHash('sha256');
   hash.update(data);
