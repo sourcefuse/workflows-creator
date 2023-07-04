@@ -172,12 +172,91 @@ The web component accepts all the same inputs and services as the regular Angula
             value: "customValue",
           },
         ];
-        element.state={
-          columns: NORMALIZED_COLUMN,
-          conditions: [],
-          values: [],
-        };
       })
+
+       element.addEventListener("eventAdded", (event) => {
+          elementClick(event.detail);
+        });
+        element.addEventListener("actionAdded", (event) => {
+          elementClick(event.detail);
+        });
+        element.addEventListener("itemChanged", (event) => {
+          valueChanges(event.detail);
+        });
+
+       function elementClick(event) {
+          const selectedElement = event.event ?? event.action;
+          switch (selectedElement.getIdentifier()) {
+            case "OnIntervalEvent":
+              selectedElement.state.change("intervalList", TIMESCALE);
+              selectedElement.state.change("valuePlaceholder", "n");
+            case "OnChangeEvent":
+            case "OnValueEvent":
+             let columns = NORMALIZED_COLUMN.filter(
+                (col) => col.text.toLowerCase() !== 'priority'
+              );
+              selectedElement.state.change("columns", columns);
+              break;
+            case "ChangeColumnValueAction":
+              selectedElement.state.change("columns", NORMALIZED_COLUMN);
+              break;
+          }
+        }
+
+       function valueChanges(event) {
+          let selectedCol;
+
+          switch (event.field) {
+            case "ValueInput":
+              if (event.item.getIdentifier() === "OnIntervalEvent") {
+                event.item.state.change("intervalList", TIMESCALE);
+                return;
+              }
+              break;
+            case "IntervalInput":
+              const timescale = TIMESCALE.find(
+                (time) => time.value === event.value
+              )?.timescale;
+              event.item.state.change("timescale", timescale);
+              break;
+            case "TriggerColumnInput":
+
+            case "ColumnInput":
+              selectedCol = NORMALIZED_COLUMN.find(
+                (col) => col.value === event.value
+              );
+              selectedColumnType = selectedCol.text?.toLowerCase();
+              const condition =
+                CONDITIONS[selectedCol.text?.toLowerCase()] ||
+                DEFAULT_CONDITION;
+              if (selectedCol) {
+                event.item.state.change("conditions", condition);
+              }
+            case "ConditionInput":
+            case "ToColumnInput":
+              selectedCol = NORMALIZED_COLUMN.find(
+                (col) => col.value === event.value
+              );
+              if (selectedCol)
+                selectedColumnType = selectedCol.text?.toLowerCase();
+              event.item.state.change(
+                "valueInputType",
+                FIELD_VALUES[selectedColumnType].valueInputType
+              );
+              if (FIELD_VALUES[selectedColumnType].values) {
+                event.item.state.change(
+                  "values",
+                  FIELD_VALUES[selectedColumnType].values
+                );
+              }
+
+              break;
+            case "EmailDataInput":
+            
+          }
+        }
+
+
        </script>
         </body>
       </html>
