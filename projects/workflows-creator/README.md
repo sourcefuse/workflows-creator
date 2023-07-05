@@ -89,7 +89,7 @@ npm i @sourceloop/workflows-creator
 npm i @sourceloop/workflows-creator
 ```
 
-- In the node modules you can find two files relevant to the element - `workflows-element/dist/workflows-element.js` & `workflows-element/dist/style.css`.
+- In the node modules you can find two files relevant to the element - `workflows-element/element/workflows-element.js` & `workflows-element/element/style.css`.
   How you serve and include these files in your non Angular project depend on the framework that you are using. For example, for Vanilla JS and HTML you can simply import the js and styles in your HTML ->
 
 ```html
