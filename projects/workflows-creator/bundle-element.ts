@@ -30,7 +30,7 @@ async function elementsBundler() {
   hash.update(data);
   const fileHash = hash.digest('hex');
 
-  //update the package.json with the new hashCode
+ 
   //if there will be changes in hash then the element will also be published
 
   const packageJsonPath = '../../dist/workflows-creator/package.json';
