@@ -20,9 +20,7 @@ async function elementsBundler() {
     '../../dist/workflows-creator/README.md',
     '../../dist/workflows-element/element/README.md',
   );
-  // await rm('../../dist/workflows-element', {recursive: true});
 
-  // generate the hash of element file to keep a track of the chnages
   // whenever any changes are made in the element the corresponding js file will
   // resulting in changing its hash, so the element will also be published
 

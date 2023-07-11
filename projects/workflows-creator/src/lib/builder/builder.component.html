@@ -2,7 +2,6 @@
 <div class="container">
   <span *ngFor="let group of eventGroups; let i = index">
     <workflow-group
-     [isPage]="true"
       [group]="group"
       [isLast]="i === eventGroups.length - 1"
       [isFirst]="i === 0"
