@@ -24,7 +24,7 @@
     "@angular-eslint/schematics": "^13.5.0",
     "@angular/common": "~13.3.11",
     "@angular/core": "~13.3.11",
-    "@angular/elements": "^16.0.3",
+    "@angular/elements": "^13.3.0",
     "@angular/forms": "~13.3.11",
     "@angular/platform-browser": "~13.3.11",
     "@angular/platform-browser-dynamic": "~13.3.11",
