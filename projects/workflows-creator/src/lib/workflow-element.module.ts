@@ -17,7 +17,6 @@ import {
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {createCustomElement} from '@angular/elements';
 import { LocalizationPipe } from './pipes/localization.pipe';
-import { InputTypes, LocalizedStringKeys } from './enum';
 import { ChangeColumnValueAction, OnChangeEvent, ColumnInput, ConditionInput, ToColumnInput, OnValueEvent, EmailToInput, EmailDataInput, EmailRecepientInput, ValueInput, IntervalInput, OnIntervalEvent, OnAddItemEvent, TriggerColumnInput, ValueTypeInput } from './services';
 
 
@@ -50,41 +49,24 @@ export class WorkflowElementModule {
       // Render the web component's template
     });
     customElements.define('sourceloop-workflow-element', webComponent);
-    const changeColumnValue = this.injector.get(ChangeColumnValueAction);
-    const onAddItem = this.injector.get(OnAddItemEvent);
-    const onInterval = this.injector.get(OnIntervalEvent);
-    const columnInput = this.injector.get(ColumnInput);
-    const conditionInput   = this.injector.get(ConditionInput );
-    const toColumnInput = this.injector.get(ToColumnInput);
-    const valueInput= this.injector.get(ValueInput);
-    const onChangeEvent = this.injector.get(OnChangeEvent);
-    const onValueEvent = this.injector.get(OnValueEvent);
-    const emailDataInput = this.injector.get(EmailDataInput);
-    const emailToInput = this.injector.get(EmailToInput);
-    const intervalInput = this.injector.get(IntervalInput);
-    const triggerColumnInput = this.injector.get(TriggerColumnInput);
-    const valueTypeInput = this.injector.get(ValueTypeInput);
-    const emailRecepientInput = this.injector.get(EmailRecepientInput);
-    const inputTypes = this.injector.get(InputTypes);
     
     // to export the service for vanilla JS projects
     Object.assign(window, {
-      changeColumnValue,
-      onAddItem,
-      onInterval,
-      columnInput,
-      conditionInput,
-      toColumnInput,
-      valueInput,
-      onChangeEvent,
-      onValueEvent,
-      emailDataInput,
-      emailToInput,
-      intervalInput,
-      triggerColumnInput,
-      valueTypeInput,
-      emailRecepientInput,
-      inputTypes
+      ChangeColumnValueAction,
+      OnAddItemEvent,
+      OnIntervalEvent,
+      ColumnInput,
+      ConditionInput,
+      ToColumnInput,
+      ValueInput,
+      OnChangeEvent,
+      IntervalInput,
+      OnValueEvent,
+      EmailDataInput,
+      EmailToInput,
+      TriggerColumnInput,
+      ValueTypeInput,
+      EmailRecepientInput
     });
   }
 }

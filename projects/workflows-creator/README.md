@@ -184,44 +184,44 @@ The web component accepts all the same inputs and services as the regular Angula
           valueChanges(event.detail);
         });
 
-       function elementClick(event) {
+        function elementClick(event) {
           const selectedElement = event.event ?? event.action;
           switch (selectedElement.getIdentifier()) {
-            case "OnIntervalEvent":
+            case window.OnIntervalEvent.identifier:
               selectedElement.state.change("intervalList", TIMESCALE);
               selectedElement.state.change("valuePlaceholder", "n");
-            case "OnChangeEvent":
-            case "OnValueEvent":
+            case window.OnChangeEvent.identifier:
+            case window.OnValueEvent.identifier:
              let columns = NORMALIZED_COLUMN.filter(
                 (col) => col.text.toLowerCase() !== 'priority'
               );
               selectedElement.state.change("columns", columns);
               break;
-            case "ChangeColumnValueAction":
+            case window.ChangeColumnValueAction.identifier:
               selectedElement.state.change("columns", NORMALIZED_COLUMN);
               break;
           }
         }
 
-       function valueChanges(event) {
+         function valueChanges(event) {
           let selectedCol;
 
           switch (event.field) {
-            case "ValueInput":
-              if (event.item.getIdentifier() === "OnIntervalEvent") {
+            case window.ValueInput.identifier:
+              if (event.item.getIdentifier() === window.OnIntervalEvent.identifier) {
                 event.item.state.change("intervalList", TIMESCALE);
                 return;
               }
               break;
-            case "IntervalInput":
+            case window.IntervalInput.identifier:
               const timescale = TIMESCALE.find(
                 (time) => time.value === event.value
               )?.timescale;
               event.item.state.change("timescale", timescale);
               break;
-            case "TriggerColumnInput":
+            case window.TriggerColumnInput.identifier:
 
-            case "ColumnInput":
+            case window.ColumnInput.identifier:
               selectedCol = NORMALIZED_COLUMN.find(
                 (col) => col.value === event.value
               );
@@ -232,8 +232,8 @@ The web component accepts all the same inputs and services as the regular Angula
               if (selectedCol) {
                 event.item.state.change("conditions", condition);
               }
-            case "ConditionInput":
-            case "ToColumnInput":
+            case window.ConditionInput.identifier:
+            case window.ToColumnInput.identifier:
               selectedCol = NORMALIZED_COLUMN.find(
                 (col) => col.value === event.value
               );
@@ -251,12 +251,11 @@ The web component accepts all the same inputs and services as the regular Angula
               }
 
               break;
-            case "EmailDataInput":
+            case window.EmailDataInput.identifier:
             
           }
         }
-
-
+      
        </script>
         </body>
       </html>
