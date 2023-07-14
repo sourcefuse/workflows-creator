@@ -225,6 +225,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
       if (nodeWithInput.node.state.get('email')) {
+        (value as AllowedValuesMap).body = (
+          (value as AllowedValuesMap).body as string
+        ).replace(/\\"/g, '"');
+        (value as AllowedValuesMap).subject = (
+          (value as AllowedValuesMap).subject as string
+        ).replace(/\\"/g, '"');
+
         this.emailInput = value;
       } else {
         switch (nodeWithInput.node.state.get('valueInputType')) {
