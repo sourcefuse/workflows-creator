@@ -400,8 +400,18 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           input.setValue(element.node.state, value),
           input.typeFunction(element.node.state) === InputTypes.List,
         );
+        this.clearValues();
       }
       popper.hide();
+    };
+  }
+
+  private clearValues() {
+    this.emailInput = {
+      subject: '',
+      body: '',
+      focusKey: '',
+      caretPos: 0,
     };
   }
 
