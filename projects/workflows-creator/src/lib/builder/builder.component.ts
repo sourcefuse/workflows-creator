@@ -20,7 +20,16 @@ import {
 } from '../classes';
 import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
-import {EventTypes, LocalizedStringKeys, NodeTypes, ValueTypes} from '../enum';
+import {
+  ActionTypes,
+  ConditionTypes,
+  EventTypes,
+  LocalizedStringKeys,
+  NUMBER,
+  NodeTypes,
+  NotificationRecipientTypesEnum,
+  ValueTypes,
+} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
 import {
   ActionAddition,
@@ -38,6 +47,11 @@ import {
   WorkflowNode,
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
+import {
+  ReadColumnValue,
+  TriggerWhenColumnChanges,
+} from '../services/bpmn/elements/tasks';
+import {GatewayElement} from '../services/bpmn/elements/gateways';
 
 @Component({
   selector: 'workflow-builder',
@@ -78,7 +92,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
 
   @Output()
-  diagramChange = new EventEmitter<string>();
+  diagramChange = new EventEmitter<Object>();
 
   @Output()
   eventAdded = new EventEmitter<EventAddition<E>>();
@@ -217,7 +231,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.updateDiagram();
     this.updateState(event.node, event.newNode.inputs);
     this.elseBlockHidden =
-      !this.eventGroups[0]?.children?.length &&
+      this.eventGroups[0]?.children?.length === 1 &&
       (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
         event.node.getIdentifier() === EventTypes.OnAddItemEvent);
   }
@@ -226,16 +240,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * The function is called when an event is removed from the workflow.
    * Hides the else block when it is not needed.
    */
-  onEventRemoved() {
-    const events = this.eventGroups[0].children;
-
-    this.elseBlockHidden =
-      events.length === 1 &&
-      (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
-        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
-        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
-          (events[0].node.state.get('value') === ValueTypes.AnyValue ||
-            events[0].node.state.get('valueType') === ValueTypes.AnyValue)));
+  onNodeRemoved() {
+    this.updateDiagram();
+    if (this.eventGroups[0]?.children?.length) this.hideElseBlockIfRequired();
   }
 
   /**
@@ -264,17 +271,30 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       item: item.element.node,
     });
     this.updateState(item.element.node, item.element.inputs);
-    // TODO: to be refactored
-    // to hide else block when anything is selected in ValueInput or ValueTypeInput
-    this.elseBlockHidden =
-      this.eventGroups[0].children?.length === 1 &&
-      this.eventGroups[0].children[0].node.getIdentifier() ===
-        EventTypes.OnChangeEvent &&
-      (this.eventGroups[0].children[0].node.state.get('value') ===
-        ValueTypes.AnyValue ||
-        this.eventGroups[0].children[0].node.state.get('valueType') ===
-          ValueTypes.AnyValue);
+    this.hideElseBlockIfRequired();
     this.updateDiagram();
+  }
+
+  /**
+   * This function checks if the else block should be hidden based on the type and number of events in
+   * the event group.
+   */
+  hideElseBlockIfRequired() {
+    const events = this.eventGroups[0].children;
+    let value = events[0].node.state.get('value');
+    if (typeof value === 'object') {
+      value = value.value;
+    }
+    if (events.length !== 1) {
+      this.elseBlockHidden = false;
+    } else {
+      this.elseBlockHidden =
+        events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
+        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
+        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
+          (value === ValueTypes.AnyValue ||
+            events[0].node.state.get('valueType') === ValueTypes.AnyValue));
+    }
   }
 
   /**
@@ -346,6 +366,30 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     value: AllowedValues | AllowedValuesMap,
     select = false,
   ) {
+    if (
+      (input.getIdentifier() === 'ValueTypeInput' ||
+        input.getIdentifier() === 'ValueInput') &&
+      element.node.getIdentifier() === 'OnChangeEvent'
+    ) {
+      if (
+        ((value as AllowedValuesMap)?.value as AllowedValuesMap)?.value ===
+        ValueTypes.AnyValue
+      ) {
+        /**
+         * Remove node on changes event
+         */
+        element.node.elements.splice(-NUMBER.TWO, NUMBER.TWO);
+        // element.inputs[1].prefix = '';
+        //this.enableActionIcon = false;
+      } else {
+        element.node.elements = [
+          TriggerWhenColumnChanges.identifier,
+          ReadColumnValue.identifier,
+          GatewayElement.identifier,
+        ];
+      }
+    }
+
     if (select && isSelectInput(input)) {
       element.node.state.change(
         `${input.inputKey}Name`,
@@ -429,8 +473,55 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * It builds a new diagram, emits the new diagram, and then tells Angular to update the view
    */
   async updateDiagram() {
+    const nodes = [
+      ...this.eventGroups[0].children,
+      ...this.actionGroups[0].children,
+      ...this.elseActionGroups[0].children,
+    ];
+    let isValid =
+      !!this.eventGroups[0].children.length &&
+      (!!this.actionGroups[0].children.length ||
+        !!this.elseActionGroups[0].children.length);
+    if (isValid) {
+      for (const node of nodes) {
+        switch (node.node.getIdentifier()) {
+          case EventTypes.OnChangeEvent:
+          case EventTypes.OnValueEvent:
+          case ActionTypes.ChangeColumnValueAction:
+            const columnExists = !!node.node.state.get('column');
+            const valueExists =
+              node.node.state.get('condition') === ConditionTypes.PastToday
+                ? true
+                : !!node.node.state.get('value');
+            const valueTypeIsAnyValue =
+              node.node.state.get('valueType') === ValueTypes.AnyValue;
+            isValid = columnExists && (valueExists || valueTypeIsAnyValue);
+            break;
+          case EventTypes.OnIntervalEvent:
+            const intervalExists = !!node.node.state.get('interval');
+            const intervalValueExists = !!node.node.state.get('value');
+            isValid = intervalValueExists && intervalExists;
+            break;
+          case ActionTypes.SendEmailAction:
+            const email = !!node.node.state.get('email');
+            const emailTo = !!node.node.state.get('emailTo');
+            const specificRecipientsRequired = [
+              NotificationRecipientTypesEnum.NotifySpecificColumn,
+              NotificationRecipientTypesEnum.NotifySpecificPeople,
+            ].includes(node.node.state.get('emailTo'));
+            const recipients = !!node.node.state.get('specificRecepient');
+            isValid = specificRecipientsRequired
+              ? email && emailTo && recipients
+              : email && emailTo;
+            break;
+        }
+        if (!isValid) {
+          break; // exit the loop since we found an invalid input
+        }
+      }
+    }
     this.diagram = await this.build();
-    this.diagramChange.emit(this.diagram);
+    this.diagramChange.emit({diagram: this.diagram, isValid: isValid});
     this.cdr.detectChanges();
   }
 

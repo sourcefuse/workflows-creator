@@ -86,7 +86,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   eventAdded = new EventEmitter<unknown>();
 
   @Output()
-  eventRemoved = new EventEmitter<unknown>();
+  nodeRemoved = new EventEmitter<unknown>();
 
   @Output()
   actionAdded = new EventEmitter<unknown>();
@@ -103,6 +103,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     subject: '',
     body: '',
     focusKey: '',
+    caretPos: 0,
   };
   dropdownSettings: IDropdownSettings = {
     singleSelection: false,
@@ -134,6 +135,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
+  doThisLbl = '';
+  whenThisHappensLbl = '';
+  setLbl = '';
 
   localizedStringKeys = LocalizedStringKeys;
 
@@ -221,6 +225,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
       if (nodeWithInput.node.state.get('email')) {
+        (value as AllowedValuesMap).body = (
+          (value as AllowedValuesMap).body as string
+        ).replace(/\\"/g, '"');
+        (value as AllowedValuesMap).subject = (
+          (value as AllowedValuesMap).subject as string
+        ).replace(/\\"/g, '"');
+
         this.emailInput = value;
       } else {
         switch (nodeWithInput.node.state.get('valueInputType')) {
@@ -261,11 +272,21 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   appendEmailBody(item: Select, emailInput: EmailInput) {
     if (emailInput.focusKey === 'subject') {
-      emailInput.subject += ` ${item.value}`;
+      emailInput.subject = [
+        emailInput.subject.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.subject.slice(emailInput.caretPos),
+      ].join('');
     }
     if (emailInput.focusKey === 'body') {
-      emailInput.body += ` ${item.value}`;
+      emailInput.body = [
+        emailInput.body.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.body.slice(emailInput.caretPos),
+      ].join('');
     }
+
+    emailInput.caretPos += `${item.value}`.length;
   }
 
   /**
@@ -276,6 +297,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   setFocusKey(emailInput: EmailInput, key: string) {
     emailInput.focusKey = key;
+  }
+
+  /**
+   * @emailInput this is the object that contains the email input
+   * @caretPosition pos caret position
+   */
+  setFocusOutPos(emailInput: EmailInput, caretPosition: number) {
+    emailInput.caretPos = caretPosition;
   }
 
   /**
@@ -322,20 +351,20 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       inputs: this.nodes.mapInputs(node),
     };
     if (node.type === NodeTypes.EVENT) {
-      this.eventAdded.emit({
-        node: node,
-        newNode: newNode,
-      });
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
       this.group.children.push(newNode as EventWithInput<E>);
+      this.eventAdded.emit({
+        node: node,
+        newNode: newNode,
+      });
     } else if (node.type === NodeTypes.ACTION) {
+      this.group.children.push(newNode as ActionWithInput<E>);
       this.actionAdded.emit({
         node: node,
         newNode: newNode,
       });
-      this.group.children.push(newNode as ActionWithInput<E>);
     } else {
       throw new InvalidEntityError('Node');
     }
@@ -347,7 +376,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   onNodeRemove(index: number) {
     this.group.children.splice(index, 1);
-    this.eventRemoved.emit();
+    this.nodeRemoved.emit();
   }
 
   /**
@@ -371,8 +400,18 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           input.setValue(element.node.state, value),
           input.typeFunction(element.node.state) === InputTypes.List,
         );
+        this.clearValues();
       }
       popper.hide();
+    };
+  }
+
+  private clearValues() {
+    this.emailInput = {
+      subject: '',
+      body: '',
+      focusKey: '',
+      caretPos: 0,
     };
   }
 
@@ -470,32 +509,24 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
     }
     if (select && isSelectInput(input)) {
-      if (
-        element.node.state.get('columnName') === 'Priority' &&
-        input.inputKey !== 'condition'
-      ) {
-        element.node.state.change(
-          `${input.inputKey}Name`,
-          value as AllowedValuesMap,
-        );
-        this.itemChanged.emit({
-          field: input.getIdentifier(),
-          value: value as AllowedValuesMap,
-          element: element,
-        });
-        value = value as AllowedValuesMap;
-      } else {
-        element.node.state.change(
-          `${input.inputKey}Name`,
-          (value as AllowedValuesMap)[input.listNameField],
-        );
-        this.itemChanged.emit({
-          field: input.getIdentifier(),
-          value: (value as AllowedValuesMap)[input.listValueField],
-          element: element,
-        });
-        value = (value as AllowedValuesMap)[input.listValueField];
-      }
+      element.node.state.change(
+        `${input.inputKey}Name`,
+        (value as AllowedValuesMap)[input.listNameField],
+      );
+      value =
+        input.inputKey === 'value'
+          ? value
+          : (value as AllowedValuesMap)[input.listValueField];
+      element.node.state.change(input.inputKey, value);
+      this.handleSubsequentInputs(element, input);
+      this.itemChanged.emit({
+        field: input.getIdentifier(),
+        value:
+          input.inputKey === 'value'
+            ? (value as AllowedValuesMap)[input.listValueField]
+            : value,
+        element: element,
+      });
     }
     element.node.state.change(input.inputKey, value);
     this.handleSubsequentInputs(element, input);

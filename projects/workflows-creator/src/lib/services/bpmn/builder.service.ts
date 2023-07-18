@@ -347,7 +347,10 @@ export class BpmnBuilderService extends BuilderService<
     const [id, key] = property['name'].split('_');
     if (state[id]) {
       try {
-        state[id][key] = JSON.parse(property['value']);
+        state[id][key] =
+          typeof JSON.parse(property['value']) === 'object'
+            ? JSON.parse(property['value'])
+            : property['value'];
       } catch (error) {
         state[id][key] = property['value'];
       }

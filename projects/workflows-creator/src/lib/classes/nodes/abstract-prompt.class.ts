@@ -94,6 +94,12 @@ export abstract class WorkflowPrompt {
         const dateTime = `${this.onDateSelect(date)} ${hours}:${min}`;
         return moment(dateTime.toString(), 'DD-MM-YYYY hh:mm').format();
       case InputTypes.Email:
+        (value as AllowedValuesMap).body = (
+          (value as AllowedValuesMap).body as string
+        ).replace(/"/g, '\\"');
+        (value as AllowedValuesMap).subject = (
+          (value as AllowedValuesMap).subject as string
+        ).replace(/"/g, '\\"');
         (value as AllowedValuesMap).displayValue = 'email';
         return value;
       case InputTypes.Number:

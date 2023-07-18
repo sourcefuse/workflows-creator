@@ -322,9 +322,13 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   var taskValuePair = readObj[key];
                   if(taskValuePair && taskValuePair.value){
                     var readDateValue = new Date(taskValuePair.value);
+                    var today = new Date();
+                    readDateValue.setHours(0,0,0,0);
+                    today.setHours(0,0,0,0);
+                    readDateValue.setDate(readDateValue.getDate()${condition});
                     if(${
                       isElse ? '!' : ''
-                    }(readDateValue > new Date() && readDateValue.setDate(readDateValue.getDate()${condition}) < new Date())){
+                    }(readDateValue.valueOf() === today.valueOf())){
                       ids.push(taskValuePair.id);
                     }
                   }
@@ -369,12 +373,17 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   private getCondition(node: BpmnStatementNode) {
     let value = node.workflowNode.state.get('value');
     const valueType = node.workflowNode.state.get('valueInputType');
-    if (valueType === InputTypes.Text || valueType === InputTypes.List) {
-      value = `'${value}'`;
-    }
-    if (value && valueType === InputTypes.People) {
-      return `'${value.ids}'`;
-    }
+    if (value)
+      switch (valueType) {
+        case InputTypes.Text:
+          value = `'${value}'`;
+          break;
+        case InputTypes.List:
+          value = `'${value.value}'`;
+          break;
+        case InputTypes.People:
+          return `'${value.ids}'`;
+      }
     const condition = node.workflowNode.state.get('condition');
     const pair = this.conditions.find(item => item.condition === condition);
     if (!pair) {

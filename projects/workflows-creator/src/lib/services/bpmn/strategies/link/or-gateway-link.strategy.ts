@@ -161,9 +161,13 @@ export class OrGatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   var taskValuePair = readObj[key];
                   if(taskValuePair && taskValuePair.value){
                     var readDateValue = new Date(taskValuePair.value);
+                    var today = new Date();
+                    readDateValue.setHours(0,0,0,0);
+                    today.setHours(0,0,0,0);
+                    readDateValue.setDate(readDateValue.getDate()${condition});
                     if(${
                       isElse ? '!' : ''
-                    }(readDateValue > new Date() && readDateValue.setDate(readDateValue.getDate()${condition}) < new Date())){
+                    }(readDateValue.valueOf() === today.valueOf())){
                       ids.push(taskValuePair.id);
                     }
                   }
