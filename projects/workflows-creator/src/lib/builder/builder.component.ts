@@ -9,6 +9,7 @@ import {
   Output,
   SimpleChanges,
   TemplateRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   isSelectInput,
@@ -22,6 +23,7 @@ import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
 import {EventTypes, LocalizedStringKeys, NodeTypes, ValueTypes} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
+
 import {
   ActionAddition,
   ActionWithInput,
@@ -38,6 +40,7 @@ import {
   WorkflowNode,
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
+import { LocalizationPipe } from '../pipes/localization.pipe';
 
 @Component({
   selector: 'workflow-builder',
@@ -46,6 +49,8 @@ import {LocalizationProviderService} from '../services/localization-provider.ser
     './builder.component.scss',
     '../../assets/icons/icomoon/style.css',
   ],
+  providers:[LocalizationPipe],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuilderComponent<E> implements OnInit, OnChanges {
@@ -57,22 +62,45 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
 
+  private _state: StateMap<RecordOfAnyType> = {};
+  public get state(): StateMap<RecordOfAnyType> {
+    return this._state;
+  }
   @Input()
-  state: StateMap<RecordOfAnyType> = {};
+  public set state(value: StateMap<RecordOfAnyType>) {
+    this._state = value;
+  }
+
+  private _localizedStringMap: RecordOfAnyType = {};
+  public get localizedStringMap() {
+    return this._localizedStringMap;
+  }
+  @Input()
+  public set localizedStringMap(value: RecordOfAnyType) {
+    this._localizedStringMap = value;
+  }
 
   @Input()
-  localizedStringMap: RecordOfAnyType;
+  public diagram: string = '';
 
-  @Input()
-  diagram = '';
-
-  @Input()
-  templateMap?: {
+  private _templateMap: {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
-
+  public get templateMap() {
+    return this._templateMap;
+  }
   @Input()
-  allColumns: Select[];
+  public set templateMap(value: {[key: string]: TemplateRef<RecordOfAnyType>}) {
+    this._templateMap = value;
+  }
+  private _allColumns: Select[] = [];
+  @Input()
+  public set allColumns(value: Select[]) {
+    this._allColumns = value;
+  }
+  public get allColumns() {
+    return this._allColumns;
+  }
 
   @Output()
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
@@ -121,8 +149,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.nodes
       .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
-
+    
     this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.cdr.detectChanges();
   }
 
   /**
@@ -172,6 +201,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           action: action.node as WorkflowAction<E>,
         });
       });
+      this.updateDiagram();
+    }
+    if (changes['localizedStringMap'] && this.localizedStringMap) {
+      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
       this.updateDiagram();
     }
   }
