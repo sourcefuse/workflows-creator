@@ -21,6 +21,7 @@ jobs:
           git config --global user.name '@yeshamavani'
           git config --global user.email 'yesha.mavani@sourcefuse.com'
           git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_PAT@github.com/sourcefuse/workflows-creator
+        env:
           GITHUB_PAT: ${{ secrets.RELEASE_COMMIT_GH_PAT }}
       - name: Authenticate with Registry
         run: |
