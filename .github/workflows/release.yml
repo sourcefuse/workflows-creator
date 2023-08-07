@@ -24,7 +24,7 @@ jobs:
           GITHUB_PAT: ${{ secrets.RELEASE_COMMIT_GH_PAT }}
       - name: Authenticate with Registry
         run: |
-          echo "@shubhamp-sf:registry=https://registry.npmjs.org/" > .npmrc
+          echo "@yeshasf:registry=https://registry.npmjs.org/" > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
           npm whoami
