@@ -64,7 +64,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "./dist/workflows-element",
+            "outputPath": "./projects/workflows-creator/dist/workflows-element",
             "index": "projects/workflows-creator/src/index.html",
             "main": "projects/workflows-creator/src/main.ts",
             "polyfills": "projects/workflows-creator/src/polyfills.ts",

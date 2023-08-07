@@ -1,0 +1,44 @@
+{
+    "packages": [
+      "projects/workflows-creator",
+      "projects/workflows-element"
+    ],
+    "command": {
+      "bootstrap": {
+        "concurrency": 4,
+        "ignore": [],
+        "npmClientArgs": [
+          "--loglevel",
+          "verbose",
+          "--no-install-links"
+        ]
+      },
+      "version": {
+        "conventionalCommits": true,
+        "message": "chore: publish release",
+        "allowBranch": "master"
+      },
+      "publish": {
+        "conventionalCommits": true,
+        "message": "chore: publish release",
+        "allowBranch": "master",
+        "noPrivate": true,
+        "graphType": "all"
+      },
+      "run": {
+        "concurrency": 1,
+        "ignore": []
+      },
+      "clean": {
+        "loglevel": "silent",
+        "concurrency": 8,
+        "yes": true
+      }
+    },
+    "changelogPreset": "custom-sf-changelog",
+    "ignoreChanges": ["**/*.md"],
+    "version": "independent",
+    "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+    "useWorkspaces": false
+  }
+  

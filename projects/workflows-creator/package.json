@@ -12,7 +12,7 @@
     "checkIfNodeModulesExist": "[ -d \"../../node_modules\" ]",
     "installNodeModules": "cd ../../ && npm i",
     "prebuild": "npm run checkIfNodeModulesExist || npm run installNodeModules",
-    "libraryBuild": "ng build",
+    "libraryBuild": "ng build && cp -r src/assets dist/assets",
     "elementBuild": "ng build workflows-element",
     "postbuild": "ts-node bundle-element.ts",
     "build": "npm run libraryBuild && npm run elementBuild",
@@ -62,40 +62,5 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public",
     "directory": "dist"
-  },
-  "release": {
-    "branches": [
-      "master"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "angular",
-          "releaseRules": [
-            {
-              "type": "chore",
-              "scope": "deps",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "package.json",
-            "CHANGELOG.md"
-          ],
-          "message": "chore(release): ${nextRelease.version} semantic"
-        }
-      ],
-      "@semantic-release/github"
-    ],
-    "repositoryUrl": "git@github.com:sourcefuse/workflows-creator.git"
   }
 }
