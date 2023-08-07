@@ -35,7 +35,6 @@
         "yes": true
       }
     },
-    "changelogPreset": "custom-sf-changelog",
     "ignoreChanges": ["**/*.md"],
     "version": "independent",
     "$schema": "node_modules/lerna/schemas/lerna-schema.json",
