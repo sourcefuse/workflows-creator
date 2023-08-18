@@ -71,7 +71,7 @@
         onNodeAdd(node, group.getIdentifier(), group.id);
         nodePopup.hide();
         $event.stopPropagation()
-      "
+      ;$event.stopPropagation()"
       *ngFor="let node of nodeList"
     >
       {{ node.name }}
