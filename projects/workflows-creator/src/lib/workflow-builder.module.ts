@@ -100,7 +100,7 @@ import {ENV_TOKEN} from './token';
     TooltipRenderComponent,
     LocalizationPipe,
   ],
-  schemas:[CUSTOM_ELEMENTS_SCHEMA],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [BuilderComponent, GroupComponent, NodeComponent, NgxPopperjsModule],
   imports: [
     CommonModule,
@@ -172,7 +172,13 @@ import {ENV_TOKEN} from './token';
     {provide: LINK_OR_GATEWAY_STRATEGY, useClass: OrGatewayLinkStrategy},
     {provide: LINK_NONE_STRATEGY, useClass: NoLinkStrategy},
     {provide: CONDITION_LIST, useValue: typeTuppleList},
-    {provide: ENV_TOKEN, useValue: 'local'},
+    {
+      provide: ENV_TOKEN,
+      useValue: (
+        window as Window &
+          typeof globalThis & {workflowEnv: {envIdentifier: string}}
+      ).workflowEnv,
+    },
     LocalizationPipe,
   ],
 })
