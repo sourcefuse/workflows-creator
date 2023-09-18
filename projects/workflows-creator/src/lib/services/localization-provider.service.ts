@@ -37,7 +37,7 @@ export class LocalizationProviderService {
   }
 
   setLocalizedStrings(stringMap: RecordOfAnyType) {
-    if (stringMap &&  Object.keys(stringMap).length>0) {
+    if (stringMap && Object.keys(stringMap).length > 0) {
       this.localizedStringMap = stringMap;
     } else {
       this.setDefaultStrings();

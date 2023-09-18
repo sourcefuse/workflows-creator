@@ -9,16 +9,27 @@ import {NgxPopperjsModule} from 'ngx-popperjs';
 import {BuilderComponent} from './builder/builder.component';
 import {FormsModule} from '@angular/forms';
 import {WorkflowBuilderModule} from './workflow-builder.module';
-import {
-  NgbDatepickerModule,
-  NgbTimepickerModule,
-  NgbPopoverModule,
-} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {createCustomElement} from '@angular/elements';
-import { LocalizationPipe } from './pipes/localization.pipe';
-import { ChangeColumnValueAction, OnChangeEvent, ColumnInput, ConditionInput, ToColumnInput, OnValueEvent, EmailToInput, EmailDataInput, EmailRecepientInput, ValueInput, IntervalInput, OnIntervalEvent, OnAddItemEvent, TriggerColumnInput, ValueTypeInput } from './services';
-
+import {LocalizationPipe} from './pipes/localization.pipe';
+import {
+  ChangeColumnValueAction,
+  OnChangeEvent,
+  ColumnInput,
+  ConditionInput,
+  ToColumnInput,
+  OnValueEvent,
+  EmailToInput,
+  EmailDataInput,
+  EmailRecepientInput,
+  ValueInput,
+  IntervalInput,
+  OnIntervalEvent,
+  OnAddItemEvent,
+  TriggerColumnInput,
+  ValueTypeInput,
+} from './services';
+import {InputTypes} from './enum';
 
 @NgModule({
   declarations: [],
@@ -28,28 +39,23 @@ import { ChangeColumnValueAction, OnChangeEvent, ColumnInput, ConditionInput, To
     BrowserModule,
     HttpClientModule,
     NgxPopperjsModule,
-    NgbDatepickerModule,
-    NgbTimepickerModule,
-    NgbPopoverModule,
     WorkflowBuilderModule,
     BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
   ],
   entryComponents: [BuilderComponent],
-  schemas:[CUSTOM_ELEMENTS_SCHEMA],
- 
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WorkflowElementModule {
   [x: string]: any;
-  constructor(private injector: Injector,
-    private local:LocalizationPipe) {}
+  constructor(private injector: Injector, private local: LocalizationPipe) {}
   ngDoBootstrap() {
     const webComponent = createCustomElement(BuilderComponent, {
       injector: this.injector,
       // Render the web component's template
     });
     customElements.define('sourceloop-workflow-element', webComponent);
-    
+
     // to export the service for vanilla JS projects
     Object.assign(window, {
       ChangeColumnValueAction,
@@ -66,7 +72,8 @@ export class WorkflowElementModule {
       EmailToInput,
       TriggerColumnInput,
       ValueTypeInput,
-      EmailRecepientInput
+      EmailRecepientInput,
+      InputTypes,
     });
   }
 }

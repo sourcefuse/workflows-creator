@@ -1,4 +1,4 @@
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {DateStruct} from '../../interfaces'
 import moment from 'moment';
 import {InvalidEntityError} from '../../errors';
 import {InputTypes, NUMBER} from '../../enum';
@@ -85,7 +85,7 @@ export abstract class WorkflowPrompt {
         };
       }
       case InputTypes.Date:
-        const _date = `${this.onDateSelect(value as NgbDateStruct)}`;
+        const _date = `${this.onDateSelect(value as DateStruct)}`;
         return moment(_date.toString(), 'DD-MM-YYYY').format();
       case InputTypes.DateTime:
         const {date, time} = value as DateTime;
@@ -125,7 +125,7 @@ export abstract class WorkflowPrompt {
    * @param {NgbDateStruct} date - NgbDateStruct - The date object that is passed to the function.
    * @returns A string in the format of dd-mm-yyyy
    */
-  private onDateSelect(date: NgbDateStruct) {
+  private onDateSelect(date: DateStruct) {
     const year = date.year;
     const month = this.convertToTwoDigits(date.month);
     const day = this.convertToTwoDigits(date.day);
