@@ -68,7 +68,9 @@
     <div
       class="option-div"
       (click)="
-        onNodeAdd(node, group.getIdentifier(), group.id); nodePopup.hide()
+        onNodeAdd(node, group.getIdentifier(), group.id);
+        nodePopup.hide();
+        $event.stopPropagation()
       "
       *ngFor="let node of nodeList"
     >
@@ -123,32 +125,34 @@
         }}
       </ng-container>
       <popper-content #inputPopper>
-        <ng-container
-          *ngIf="
-            inputPopper.displayType === 'block' &&
-            templateMap &&
-            templateMap[input.typeFunction(nodeWithInput.node.state)]
-          "
-        >
+        <div (click)="$event.stopPropagation()">
           <ng-container
-            *ngTemplateOutlet="
-              templateMap[input.typeFunction(nodeWithInput.node.state)] ||
-                listTemplate;
-              context: {
-                list: input.options
-                  ? input.options(nodeWithInput.node.state)
-                  : [],
-                callback: createCallback(nodeWithInput, input, inputPopper),
-                nodeWithInput: nodeWithInput,
-                input: input,
-                emailInput: emailInput,
-                appendEmailBody: appendEmailBody,
-                setFocusKey: setFocusKey,
-                hide: hidePopper()
-              }
+            *ngIf="
+              inputPopper.displayType === 'block' &&
+              templateMap &&
+              templateMap[input.typeFunction(nodeWithInput.node.state)]
             "
-          ></ng-container>
-        </ng-container>
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                templateMap[input.typeFunction(nodeWithInput.node.state)] ||
+                  listTemplate;
+                context: {
+                  list: input.options
+                    ? input.options(nodeWithInput.node.state)
+                    : [],
+                  callback: createCallback(nodeWithInput, input, inputPopper),
+                  nodeWithInput: nodeWithInput,
+                  input: input,
+                  emailInput: emailInput,
+                  appendEmailBody: appendEmailBody,
+                  setFocusKey: setFocusKey,
+                  hide: hidePopper()
+                }
+              "
+            ></ng-container>
+          </ng-container>
+        </div>
       </popper-content>
     </ng-container>
   </ng-template>
@@ -238,12 +242,13 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <ngb-datepicker
+    <input
+      type="date"
       [(ngModel)]="date"
-      #d
-      (dateSelect)="callback($event)"
+      (input)="callback(getLibraryValue($event, inputType.Date))"
+      (click)="$event.stopPropagation()"
       (document:click)="hide()"
-    ></ngb-datepicker>
+    />
   </ng-template>
 
   <ng-template
@@ -254,18 +259,21 @@
     let-hide="hide"
   >
     <div class="date-time-picker" (document:click)="hide()">
-      <ngb-datepicker [(ngModel)]="dateTime.date" #d></ngb-datepicker>
       <div class="time-picker">
-        <div>
-          <ngb-timepicker
-            [(ngModel)]="dateTime.time"
-            meridian="true"
-          ></ngb-timepicker>
+        <div class="date-input">
+          <input type="date" [(ngModel)]="dateTime.date" />
+        </div>
+        <div class="time-input">
+          <input type="time" [(ngModel)]="dateTime.time" />
         </div>
         <div>
           <button
             class="close-btn"
-            (click)="callback(dateTime)"
+            (click)="
+              callback(
+                getLibraryValue({target: {value: dateTime}}, inputType.DateTime)
+              )
+            "
             [disabled]="!dateTime.date || !dateTime.time"
           >
             Set

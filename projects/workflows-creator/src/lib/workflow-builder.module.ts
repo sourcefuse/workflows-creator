@@ -74,12 +74,6 @@ import {ProcessPropertiesElement} from './services/bpmn/elements/process/process
 import {FormsModule} from '@angular/forms';
 import {AndGroup, OrGroup} from './services/statement/groups';
 import {GroupComponent} from './builder/group/group.component';
-
-import {
-  NgbDatepickerModule,
-  NgbTimepickerModule,
-  NgbPopoverModule,
-} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {OrGatewayElement} from './services/bpmn/elements/gateways/or-gateway.element';
 import {OnIntervalEvent} from './services/statement/events/oninterval.event';
@@ -106,9 +100,6 @@ import {ENV_TOKEN} from './token';
     CommonModule,
     FormsModule,
     NgxPopperjsModule,
-    NgbDatepickerModule,
-    NgbTimepickerModule,
-    NgbPopoverModule,
     BrowserModule,
     NgMultiSelectDropDownModule.forRoot(),
   ],

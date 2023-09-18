@@ -19,6 +19,12 @@ export class TriggerOnInterval extends ServiceTaskElement {
     public utils: UtilsService,
   ) {
     super();
+    this.env =
+      this.env ??
+      (
+        window as Window &
+          typeof globalThis & {workflowEnv: {envIdentifier: string}}
+      ).workflowEnv;
     this.attributes = {
       ...this.attributes,
       'camunda:topic': `trigger-on-interval-${this.env?.envIdentifier}`,

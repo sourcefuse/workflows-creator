@@ -99,7 +99,7 @@ npm i @sourceloop/workflows-creator
 ### Usage
 
 The web component accepts all the same inputs and services as the regular Angular Module, but instead of passing them through bindings and DI, you pass them as properties of the element as shown below.
-NOTE: If `envIdentifier` is required it must be provided in the global `window` object as shown below, otherwise it will be rendered as undefined. This step is needed only in non-angular applications. For angular appplications it can be directly provided with the help of providers. If the value of bpmn diagram is required it can passed to web component in the manner as described below. This can be used to dynamically use the XML when working with the sourceloop-workflow web component. The `digram` attribute needs to be set if it is required to render the workflow from the bpmnDiagram(XML).
+NOTE: If `envIdentifier` is required it must be provided in the global `window` object as shown below, otherwise it will be rendered as undefined. This step is needed only in non-angular applications. For angular appplications it can be directly provided with the help of providers.
 
 ```html
 <!DOCTYPE html>
@@ -121,7 +121,6 @@ NOTE: If `envIdentifier` is required it must be provided in the global `window` 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const element = document.querySelector('sourceloop-workflow-element');
-        element.setAttribute("diagram",`<?xml version=\"1.0\" encoding=\"UTF-8\"?>....`)
         element.allColumns = [
           {
             text: 'Status',
