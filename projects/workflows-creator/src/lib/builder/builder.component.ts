@@ -40,7 +40,7 @@ import {
   WorkflowNode,
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
-import { LocalizationPipe } from '../pipes/localization.pipe';
+import {LocalizationPipe} from '../pipes/localization.pipe';
 
 @Component({
   selector: 'workflow-builder',
@@ -49,7 +49,7 @@ import { LocalizationPipe } from '../pipes/localization.pipe';
     './builder.component.scss',
     '../../assets/icons/icomoon/style.css',
   ],
-  providers:[LocalizationPipe],
+  providers: [LocalizationPipe],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -149,7 +149,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.nodes
       .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
-    
+
     this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
     this.cdr.detectChanges();
   }

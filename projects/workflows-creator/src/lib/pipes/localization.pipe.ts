@@ -4,7 +4,6 @@ import {LocalizedStringKeys} from '../enum';
 
 @Pipe({
   name: 'localization',
-
 })
 export class LocalizationPipe implements PipeTransform {
   constructor(private readonly localizationSvc: LocalizationProviderService) {}

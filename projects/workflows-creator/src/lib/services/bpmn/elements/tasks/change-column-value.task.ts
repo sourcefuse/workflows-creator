@@ -20,6 +20,12 @@ export class ChangeColumnValue extends ServiceTaskElement {
     public utils: UtilsService,
   ) {
     super();
+    this.env =
+      this.env ??
+      (
+        window as Window &
+          typeof globalThis & {workflowEnv: {envIdentifier: string}}
+      ).workflowEnv;
     this.attributes = {
       ...this.attributes,
       'camunda:topic': `change-task-column-value-${this.env?.envIdentifier}`,
