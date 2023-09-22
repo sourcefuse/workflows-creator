@@ -14,6 +14,88 @@
   border: 1px solid $primary-color;
   color: $white;
 }
+popper-content {
+  display: inline-block !important;
+  margin-left:10px;;
+  & > div {
+    padding: 0 !important;
+  }
+  .workflow-popper {
+    .mat-form-field-appearance-outline .mat-form-field-wrapper {
+      margin: 0px;
+      padding-bottom: 0px;
+    }
+  }
+}
+
+
+/* my-component.scss */
+/* Removes the clear button from date inputs */
+input[type="date"]::-webkit-clear-button {
+  display: none;
+}
+
+/* Removes the spin button */
+input[type="date"]::-webkit-inner-spin-button { 
+  display: none;
+}
+
+/* Always display the drop down caret */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color: #2c3e50;
+}
+
+/* A few custom styles for date inputs */
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  color: #95a5a6;
+  font-family: "Helvetica", arial, sans-serif;
+  font-size: 18px;
+  border:1px solid #ecf0f1;
+  background:#ecf0f1;
+  padding:5px;
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+input[type="date"], focus {
+  color: #95a5a6;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+
+/* Removes the clear button from time inputs */
+input[type="time"]::-webkit-clear-button {
+  display: none;
+}
+
+/* Removes the spin button */
+input[type="time"]::-webkit-inner-spin-button { 
+  display: none;
+}
+
+/* A few custom styles for time inputs */
+input[type="time"] {
+  appearance: none;
+  -webkit-appearance: none;
+  color: #95a5a6;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 18px;
+  border: 1px solid #ecf0f1;
+  background: #ecf0f1;
+  padding: 5px;
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+input[type="time"]:focus {
+  color: #95a5a6;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
 
 .tree-group {
   padding: 5px 0;
@@ -227,8 +309,14 @@
 
 .date-time-picker {
   border: 1px solid;
-  max-width: 330px;
+  max-width: 530px;
   border-radius: 5px;
+  .date-input{
+    margin-right: 10px; /* Add some right margin to separate the input fields */
+  }
+  .time-input{
+    margin-right: 10px;
+  }
   .time-picker {
     display: flex;
     padding: 20px;
@@ -236,9 +324,9 @@
   }
   .close-btn {
     @include theme;
-    height: 30px;
+    height: 40px;
     padding: 0 10px;
-    margin-top: 35px;
+    margin-top: 1px;
     border: 0;
     border-radius: 5px;
     cursor: pointer;

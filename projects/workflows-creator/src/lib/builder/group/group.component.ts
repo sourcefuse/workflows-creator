@@ -42,7 +42,8 @@ import {
   ReadColumnValue,
   TriggerWhenColumnChanges,
 } from '../../services';
-import { LocalizationPipe } from '../../pipes/localization.pipe';
+import {LocalizationPipe} from '../../pipes/localization.pipe';
+import moment from 'moment';
 
 @Component({
   selector: 'workflow-group',
@@ -51,15 +52,15 @@ import { LocalizationPipe } from '../../pipes/localization.pipe';
     './group.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
-  providers:[LocalizationPipe]
-  
-  
+  providers: [LocalizationPipe],
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
+
+  public inputType = InputTypes;
 
   @Input()
   group: AbstractBaseGroup<E>;
@@ -109,7 +110,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     focusKey: '',
   };
 
-  
   dropdownSettings: IDropdownSettings = {
     singleSelection: false,
     idField: 'id',
@@ -126,7 +126,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
   triggerEvents: WorkflowNode<E>[] = [];
-  actions: WorkflowNode<E>[] = []; 
+  actions: WorkflowNode<E>[] = [];
 
   nodeList: WorkflowNode<E>[];
 
@@ -140,7 +140,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
-
 
   localizedStringKeys = LocalizedStringKeys;
 
@@ -224,12 +223,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * @param nodeWithInput - The node that has the input.
    */
   setInput(input: WorkflowPrompt, nodeWithInput: NodeWithInput<E>) {
+    debugger;
     const allowedInputs = ['ValueInput', 'EmailDataInput', 'ToValueInput'];
     if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
       if (nodeWithInput.node.state.get('email')) {
         this.emailInput = value;
       } else {
+        debugger;
         switch (nodeWithInput.node.state.get('valueInputType')) {
           case InputTypes.Date:
             this.date = value;
@@ -507,6 +508,40 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     });
     this.enableActionIcon =
       element.node.state.get('value') !== ValueTypes.AnyValue;
+  }
+
+  getLibraryValue($event: any, type: string, metaObj: RecordOfAnyType) {
+    const value = $event.target.value;
+    switch (type) {
+      case InputTypes.Date: {
+        if (value) {
+          const dateObj = moment(value);
+          return {
+            day: dateObj.date(),
+            month: dateObj.month() + 1,
+            year: dateObj.year(),
+          };
+        }
+        break;
+      }
+      case InputTypes.DateTime:
+        if (value) {
+          const dateObj = moment(`${value.date} ${value.time}`);
+          return {
+            date: {
+              day: dateObj.date(),
+              month: dateObj.month() + 1,
+              year: dateObj.year(),
+            },
+            time: {
+              hour: dateObj.hour(),
+              minute: dateObj.minute(),
+            },
+          };
+        }
+        break;
+    }
+    return;
   }
 
   /**

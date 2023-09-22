@@ -36,7 +36,6 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
-    "@ng-bootstrap/ng-bootstrap": "^12.1.2",
     "@popperjs/core": "^2.11.6",
     "@types/estree": "^1.0.0",
     "bpmn-moddle": "^8.0.0",
@@ -101,11 +100,7 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "overrides": {
-    "@ng-bootstrap/ng-bootstrap": {
-      "@angular/localize": "~13.3.0"
-    }
-  },
+  
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-customizable"
