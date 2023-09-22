@@ -86,6 +86,9 @@ import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
 import {ENV_TOKEN} from './token';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -101,7 +104,9 @@ import {ENV_TOKEN} from './token';
     FormsModule,
     NgxPopperjsModule,
     BrowserModule,
+    BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
+    NgSelectModule,
   ],
   providers: [
     {

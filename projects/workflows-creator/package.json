@@ -68,5 +68,8 @@
       "@angular/compiler-cli": "~13.3.10",
       "typescript": "~4.6.4"
     }
+  },
+  "dependencies": {
+    "@ng-select/ng-select": "^8.0.0"
   }
 }
