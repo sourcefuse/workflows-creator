@@ -24,7 +24,6 @@
     "lint": "ng lint",
     "prepare": "husky install",
     "clean-deps": "lerna clean --yes && lerna exec --no-private \"npm install --ignore-scripts --package-lock-only --no-audit\""
-
   },
   "dependencies": {
     "@angular/animations": "~13.3.0",
@@ -36,6 +35,7 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "@ng-select/ng-select": "^8.0.0",
     "@popperjs/core": "^2.11.6",
     "@types/estree": "^1.0.0",
     "bpmn-moddle": "^8.0.0",
@@ -100,7 +100,6 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-customizable"

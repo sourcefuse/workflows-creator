@@ -223,16 +223,37 @@
     let-callback="callback"
     let-hide="hide"
   >
-    <ng-multiselect-dropdown
-      [placeholder]="'Please Select'"
-      [settings]="dropdownSettings"
-      [data]="list"
-      [(ngModel)]="selectedItems"
-      (onDropDownClose)="hide()"
-      (onSelect)="callback($event)"
-      (onSelectAll)="callback($event)"
-    >
-    </ng-multiselect-dropdown>
+    <div (document:click)="hide()">
+      <ng-select
+        class="multiselect"
+        [items]="list"
+        bindLabel="displayValue"
+        bindValue="id"
+        [multiple]="true"
+        placeholder="Please Select"
+        [(ngModel)]="selectedItems"
+        [closeOnSelect]="false"
+        (blur)="
+          callback(
+            getLibraryValue($event, inputType.People, {
+              list: list,
+              key: 'value'
+            })
+          )
+        "
+      >
+        <ng-template ng-header-tmp>
+          <div>
+            <button class="btn btn-link" (click)="onSelectAll(list)">
+              Select All
+            </button>
+            <button class="btn btn-link" (click)="onClearAll(list)">
+              Clear All
+            </button>
+          </div>
+        </ng-template>
+      </ng-select>
+    </div>
   </ng-template>
 
   <ng-template

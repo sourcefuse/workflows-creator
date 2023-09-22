@@ -59,7 +59,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
-
   public inputType = InputTypes;
 
   @Input()
@@ -223,7 +222,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * @param nodeWithInput - The node that has the input.
    */
   setInput(input: WorkflowPrompt, nodeWithInput: NodeWithInput<E>) {
-    debugger;
     const allowedInputs = ['ValueInput', 'EmailDataInput', 'ToValueInput'];
     if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
@@ -239,7 +237,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
             this.dateTime = value;
             break;
           case InputTypes.People:
-            this.selectedItems = value;
+            this.selectedItems = value.map((item: any) => item.id);
             break;
         }
       }
@@ -510,9 +508,22 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       element.node.state.get('value') !== ValueTypes.AnyValue;
   }
 
+  onSelectAll(list: any) {
+    this.selectedItems = list.map((item: any) => item.id);
+  }
+
+  onClearAll() {
+    this.selectedItems = [];
+  }
+
   getLibraryValue($event: any, type: string, metaObj: RecordOfAnyType) {
-    const value = $event.target.value;
+    const value = $event?.target?.value ?? $event;
     switch (type) {
+      case InputTypes.People:
+        const selectedIds = metaObj.list.filter((item: any) =>
+          (this.selectedItems as any[]).includes(`${item.id}`),
+        );
+        return selectedIds;
       case InputTypes.Date: {
         if (value) {
           const dateObj = moment(value);

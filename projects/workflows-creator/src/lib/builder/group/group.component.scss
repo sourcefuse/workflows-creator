@@ -1,4 +1,5 @@
 @import '../../../assets/styles/colors';
+@import "~@ng-select/ng-select/themes/default.theme.css";
 
 @mixin round-btn {
   height: 30px;
@@ -14,6 +15,12 @@
   border: 1px solid $primary-color;
   color: $white;
 }
+
+.multiselect{
+  width: 300px;
+  font-size: 15px;
+}
+
 popper-content {
   display: inline-block !important;
   margin-left:10px;;
@@ -226,7 +233,6 @@ input[type="time"]:focus {
 }
 
 :host ::ng-deep {
-  .multiselect-dropdown,
   .dropdown-list {
     min-width: 250px;
     margin-top: 0 !important;
@@ -237,43 +243,10 @@ input[type="time"]:focus {
       padding: 9px 12px;
     }
   }
-  .multiselect-dropdown {
-    .dropdown-btn {
-      .selected-item-container {
-        .selected-item {
-          font-size: 12px;
-          background: $primary-color !important;
-          border: 1px solid $primary-color !important;
-        }
-      }
-    }
-  }
-
-  .multiselect-item-checkbox input[type='checkbox']:checked + div:before {
-    background: $primary-color !important;
-    border: 2px solid $primary-color !important;
-  }
-
-  .multiselect-item-checkbox input[type='checkbox'] + div:before {
-    border: 2px solid $primary-color !important;
-  }
 
   div.ngxp__container {
     max-width: none;
     font-size: 15px;
-  }
-
-  .ngb-dp-day {
-    .bg-primary {
-      @include theme;
-    }
-  }
-  ngb-datepicker {
-    padding-top: 10px;
-  }
-
-  ngb-datepicker-navigation-select > .custom-select {
-    margin-right: 10px;
   }
 
   fieldset {
@@ -281,24 +254,12 @@ input[type="time"]:focus {
     text-align: center;
     padding: 0;
   }
-  .ngb-tp-input {
-    @include round-btn;
-  }
-  .ngb-tp-meridian {
-    .btn-outline-primary {
-      @include round-btn;
-    }
-  }
+
 
   .sr-only {
     display: none;
   }
-  .ngb-dp-week {
-    border-radius: 5px;
-    display: flex;
-    width: 320px;
-    justify-content: space-between;
-  }
+
   .btn-link {
     background-color: $white;
     border: 0;
