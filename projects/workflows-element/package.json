@@ -1,7 +1,7 @@
 {
   "name": "@sourceloop/workflows-creator-element",
   "version": "1.1.2",
-  "description": "Web Component for providing a smooth user workflow",
+  "description": "Web Component for providing a smooth user workflow.",
   "scripts": {
     "prepublishOnly": "cp package.json dist/package.json"
   },
@@ -17,5 +17,5 @@
     "access": "public",
     "directory": "dist"
   },
-  "hash": "2fe0e75520085fa5aa1bd85afa904606b2f2a74c7bd8396eb572c67289d9666a"
+  "hash": "9c688eddfeb595fbd51243cce17fa35ebf1eeb9915b95b713c2f6bf3d6967060"
 }
