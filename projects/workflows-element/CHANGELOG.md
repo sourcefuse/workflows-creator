@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.2...@sourceloop/workflows-creator-element@1.1.3) (2023-09-28)
+
+### Bug Fixes
+
+- **ci-cd:** dummy change for release ([#32](https://github.com/sourcefuse/workflows-creator/issues/32)) ([69b0416](https://github.com/sourcefuse/workflows-creator/commit/69b041697469659f4d8936fb086a74c3409657f6)), closes [#00](https://github.com/sourcefuse/workflows-creator/issues/00)
+
 ## [1.1.2](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.1...@sourceloop/workflows-creator-element@1.1.2) (2023-09-28)
 
 ### Bug Fixes
