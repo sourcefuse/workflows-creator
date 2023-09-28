@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.1...@sourceloop/workflows-creator-element@1.1.2) (2023-09-28)
+
+### Bug Fixes
+
+- **core:** add support for input templates when using as a web-component ([#31](https://github.com/sourcefuse/workflows-creator/issues/31)) ([4b6ff26](https://github.com/sourcefuse/workflows-creator/commit/4b6ff262178e0f9bc267e5e268eef977f1a707ef)), closes [#29](https://github.com/sourcefuse/workflows-creator/issues/29)
+- **core:** hides the input popup's ([#23](https://github.com/sourcefuse/workflows-creator/issues/23)) ([ae46f2d](https://github.com/sourcefuse/workflows-creator/commit/ae46f2dcfe21eb239d7eb960ad62533e76be3f45)), closes [#22](https://github.com/sourcefuse/workflows-creator/issues/22)
+- **core:** pass envIdentifier with VanillaJS and support for date and date-time templates ([#30](https://github.com/sourcefuse/workflows-creator/issues/30)) ([e50ab78](https://github.com/sourcefuse/workflows-creator/commit/e50ab78f05c7f44d0aef03bac3a9dc4246b50bf9)), closes [#27](https://github.com/sourcefuse/workflows-creator/issues/27)
+
 ## [1.1.1](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.0...@sourceloop/workflows-creator-element@1.1.1) (2023-09-06)
 
 ### Bug Fixes
