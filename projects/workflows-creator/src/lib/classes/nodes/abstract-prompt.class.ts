@@ -1,4 +1,4 @@
-import {DateStruct} from '../../interfaces'
+import {DateStruct} from '../../interfaces';
 import moment from 'moment';
 import {InvalidEntityError} from '../../errors';
 import {InputTypes, NUMBER} from '../../enum';
