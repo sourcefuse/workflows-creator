@@ -159,7 +159,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param {SimpleChanges} changes - SimpleChanges - the changes that have occurred in the component
    */
   async ngOnChanges(changes: SimpleChanges) {
-    if (changes['diagram'] && this.diagram && this.state) {
+    if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
       const {events, actions, elseActions, groups, process, state} =
         await this.builder.restore(this.diagram);
       this.processId = process.id;
