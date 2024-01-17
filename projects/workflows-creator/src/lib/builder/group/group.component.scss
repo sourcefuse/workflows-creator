@@ -28,6 +28,7 @@ popper-content {
     padding: 0 !important;
   }
   .workflow-popper {
+    z-index: 100 !important;
     .mat-form-field-appearance-outline .mat-form-field-wrapper {
       margin: 0px;
       padding-bottom: 0px;
@@ -104,14 +105,13 @@ input[type="time"]:focus {
 }
 
 .tree-group {
+  margin-bottom: -50px;
   padding: 5px 0;
-  height: 50px;
   @media screen and (max-width: 480px) {
     margin-bottom: -25px;
   }
   &.no-node {
-    margin-bottom: -25px;
-    height: 50px;
+    margin-bottom: -25px !important;
   }
   .workflow-group {
     display: flex;
