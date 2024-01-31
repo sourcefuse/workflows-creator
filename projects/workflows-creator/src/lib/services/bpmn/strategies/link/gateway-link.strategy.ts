@@ -224,10 +224,11 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const column: string = node.workflowNode.state.get('columnName');
     const conditionType = node.workflowNode.state.get('condition');
-    const value = node.workflowNode.state.get('value');
+    const valueType = node.workflowNode.state.get('valueType');
+    const valueInputType = node.workflowNode.state.get('valueInputType');
 
-    if (!conditionType && value) {
-      switch (value) {
+    if (!conditionType && valueType && valueInputType === InputTypes.Date) {
+      switch (valueType) {
         case ValueTypes.PastToday:
           return `
                 for(var key in readObj){
@@ -252,6 +253,22 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   }
                 }
               `;
+        case ValueTypes.Custom:
+          return `
+                  for (var key in readObj) {
+                    var taskValuePair = readObj[key];
+                    if (taskValuePair && taskValuePair.value) {
+                      var readDateValue = taskValuePair.value.split('T')[0];
+                      var customDate = "${condition}";
+
+                      if (${
+                        isElse ? '!' : ''
+                      }(readDateValue === customDate)) {
+                        ids.push(taskValuePair.id);
+                      }
+                    }
+                  }
+                `;
       }
     }
 
@@ -383,6 +400,8 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
           break;
         case InputTypes.People:
           return `'${value.ids}'`;
+        case InputTypes.Date:
+          return `${value.split('T')[0]}`;
       }
     const condition = node.workflowNode.state.get('condition');
     const pair = this.conditions.find(item => item.condition === condition);

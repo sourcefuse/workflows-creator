@@ -493,9 +493,12 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
               node.node.state.get('condition') === ConditionTypes.PastToday
                 ? true
                 : !!node.node.state.get('value');
-            const valueTypeIsAnyValue =
-              node.node.state.get('valueType') === ValueTypes.AnyValue;
-            isValid = columnExists && (valueExists || valueTypeIsAnyValue);
+            const valueTypeIsSufficient = [
+              ValueTypes.AnyValue,
+              ValueTypes.Today,
+              ValueTypes.PastToday,
+            ].includes(node.node.state.get('valueType'));
+            isValid = columnExists && (valueExists || valueTypeIsSufficient);
             break;
           case EventTypes.OnIntervalEvent:
             const intervalExists = !!node.node.state.get('interval');
