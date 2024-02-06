@@ -1,0 +1,89 @@
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[6].rules[1].use[0]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].rules[1].use[1]!./projects/workflows-creator/src/styles.scss ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+@import url(https://fonts.googleapis.com/icon?family=Material+Icons+Round);
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[6].rules[1].use[0]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].rules[1].use[1]!./projects/workflows-creator/src/styles.scss (1) ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap);
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].rules[0].oneOf[0].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[6].rules[1].use[0]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].rules[1].use[1]!./projects/workflows-creator/src/styles.scss (2) ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+@font-face {
+  font-family: 'icomoon';
+  src:  url('icomoon.eot?y9pwfy');
+  src:  url('icomoon.eot?y9pwfy#iefix') format('embedded-opentype'),
+    url('icomoon.ttf?y9pwfy') format('truetype'),
+    url('icomoon.woff?y9pwfy') format('woff'),
+    url('icomoon.svg?y9pwfy#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon-workflow-delete:before {
+  content: "\e900";
+}
+.icon-workflow-down-arrow:before {
+  content: "\e901";
+}
+.icon-workflow-plus:before {
+  content: "\e902";
+}
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].rules[0].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].rules[0].oneOf[0].use[2]!./projects/workflows-creator/src/assets/icons/icomoon/style.css?ngResource ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
+@font-face {
+  font-family: 'icomoon';
+  src:  url('icomoon.eot?y9pwfy');
+  src:  url('icomoon.eot?y9pwfy#iefix') format('embedded-opentype'),
+    url('icomoon.ttf?y9pwfy') format('truetype'),
+    url('icomoon.woff?y9pwfy') format('woff'),
+    url('icomoon.svg?y9pwfy#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-workflow-delete:before {
+  content: "\e900";
+}
+
+.icon-workflow-down-arrow:before {
+  content: "\e901";
+}
+
+.icon-workflow-plus:before {
+  content: "\e902";
+}
+
+
+/*# sourceMappingURL=styles.css.map*/

@@ -1,4 +1,4 @@
-<div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
+<div class="tree-group"  [ngClass]="{'no-node': !group.children?.length}">
   <workflow-tooltip-render
     [showsTooltip]="showsTooltip"
     [tooltipText]="tooltipText"
@@ -164,15 +164,19 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <div (document:click)="hide()">
+    <div (document:click)="handleDocumentClick($event)" >
       <input
         type="text"
         class="text-input"
         autofocus
         value="{{ input.setValueName(nodeWithInput.node.state) }}"
         (focusout)="callback($event.target)"
+        (mousedown)="handleMouseDown($event)"
+        (mouseup)="handleMouseUp()"
+        (mouseleave)="handleMouseLeave($event)"
       />
     </div>
+
   </ng-template>
 
   <ng-template
@@ -235,7 +239,7 @@
         [closeOnSelect]="false"
         (blur)="
           callback(
-            getLibraryValue($event, inputType.People, {
+            getLibraryValue(nodeWithInput.node,$event, inputType.People, {
               list: list,
               key: 'value'
             })
@@ -266,7 +270,7 @@
     <input
       type="date"
       [(ngModel)]="date"
-      (input)="callback(getLibraryValue($event, inputType.Date))"
+      (input)="callback(getLibraryValue(nodeWithInput.node,$event, inputType.Date))"
       (click)="$event.stopPropagation()"
       (document:click)="hide()"
     />
@@ -282,23 +286,25 @@
     <div class="date-time-picker" (document:click)="hide()">
       <div class="time-picker">
         <div class="date-input">
-          <input type="date" [(ngModel)]="dateTime.date" />
+          <input type="date" [(ngModel)]="newDateTime.date" />
         </div>
         <div class="time-input">
-          <input type="time" [(ngModel)]="dateTime.time" />
+          <input type="time" [(ngModel)]="newDateTime.time"  />
         </div>
         <div>
           <button
-            class="close-btn"
+            class="close-button"
             (click)="
               callback(
-                getLibraryValue({target: {value: dateTime}}, inputType.DateTime)
+                getLibraryValue(nodeWithInput.node,{target: {value: newDateTime}}, inputType.DateTime)
               )
             "
-            [disabled]="!dateTime.date || !dateTime.time"
+            [disabled]="!newDateTime.date"
           >
             Set
           </button>
+          <!-- {{dateTime | json}}
+          {{newDateTime | json}} -->
         </div>
       </div>
     </div>
@@ -340,7 +346,7 @@
       </div>
       <div class="set-email-btn">
         <button
-          class="close-btn"
+          class="close-button"
           (click)="callback(emailInput)"
           [disabled]="!emailInput.subject || !emailInput.body"
         >

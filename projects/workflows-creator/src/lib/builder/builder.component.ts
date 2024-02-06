@@ -60,7 +60,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
-  ) {}
+  ) {
+    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+  }
 
   private _state: StateMap<RecordOfAnyType> = {};
   public get state(): StateMap<RecordOfAnyType> {
@@ -140,17 +142,22 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * We're getting all the groups from the node service, and then we're adding them to the list of groups
    */
   ngOnInit(): void {
-    this.nodes
-      .getGroups(true, NodeTypes.EVENT)
-      .forEach(group => this.onGroupAdd(group));
-    this.nodes
-      .getGroups(true, NodeTypes.ACTION)
-      .forEach(group => this.onGroupAdd(group));
-    this.nodes
-      .getGroups(true, NodeTypes.ACTION, true)
-      .forEach(group => this.elseActionGroups.push(group));
-
-    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.initiateNode();
+  }
+  initiateNode(){
+      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+      this.eventGroups=[];
+      this.actionGroups=[];
+      this.elseActionGroups=[];
+      this.nodes
+        .getGroups(true, NodeTypes.EVENT)
+        .forEach(group => this.onGroupAdd(group));
+      this.nodes
+        .getGroups(true, NodeTypes.ACTION)
+        .forEach(group => this.onGroupAdd(group));
+      this.nodes
+        .getGroups(true, NodeTypes.ACTION, true)
+        .forEach(group => this.elseActionGroups.push(group));
     this.cdr.detectChanges();
   }
 
@@ -159,11 +166,16 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param {SimpleChanges} changes - SimpleChanges - the changes that have occurred in the component
    */
   async ngOnChanges(changes: SimpleChanges) {
+    if (changes['localizedStringMap'] && this.localizedStringMap) {
+      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+      this.initiateNode();
+      this.updateDiagram();
+    }
     if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
       const {events, actions, elseActions, groups, process, state} =
         await this.builder.restore(this.diagram);
       this.processId = process.id;
-      this.selectedActions = actions; 
+      this.selectedActions = actions;
       this.selectedEvents = events;
       this.selectedElseActions = elseActions;
       if (this.selectedActions.length) this.actionGroups = [];
@@ -201,10 +213,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           action: action.node as WorkflowAction<E>,
         });
       });
-      this.updateDiagram();
-    }
-    if (changes['localizedStringMap'] && this.localizedStringMap) {
-      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
       this.updateDiagram();
     }
   }

@@ -1,6 +1,5 @@
 @import '../../../assets/styles/colors';
 @import "~@ng-select/ng-select/themes/default.theme.css";
-
 @mixin round-btn {
   height: 30px;
   width: 44px;
@@ -20,19 +19,25 @@
   width: 300px;
   font-size: 15px;
 }
-
+// .workflow-popper{
+//   z-index: 1 !important;
+//   color: #2c3e50;
+// }
 popper-content {
   display: inline-block !important;
-  margin-left:10px;;
+  // border : 1px red;
+  // z-index: 999 !important;
+  margin-left:10px;
   & > div {
     padding: 0 !important;
   }
-  .workflow-popper {
-    z-index: 100 !important;
-    .mat-form-field-appearance-outline .mat-form-field-wrapper {
-      margin: 0px;
-      padding-bottom: 0px;
-    }
+  
+}
+.workflow-popper {
+  // z-index: 100 !important;
+  .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin: 0px;
+    padding-bottom: 0px;
   }
 }
 
@@ -103,9 +108,8 @@ input[type="time"]:focus {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
 }
-
 .tree-group {
-  margin-bottom: -50px;
+  margin-bottom: 10px;
   padding: 5px 0;
   @media screen and (max-width: 480px) {
     margin-bottom: -25px;
@@ -204,7 +208,7 @@ input[type="time"]:focus {
     .set-email-btn {
       text-align: right;
       padding: 10px;
-      .close-btn {
+      .close-button {
         background: $black;
         color: $white;
         cursor: pointer;
@@ -244,11 +248,15 @@ input[type="time"]:focus {
       padding: 9px 12px;
     }
   }
+  .workflow-popper{
+    z-index: 1;
+  }
 
   div.ngxp__container {
     max-width: none;
     font-size: 15px;
     background-color: white;
+    z-index: 1;
   }
 
   fieldset {
@@ -285,10 +293,11 @@ input[type="time"]:focus {
     padding: 20px;
     justify-content: space-between;
   }
-  .close-btn {
+  .close-button {
     @include theme;
-    height: 40px;
-    padding: 0 10px;
+    // height: 40px;
+    padding: 9.5px 10px;
+    // padding: 0 10px;
     margin-top: 1px;
     border: 0;
     border-radius: 5px;

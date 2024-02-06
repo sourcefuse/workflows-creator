@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnInit,
@@ -22,6 +23,7 @@ import {InvalidEntityError} from '../../errors/base.error';
 import {
   AllowedValues,
   AllowedValuesMap,
+  BpmnNode,
   NodeWithInput,
   RecordOfAnyType,
   WorkflowNode,
@@ -58,9 +60,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
+    private elementRef:ElementRef
   ) {}
   public inputType = InputTypes;
-
+  private isMouseDown: boolean = false;
   @Input()
   group: AbstractBaseGroup<E>;
 
@@ -99,10 +102,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   itemChanged = new EventEmitter<unknown>();
 
   date: DateType = {month: 0, day: 0, year: 0};
-  dateTime: DateTime = {
-    date: {month: 0, day: 0, year: 0},
-    time: {hour: null, minute: null},
-  };
+  // dateTime: DateTime = {
+  //   date: {month: 0, day: 0, year: 0},
+  //   time: {hour: 0, minute: 0},
+  // };
+  newDateTime:any={
+    date:"",
+    time:""
+  }
   emailInput: EmailInput = {
     subject: '',
     body: '',
@@ -233,7 +240,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
             this.date = value;
             break;
           case InputTypes.DateTime:
-            this.dateTime = value;
+            this.newDateTime = value;
             break;
           case InputTypes.People:
             this.selectedItems = value.map((item: { id: string; }) => item.id);
@@ -316,6 +323,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     groupId: string,
     id?: string,
   ) {
+    // this.newDateTime={
+    //   date:"",
+    //   time:""
+    // }
     const newNode = {
       node: this.nodes.getNodeByName(
         node.getIdentifier(),
@@ -388,6 +399,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * component that you want to show/hide.
    */
   onPoperClick(event: MouseEvent, popper: NgxPopperjsContentComponent) {
+    this.hidePopper()
     this.prevPopperRef?.hide();
     this.prevPopperRef = popper;
     event.preventDefault();
@@ -515,7 +527,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.selectedItems = [];
   }
 
-  getLibraryValue($event: any, type: string, metaObj: RecordOfAnyType) {
+
+  getLibraryValue(node:BpmnNode,$event: any, type: string, metaObj: RecordOfAnyType) {
+  //  console.log(moment().format("HH:mm")) 
     const value = $event.target?.value ?? $event;
     switch (type) {
       case InputTypes.People:
@@ -536,16 +550,53 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
       case InputTypes.DateTime:
         if (value) {
+          // console.log(value)
+          // {
+          //   date: {month: 0, day: 0, year: 0},
+          //   time: {hour: null, minute: null},
+          // };
+          // const defaultTime="9:00"
+          // const defaultTime=node.state.get("defaultTime")??"9:00"
+
+          // const defaultDate=node.state.get("defaultDate")??""
+          // this.dateTime.time =defaultTime 
+          // value.time=!([value.time.hour, value.time.min].every(item=>item===null))?value.time: defaultTime;
+          // if(typeof value.time==='object'){
+          //   value.time=`${value.time.hour}:${value.time.minute}`
+          // }
+          // value.time=typeof value.time=='object' ?defaultTime:value.time
+    
+          // let newTime
+          // if(typeof (value.time)==='object'){
+          //   value.time=defaultTime
+          // }
+          if(this.newDateTime.time===""){
+            this.newDateTime.time=node.state.get("defaultTime")??"9:00";
+          }
+          // else{
+          //   newTime=value.time
+          // }
           const dateObj = moment(`${value.date} ${value.time}`);
+          // this.dateTime={
+          //   date: {
+          //     day: isNaN(dateObj.date())?1:dateObj.date(),
+          //     month: isNaN(dateObj.month())?2:(dateObj.month()+1),
+          //     year: isNaN(dateObj.year())?2022:dateObj.year(),
+          //   },
+          //   time: {
+          //     hour: isNaN(dateObj.hour())? 6:dateObj.hour(),
+          //     minute: isNaN(dateObj.minute())?10: dateObj.minute(),
+          //   },
+          // };
           return {
             date: {
               day: dateObj.date(),
-              month: dateObj.month() + 1,
+              month: (dateObj.month()+1),
               year: dateObj.year(),
             },
             time: {
-              hour: dateObj.hour(),
-              minute: dateObj.minute(),
+              hour:dateObj.hour(),
+              minute:dateObj.minute(),
             },
           };
         }
@@ -553,6 +604,34 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     }
     return;
   }
+
+  handleMouseDown(event: MouseEvent): void {
+    this.isMouseDown = true;
+  }
+
+  handleMouseUp(): void {
+    this.isMouseDown = false;
+  }
+
+  handleMouseLeave(event: MouseEvent): void {
+    this.isMouseDown = false;
+  }
+
+  handleDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    // Check if the click is outside the input element and not part of a drag
+    if (!this.isMouseDown) {
+      // If not a drag and click outside the input, hide the input box
+      this.hidePopper();
+    }
+  }
+
+  // isDescendantOfInput(target: HTMLElement): boolean {
+  //   const inputElement = this.elementRef.nativeElement.querySelector('.text-input');
+
+  //   return inputElement && inputElement.contains(target);
+  // }
 
   /**
    * It removes all the inputs that come after the current input

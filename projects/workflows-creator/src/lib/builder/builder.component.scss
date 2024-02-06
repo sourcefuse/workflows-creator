@@ -1,6 +1,6 @@
 @import '../../assets/styles/colors';
 @import "~@ng-select/ng-select/themes/default.theme.css";
-
+// @import '~ngx-popperjs/css/theme-white.css';
 :host {
   overflow-y: scroll;
   min-height: 100%;
@@ -25,6 +25,10 @@
     text-decoration: dotted;
   }
 }
+// .workflow-popper{
+//   z-index: 1 !important;
+//   color: black;
+// }
 .container {
   min-width: 46%;
   max-width: max-content;
