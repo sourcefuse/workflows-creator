@@ -59,7 +59,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
-  ) {}
+      ) {}
   public inputType = InputTypes;
   private isMouseDown: boolean = false;
   @Input()
