@@ -139,7 +139,7 @@ export type Select = {
  * @property day - The day of the month.
  * @property year - The year of the date.
  */
-export type DateType = {month: 0; day: 0; year: 0};
+export type DateType = {month: number; day: number; year: number};
 
 /**
  * `DateTime` is an object with a `date` property of type `DateType` and a `time` property of type
@@ -149,7 +149,7 @@ export type DateType = {month: 0; day: 0; year: 0};
  */
 export type DateTime = {
   date: DateType;
-  time: {hour: null; minute: null};
+  time: {hour: number; minute: number};
 };
 
 /**
