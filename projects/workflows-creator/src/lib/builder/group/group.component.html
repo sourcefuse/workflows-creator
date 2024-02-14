@@ -70,8 +70,9 @@
       (click)="
         onNodeAdd(node, group.getIdentifier(), group.id);
         nodePopup.hide();
+        $event.stopPropagation();
         $event.stopPropagation()
-      ;$event.stopPropagation()"
+      "
       *ngFor="let node of nodeList"
     >
       {{ node.name }}
@@ -235,7 +236,7 @@
         [closeOnSelect]="false"
         (blur)="
           callback(
-            getLibraryValue($event, inputType.People, {
+            getLibraryValue(nodeWithInput.node, $event, inputType.People, {
               list: list,
               key: 'value'
             })
@@ -266,7 +267,9 @@
     <input
       type="date"
       [(ngModel)]="date"
-      (input)="callback(getLibraryValue($event, inputType.Date))"
+      (input)="
+        callback(getLibraryValue(nodeWithInput.node, $event, inputType.Date))
+      "
       (click)="$event.stopPropagation()"
       (document:click)="hide()"
     />
@@ -292,10 +295,14 @@
             class="close-btn"
             (click)="
               callback(
-                getLibraryValue({target: {value: dateTime}}, inputType.DateTime)
+                getLibraryValue(
+                  nodeWithInput.node,
+                  {target: {value: dateTime}},
+                  inputType.DateTime
+                )
               )
             "
-            [disabled]="!dateTime.date || !dateTime.time"
+            [disabled]="!dateTime.date"
           >
             Set
           </button>

@@ -234,15 +234,8 @@ export abstract class WorkflowPrompt {
           DATE_TIME_FORMAT,
         );
         return {
-          date: {
-            month: moment(dateString).month() + 1,
-            day: moment(dateString).date(),
-            year: moment(dateString).year(),
-          },
-          time: {
-            hour: moment(dateString).hours(),
-            minute: moment(dateString).minutes(),
-          },
+          date: moment(dateString).format('YYYY-MM-DD'),
+          time: moment(dateString).format('hh:mm'),
         };
       }
       case InputTypes.Email:
