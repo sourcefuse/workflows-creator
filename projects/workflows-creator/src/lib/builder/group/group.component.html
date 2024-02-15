@@ -70,8 +70,9 @@
       (click)="
         onNodeAdd(node, group.getIdentifier(), group.id);
         nodePopup.hide();
+        $event.stopPropagation();
         $event.stopPropagation()
-      ;$event.stopPropagation()"
+      "
       *ngFor="let node of nodeList"
     >
       {{ node.name }}
@@ -164,13 +165,17 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <div (document:click)="hide()">
+    <div (document:click)="handleDocumentClick($event)">
       <input
         type="text"
         class="text-input"
         autofocus
         value="{{ input.setValueName(nodeWithInput.node.state) }}"
         (focusout)="callback($event.target)"
+        (mousedown)="handleMouseDown($event)"
+        (mouseup)="handleMouseUp()"
+        (mouseleave)="handleMouseLeave($event)"
+        placeholder="Enter the text here"
       />
     </div>
   </ng-template>
@@ -235,7 +240,7 @@
         [closeOnSelect]="false"
         (blur)="
           callback(
-            getLibraryValue($event, inputType.People, {
+            getLibraryValue(nodeWithInput.node, $event, inputType.People, {
               list: list,
               key: 'value'
             })
@@ -266,7 +271,9 @@
     <input
       type="date"
       [(ngModel)]="date"
-      (input)="callback(getLibraryValue($event, inputType.Date))"
+      (input)="
+        callback(getLibraryValue(nodeWithInput.node, $event, inputType.Date))
+      "
       (click)="$event.stopPropagation()"
       (document:click)="hide()"
     />
@@ -292,10 +299,14 @@
             class="close-btn"
             (click)="
               callback(
-                getLibraryValue({target: {value: dateTime}}, inputType.DateTime)
+                getLibraryValue(
+                  nodeWithInput.node,
+                  {target: {value: dateTime}},
+                  inputType.DateTime
+                )
               )
             "
-            [disabled]="!dateTime.date || !dateTime.time"
+            [disabled]="!dateTime.date"
           >
             Set
           </button>

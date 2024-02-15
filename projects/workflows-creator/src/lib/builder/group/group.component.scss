@@ -23,7 +23,7 @@
 
 popper-content {
   display: inline-block !important;
-  margin-left:10px;;
+  margin-left:10px;
   & > div {
     padding: 0 !important;
   }
@@ -105,7 +105,7 @@ input[type="time"]:focus {
 }
 
 .tree-group {
-  margin-bottom: -50px;
+  margin-bottom: 10px;
   padding: 5px 0;
   @media screen and (max-width: 480px) {
     margin-bottom: -25px;
@@ -216,7 +216,8 @@ input[type="time"]:focus {
     }
   }
   .text-input {
-    border: 2px solid $primary-color;
+    border: 0px solid $primary-color;
+    padding: 3px
   }
   .option-div {
     padding: 5px 15px;
@@ -245,12 +246,20 @@ input[type="time"]:focus {
     }
   }
 
+  .workflow-popper{
+    z-index: 1;
+  }
+
   div.ngxp__container {
     max-width: none;
     font-size: 15px;
     background-color: white;
+    z-index: 1;
+    padding: 1px
   }
-
+  div.ngxp__arrow {
+    display:none;
+  }
   fieldset {
     border: 0;
     text-align: center;
@@ -271,7 +280,6 @@ input[type="time"]:focus {
 }
 
 .date-time-picker {
-  border: 1px solid;
   max-width: 530px;
   border-radius: 5px;
   .date-input{
