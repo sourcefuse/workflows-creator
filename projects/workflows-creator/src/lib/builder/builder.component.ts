@@ -59,7 +59,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
   ) {
-    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    
   }
   private _state: StateMap<RecordOfAnyType> = {};
   public get state(): StateMap<RecordOfAnyType> {
@@ -150,7 +150,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['localizedStringMap'] && this.localizedStringMap) {
-      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
       this.initiateNode();
       this.updateDiagram();
     }
