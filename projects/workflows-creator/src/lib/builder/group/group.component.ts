@@ -59,9 +59,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
-      ) {}
+  ) {}
   public inputType = InputTypes;
-  
+  private isMouseDown: boolean = false;
   @Input()
   group: AbstractBaseGroup<E>;
 
@@ -101,10 +101,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   date: DateType = {month: 0, day: 0, year: 0};
 
-  dateTime:any={
-    date:"",
-    time:""
-  }
+  dateTime: any = {
+    date: '',
+    time: '',
+  };
   emailInput: EmailInput = {
     subject: '',
     body: '',
@@ -238,7 +238,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
             this.dateTime = value;
             break;
           case InputTypes.People:
-            this.selectedItems = value.map((item: { id: string; }) => item.id);
+            this.selectedItems = value.map((item: {id: string}) => item.id);
             break;
         }
       }
@@ -318,10 +318,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     groupId: string,
     id?: string,
   ) {
-    this.dateTime={
-      date:"",
-      time:""
-    }
+    this.dateTime = {
+      date: '',
+      time: '',
+    };
     const newNode = {
       node: this.nodes.getNodeByName(
         node.getIdentifier(),
@@ -521,12 +521,16 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.selectedItems = [];
   }
 
-
-  getLibraryValue(node:BpmnNode,$event: any, type: string, metaObj: RecordOfAnyType) {
+  getLibraryValue(
+    node: BpmnNode,
+    $event: any,
+    type: string,
+    metaObj: RecordOfAnyType,
+  ) {
     const value = $event.target?.value ?? $event;
     switch (type) {
       case InputTypes.People:
-        const selectedIds = metaObj.list.filter((item: { id: any }) =>
+        const selectedIds = metaObj.list.filter((item: {id: any}) =>
           (this.selectedItems as any[]).includes(`${item.id}`),
         );
         return selectedIds;
@@ -543,8 +547,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
       case InputTypes.DateTime:
         if (value) {
-          if(this.dateTime.time===""){
-            this.dateTime.time=node.state.get("defaultTime")??"9:00";
+          if (this.dateTime.time === '') {
+            this.dateTime.time = node.state.get('defaultTime') ?? '9:00';
           }
           const dateObj = moment(`${value.date} ${value.time}`);
           return {
@@ -564,6 +568,27 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     return;
   }
 
+  handleMouseDown(event: MouseEvent): void {
+    this.isMouseDown = true;
+  }
+
+  handleMouseUp(): void {
+    this.isMouseDown = false;
+  }
+
+  handleMouseLeave(event: MouseEvent): void {
+    this.isMouseDown = false;
+  }
+
+  handleDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    // Check if the click is outside the input element and not part of a drag
+    if (!this.isMouseDown) {
+      // If not a drag and click outside the input, hide the input box
+      this.hidePopper();
+    }
+  }
   /**
    * It removes all the inputs that come after the current input
    * @param element - NodeWithInput<E>
