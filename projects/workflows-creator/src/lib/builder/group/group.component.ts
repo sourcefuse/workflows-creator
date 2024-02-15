@@ -22,6 +22,7 @@ import {InvalidEntityError} from '../../errors/base.error';
 import {
   AllowedValues,
   AllowedValuesMap,
+  BpmnNode,
   NodeWithInput,
   RecordOfAnyType,
   WorkflowNode,
@@ -99,9 +100,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   itemChanged = new EventEmitter<unknown>();
 
   date: DateType = {month: 0, day: 0, year: 0};
-  dateTime: DateTime = {
-    date: {month: 0, day: 0, year: 0},
-    time: {hour: null, minute: null},
+
+  dateTime: any = {
+    date: '',
+    time: '',
   };
   emailInput: EmailInput = {
     subject: '',
@@ -236,7 +238,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
             this.dateTime = value;
             break;
           case InputTypes.People:
-            this.selectedItems = value.map((item: { id: string; }) => item.id);
+            this.selectedItems = value.map((item: {id: string}) => item.id);
             break;
         }
       }
@@ -316,6 +318,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     groupId: string,
     id?: string,
   ) {
+    this.dateTime = {
+      date: '',
+      time: '',
+    };
     const newNode = {
       node: this.nodes.getNodeByName(
         node.getIdentifier(),
@@ -515,11 +521,16 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.selectedItems = [];
   }
 
-  getLibraryValue($event: any, type: string, metaObj: RecordOfAnyType) {
+  getLibraryValue(
+    node: BpmnNode,
+    $event: any,
+    type: string,
+    metaObj: RecordOfAnyType,
+  ) {
     const value = $event.target?.value ?? $event;
     switch (type) {
       case InputTypes.People:
-        const selectedIds = metaObj.list.filter((item: { id: any }) =>
+        const selectedIds = metaObj.list.filter((item: {id: any}) =>
           (this.selectedItems as any[]).includes(`${item.id}`),
         );
         return selectedIds;
@@ -536,6 +547,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
       case InputTypes.DateTime:
         if (value) {
+          if (this.dateTime.time === '') {
+            this.dateTime.time = node.state.get('defaultTime') ?? '9:00';
+          }
           const dateObj = moment(`${value.date} ${value.time}`);
           return {
             date: {
