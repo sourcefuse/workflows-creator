@@ -30,7 +30,6 @@ import {
   ValueTypes,
 } from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
-
 import {
   ActionAddition,
   ActionWithInput,
@@ -48,7 +47,6 @@ import {
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
 import {LocalizationPipe} from '../pipes/localization.pipe';
-
 @Component({
   selector: 'workflow-builder',
   templateUrl: './builder.component.html',
@@ -67,8 +65,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
-  ) {}
-
+  ) {
+    
+  }
   private _state: StateMap<RecordOfAnyType> = {};
   public get state(): StateMap<RecordOfAnyType> {
     return this._state;
@@ -77,7 +76,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   public set state(value: StateMap<RecordOfAnyType>) {
     this._state = value;
   }
-
   private _localizedStringMap: RecordOfAnyType = {};
   public get localizedStringMap() {
     return this._localizedStringMap;
@@ -86,10 +84,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   public set localizedStringMap(value: RecordOfAnyType) {
     this._localizedStringMap = value;
   }
-
   @Input()
   public diagram: string = '';
-
   private _templateMap: {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
@@ -108,30 +104,22 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   public get allColumns() {
     return this._allColumns;
   }
-
   @Output()
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
-
   @Output()
   diagramChange = new EventEmitter<Object>();
-
   @Output()
   eventAdded = new EventEmitter<EventAddition<E>>();
-
   @Output()
   actionAdded = new EventEmitter<ActionAddition<E>>();
-
   @Output()
   itemChanged = new EventEmitter<InputChanged<E>>();
-
   selectedElseActions: ActionWithInput<E>[] = [];
   selectedEvents: EventWithInput<E>[] = [];
   selectedActions: ActionWithInput<E>[] = [];
-
   eventGroups: AbstractBaseGroup<E>[] = [];
   actionGroups: AbstractBaseGroup<E>[] = [];
   elseActionGroups: AbstractBaseGroup<E>[] = [];
-
   nodeList: AbstractBaseGroup<E>[] = [];
   processId: string;
   // sonarignore:start
@@ -140,13 +128,18 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   elseBlockHidden = false;
   elseBlockRemoved = false;
   public types = NodeTypes;
-
   localizedStringKeys = LocalizedStringKeys;
-
   /**
    * We're getting all the groups from the node service, and then we're adding them to the list of groups
    */
   ngOnInit(): void {
+    this.initiateNode();
+  }
+  initiateNode() {
+    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.eventGroups = [];
+    this.actionGroups = [];
+    this.elseActionGroups = [];
     this.nodes
       .getGroups(true, NodeTypes.EVENT)
       .forEach(group => this.onGroupAdd(group));
@@ -156,21 +149,22 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.nodes
       .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
-
-    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
     this.cdr.detectChanges();
   }
-
   /**
    * > If the diagram and state have changed, restore the diagram and state from the builder
    * @param {SimpleChanges} changes - SimpleChanges - the changes that have occurred in the component
    */
   async ngOnChanges(changes: SimpleChanges) {
+    if (changes['localizedStringMap'] && this.localizedStringMap) {
+      this.initiateNode();
+      this.updateDiagram();
+    }
     if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
       const {events, actions, elseActions, groups, process, state} =
         await this.builder.restore(this.diagram);
       this.processId = process.id;
-      this.selectedActions = actions; 
+      this.selectedActions = actions;
       this.selectedEvents = events;
       this.selectedElseActions = elseActions;
       if (this.selectedActions.length) this.actionGroups = [];
@@ -210,12 +204,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       });
       this.updateDiagram();
     }
-    if (changes['localizedStringMap'] && this.localizedStringMap) {
-      this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
-      this.updateDiagram();
-    }
   }
-
   /**
    * If the group is an event, add it to the eventGroups array, otherwise if it's an action, add it to
    * the actionGroups array
@@ -230,7 +219,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       throw new Error('Invalid Group');
     }
   }
-
   /**
    * The function takes in an index number, and then removes the event group at that index from the
    * eventGroups array
@@ -239,11 +227,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   onGroupRemove(index: number) {
     this.eventGroups.splice(index, 1);
   }
-
   removeElseBlock() {
     this.elseBlockRemoved = true;
   }
-
   /**
    * The function is called when an event is added to the workflow. It emits an eventAdded event,
    * updates the diagram, updates the state, and shows the else block
@@ -261,14 +247,12 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
         event.node.getIdentifier() === EventTypes.OnAddItemEvent);
   }
-
   /**
    * The function is called when an event is removed from the workflow.
    * Hides the else block when it is not needed.
    */
   onEventRemoved() {
     const events = this.eventGroups[0].children;
-
     this.elseBlockHidden =
       events.length === 1 &&
       (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
@@ -277,7 +261,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           (events[0].node.state.get('value') === ValueTypes.AnyValue ||
             events[0].node.state.get('valueType') === ValueTypes.AnyValue)));
   }
-
   /**
    * When an action is added, emit an event with the name of the action and the action itself, update
    * the diagram, and update the state of the action
@@ -291,7 +274,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.updateDiagram();
     this.updateState(action.node, action.newNode.inputs);
   }
-
   /**
    * The function is called when an item is changed in the UI. It emits an event to the parent
    * component, updates the state of the item, and updates the diagram
@@ -316,7 +298,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           ValueTypes.AnyValue);
     this.updateDiagram();
   }
-
   /**
    * "If the type is a group, then get the groups, otherwise throw an error."
    *
@@ -330,7 +311,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       throw new InvalidEntityError('' + type);
     }
   }
-
   /**
    * It takes a state object, merges it with the current state, and then loops through the state object
    * and adds the values to the inputs
@@ -368,7 +348,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.cdr.detectChanges();
   }
-
   /**
    * It takes a node, an input, a value, and a boolean, and if the boolean is true and the input is a
    * select input, it sets the node's state to the value's listNameField, emits an event, sets the
@@ -408,7 +387,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.updateState(element.node, element.inputs);
     this.updateDiagram();
   }
-
   /**
    * It takes the state of the workflow and creates a new statement from it
    * @returns A function that takes a state and returns a boolean.
@@ -419,7 +397,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     if (this.processId) {
       statement.processId = this.processId;
     }
-
     [...this.eventGroups, ...this.actionGroups].forEach(group => {
       if (group.name === 'and') {
         group.children
@@ -449,7 +426,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         throw new Error('Invalid Node type');
       }
     });
-
     if (this.elseActionGroups[0].children.length > 0) {
       this.elseActionGroups.forEach(group => {
         group.children
@@ -464,7 +440,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     }
     return this.builder.build(statement, elseStatement);
   }
-
   /**
    * It builds a new diagram, emits the new diagram, and then tells Angular to update the view
    */
@@ -517,7 +492,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.diagramChange.emit({diagram: this.diagram, isValid: isValid});
     this.cdr.detectChanges();
   }
-
   /**
    * It updates the state of the workflow
    * @param node - WorkflowNode<E> - The node that is being updated.
@@ -539,7 +513,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     }
     this.stateChange.emit(this.state);
   }
-
   /**
    * > If the user has already entered data for a subsequent input, remove it
    * @param element - NodeWithInput<E>
@@ -560,7 +533,6 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       element.node.state.remove(`${nextKey}Name`);
     }
   }
-
   /**
    * It takes two objects, and merges the second object into the first object
    * @param stateA - The state that is currently in the store.
