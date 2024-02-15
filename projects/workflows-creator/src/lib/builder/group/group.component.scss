@@ -23,7 +23,7 @@
 
 popper-content {
   display: inline-block !important;
-  margin-left:10px;;
+  margin-left:10px;
   & > div {
     padding: 0 !important;
   }
@@ -105,7 +105,7 @@ input[type="time"]:focus {
 }
 
 .tree-group {
-  margin-bottom: -50px;
+  margin-bottom: 10px;
   padding: 5px 0;
   @media screen and (max-width: 480px) {
     margin-bottom: -25px;
@@ -243,6 +243,10 @@ input[type="time"]:focus {
       font-size: 16px;
       padding: 9px 12px;
     }
+  }
+
+  .workflow-popper{
+    z-index: 1;
   }
 
   div.ngxp__container {
