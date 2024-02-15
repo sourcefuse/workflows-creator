@@ -61,7 +61,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
   public inputType = InputTypes;
-
+  private isMouseDown: boolean = false;
   @Input()
   group: AbstractBaseGroup<E>;
 
@@ -568,6 +568,27 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     return;
   }
 
+  handleMouseDown(event: MouseEvent): void {
+    this.isMouseDown = true;
+  }
+
+  handleMouseUp(): void {
+    this.isMouseDown = false;
+  }
+
+  handleMouseLeave(event: MouseEvent): void {
+    this.isMouseDown = false;
+  }
+
+  handleDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    // Check if the click is outside the input element and not part of a drag
+    if (!this.isMouseDown) {
+      // If not a drag and click outside the input, hide the input box
+      this.hidePopper();
+    }
+  }
   /**
    * It removes all the inputs that come after the current input
    * @param element - NodeWithInput<E>
