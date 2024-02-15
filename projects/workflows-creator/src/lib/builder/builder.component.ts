@@ -163,7 +163,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       const {events, actions, elseActions, groups, process, state} =
         await this.builder.restore(this.diagram);
       this.processId = process.id;
-      this.selectedActions = actions; 
+      this.selectedActions = actions;
       this.selectedEvents = events;
       this.selectedElseActions = elseActions;
       if (this.selectedActions.length) this.actionGroups = [];
