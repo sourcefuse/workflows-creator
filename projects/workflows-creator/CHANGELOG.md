@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.5...@sourceloop/workflows-creator@1.1.6) (2024-02-16)
+
+### Bug Fixes
+
+- **core:** Columns should be customise in Workflow ([#48](https://github.com/sourcefuse/workflows-creator/issues/48)) ([1776c3b](https://github.com/sourcefuse/workflows-creator/commit/1776c3b7371a54ea13db10c9efc982edd2a48609)), closes [#41](https://github.com/sourcefuse/workflows-creator/issues/41) [#41](https://github.com/sourcefuse/workflows-creator/issues/41)
+- **core:** enable input field to remain active on mouse selection of the entered text ([#51](https://github.com/sourcefuse/workflows-creator/issues/51)) ([d10636e](https://github.com/sourcefuse/workflows-creator/commit/d10636eef14e4cde375f59cde88f9f351e7f3eb5))
+- **core:** fix the invalid date issue when no time is selected for date/time column ([#50](https://github.com/sourcefuse/workflows-creator/issues/50)) ([100eb56](https://github.com/sourcefuse/workflows-creator/commit/100eb564fe5c5b4c720991b1cff319a58984dbc2))
+- **core:** resolve Valid workflow issues ([#47](https://github.com/sourcefuse/workflows-creator/issues/47)) ([8f2571d](https://github.com/sourcefuse/workflows-creator/commit/8f2571d1d76905aed5eb5dd5091b013fea6dbe5b)), closes [#42](https://github.com/sourcefuse/workflows-creator/issues/42)
+- **styles:** fix the check value ui when using as a web component ([#49](https://github.com/sourcefuse/workflows-creator/issues/49)) ([ca0aff0](https://github.com/sourcefuse/workflows-creator/commit/ca0aff01ec3de265f6dc9daf8de68ce178215789)), closes [#38](https://github.com/sourcefuse/workflows-creator/issues/38)
+- **styles:** improve ui of the text field ([#52](https://github.com/sourcefuse/workflows-creator/issues/52)) ([abbb7c0](https://github.com/sourcefuse/workflows-creator/commit/abbb7c02bd3ffc912673afd844d184bf6db4e66a)), closes [#44](https://github.com/sourcefuse/workflows-creator/issues/44)
+
 ## [1.1.5](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.4...@sourceloop/workflows-creator@1.1.5) (2024-01-17)
 
 ### Bug Fixes
