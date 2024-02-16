@@ -79,6 +79,11 @@ export enum EventTypes {
   OnValueEvent = 'OnValueEvent',
 }
 
+export enum ActionTypes {
+  ChangeColumnValueAction = 'ChangeColumnValueAction',
+  SendEmailAction = 'SendEmailAction',
+}
+
 export enum StartElementTypes {
   BasicStartElement = 'StartElement',
   StartOnIntervalElement = 'StartOnIntervalElement',

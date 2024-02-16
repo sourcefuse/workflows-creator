@@ -21,7 +21,14 @@ import {
 } from '../classes';
 import {AbstractBaseGroup} from '../classes/nodes';
 import {BuilderService, ElementService, NodeService} from '../classes/services';
-import {EventTypes, LocalizedStringKeys, NodeTypes, ValueTypes} from '../enum';
+import {
+  ActionTypes,
+  EventTypes,
+  LocalizedStringKeys,
+  NodeTypes,
+  NotificationRecipientTypesEnum,
+  ValueTypes,
+} from '../enum';
 import {InvalidEntityError} from '../errors/base.error';
 import {
   ActionAddition,
@@ -100,7 +107,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   @Output()
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
   @Output()
-  diagramChange = new EventEmitter<string>();
+  diagramChange = new EventEmitter<Object>();
   @Output()
   eventAdded = new EventEmitter<EventAddition<E>>();
   @Output()
@@ -437,8 +444,52 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * It builds a new diagram, emits the new diagram, and then tells Angular to update the view
    */
   async updateDiagram() {
+    const nodes = [
+      ...this.eventGroups[0].children,
+      ...this.actionGroups[0].children,
+      ...this.elseActionGroups[0].children,
+    ];
+    let isValid =
+      !!this.eventGroups[0].children.length &&
+      (!!this.actionGroups[0].children.length ||
+        !!this.elseActionGroups[0].children.length);
+    if (isValid) {
+      for (const node of nodes) {
+        switch (node.node.getIdentifier()) {
+          case EventTypes.OnChangeEvent:
+          case EventTypes.OnValueEvent:
+          case ActionTypes.ChangeColumnValueAction:
+            const columnExists = !!node.node.state.get('column');
+            const valueExists = !!node.node.state.get('value');
+            const valueTypeIsAnyValue =
+              node.node.state.get('valueType') === ValueTypes.AnyValue;
+            isValid = columnExists && (valueExists || valueTypeIsAnyValue);
+            break;
+          case EventTypes.OnIntervalEvent:
+            const intervalExists = !!node.node.state.get('interval');
+            const intervalValueExists = !!node.node.state.get('value');
+            isValid = intervalValueExists && intervalExists;
+            break;
+          case ActionTypes.SendEmailAction:
+            const email = !!node.node.state.get('email');
+            const emailTo = !!node.node.state.get('emailTo');
+            const specificRecipientsRequired = [
+              NotificationRecipientTypesEnum.NotifySpecificColumn,
+              NotificationRecipientTypesEnum.NotifySpecificPeople,
+            ].includes(node.node.state.get('emailTo'));
+            const recipients = !!node.node.state.get('specificRecepient');
+            isValid = specificRecipientsRequired
+              ? email && emailTo && recipients
+              : email && emailTo;
+            break;
+        }
+        if (!isValid) {
+          break; // exit the loop since we found an invalid input
+        }
+      }
+    }
     this.diagram = await this.build();
-    this.diagramChange.emit(this.diagram);
+    this.diagramChange.emit({diagram: this.diagram, isValid: isValid});
     this.cdr.detectChanges();
   }
   /**
