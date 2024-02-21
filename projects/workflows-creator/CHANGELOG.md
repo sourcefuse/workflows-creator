@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.7](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.6...@sourceloop/workflows-creator@1.1.7) (2024-02-21)
+
+### Bug Fixes
+
+- **core:** fetch correct date when giving input with keyboard ([#57](https://github.com/sourcefuse/workflows-creator/issues/57)) ([d504788](https://github.com/sourcefuse/workflows-creator/commit/d504788d73903e23e12a22391ac9d81108f7e163)), closes [#56](https://github.com/sourcefuse/workflows-creator/issues/56)
+- **core:** fix the number template to handle drag event ([#55](https://github.com/sourcefuse/workflows-creator/issues/55)) ([166793d](https://github.com/sourcefuse/workflows-creator/commit/166793dbd988d76a9ff4823a4b9971ca89ab0d19)), closes [#44](https://github.com/sourcefuse/workflows-creator/issues/44)
+
 ## [1.1.6](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.5...@sourceloop/workflows-creator@1.1.6) (2024-02-16)
 
 ### Bug Fixes
