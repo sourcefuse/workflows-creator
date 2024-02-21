@@ -45,6 +45,7 @@ import {
 } from '../../services';
 import {LocalizationPipe} from '../../pipes/localization.pipe';
 import moment from 'moment';
+import {GroupService} from './group.service';
 
 @Component({
   selector: 'workflow-group',
@@ -59,6 +60,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
+    private readonly groupService: GroupService,
   ) {}
   public inputType = InputTypes;
   private isMouseDown: boolean = false;
@@ -395,7 +397,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   onPoperClick(event: MouseEvent, popper: NgxPopperjsContentComponent) {
     this.prevPopperRef?.hide();
+    this.groupService.previousPopper?.hide();
+    this.groupService.previousPopper?.popperInstance.forceUpdate();
     this.prevPopperRef = popper;
+    this.groupService.previousPopper = popper;
     event.preventDefault();
     event.stopPropagation();
     this.prevPopperRef.show();
