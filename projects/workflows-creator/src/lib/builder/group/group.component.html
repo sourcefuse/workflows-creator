@@ -271,15 +271,32 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <input
-      type="date"
-      [(ngModel)]="date"
-      (input)="
-        callback(getLibraryValue(nodeWithInput.node, $event, inputType.Date))
-      "
-      (click)="$event.stopPropagation()"
-      (document:click)="hide()"
-    />
+    <div class="date-picker" (document:click)="hide()">
+      <div>
+        <input
+          class="date-input"
+          type="date"
+          [(ngModel)]="date"
+          (click)="$event.stopPropagation()"
+        />
+      </div>
+      <div>
+        <button
+          class="close-button"
+          (click)="
+            callback(
+              getLibraryValue(
+                nodeWithInput.node,
+                {target: {value: date}},
+                inputType.Date
+              )
+            )
+          "
+        >
+          Set
+        </button>
+      </div>
+    </div>
   </ng-template>
 
   <ng-template
@@ -299,7 +316,7 @@
         </div>
         <div>
           <button
-            class="close-btn"
+            class="close-button"
             (click)="
               callback(
                 getLibraryValue(
@@ -354,7 +371,7 @@
       </div>
       <div class="set-email-btn">
         <button
-          class="close-btn"
+          class="close-button"
           (click)="callback(emailInput)"
           [disabled]="!emailInput.subject || !emailInput.body"
         >

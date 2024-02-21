@@ -304,3 +304,21 @@ input[type="time"]:focus {
     font-size: 12px;
   }
 }
+
+.date-picker{
+  display: flex;
+  margin: 5px;
+  .date-input{
+    margin-right: 10px;
+  }
+  .close-button {
+    @include theme;
+    height: 35px;
+    padding: 0 10px;
+    margin-top: 0px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+}

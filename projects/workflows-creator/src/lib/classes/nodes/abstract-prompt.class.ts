@@ -223,11 +223,7 @@ export abstract class WorkflowPrompt {
       }
       case InputTypes.Date: {
         const dateString = state.get(this.inputKey);
-        return {
-          month: moment(dateString).month() + 1,
-          day: moment(dateString).date(),
-          year: moment(dateString).year(),
-        };
+        return moment(dateString).format('YYYY-MM-DD');
       }
       case InputTypes.DateTime: {
         const dateString = moment(state.get(this.inputKey))?.format(

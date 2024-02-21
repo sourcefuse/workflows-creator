@@ -99,8 +99,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   @Output()
   itemChanged = new EventEmitter<unknown>();
 
-  date: DateType = {month: 0, day: 0, year: 0};
-
+  date: string = '';
   dateTime: any = {
     date: '',
     time: '',
@@ -322,6 +321,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       date: '',
       time: '',
     };
+    this.date = '';
     const newNode = {
       node: this.nodes.getNodeByName(
         node.getIdentifier(),

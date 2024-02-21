@@ -65,9 +65,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
-  ) {
-    
-  }
+  ) {}
   private _state: StateMap<RecordOfAnyType> = {};
   public get state(): StateMap<RecordOfAnyType> {
     return this._state;
