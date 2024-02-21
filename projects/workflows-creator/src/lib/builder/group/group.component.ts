@@ -41,6 +41,7 @@ import {
   GatewayElement,
   LocalizationProviderService,
   ReadColumnValue,
+  ToValueInput,
   TriggerWhenColumnChanges,
 } from '../../services';
 import {LocalizationPipe} from '../../pipes/localization.pipe';
@@ -135,7 +136,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   showsTooltip = false;
   tooltipText = 'This is default parent component text';
   topPosition: any;
-  leftPosition: any;
+  rightPosition: any;
 
   public types = NodeTypes;
   public prevPopperRef: NgxPopperjsContentComponent;
@@ -414,6 +415,20 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * @param {WorkflowPrompt} input - WorkflowPrompt - this is the input object that was clicked on
    */
   showTooltip(e: MouseEvent, element: NodeWithInput<E>, input: WorkflowPrompt) {
+    if (this.shouldShowTooltip(element, input)) {
+      this.tooltipText = this.localizationSvc.getLocalizedString(
+        LocalizedStringKeys.SelectColumnTooltip,
+      );
+      this.showsTooltip = true;
+      this.topPosition = 35;
+      this.rightPosition = 150;
+      if (input instanceof ToValueInput) {
+        this.rightPosition = 250;
+      }
+    }
+  }
+
+  public shouldShowTooltip(element: NodeWithInput<E>, input: WorkflowPrompt) {
     if (
       ['condition', 'value'].includes(input.inputKey) &&
       (element.node.elements.includes(ChangeColumnValue.identifier) ||
@@ -421,13 +436,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         element.node.elements.includes(ReadColumnValue.identifier)) &&
       !element.node.state.get('column')
     ) {
-      this.tooltipText = this.localizationSvc.getLocalizedString(
-        LocalizedStringKeys.SelectColumnTooltip,
-      );
-      this.showsTooltip = true;
-      this.topPosition = e.clientY + 10;
-      this.leftPosition = e.clientX;
+      return true;
     }
+
+    return false;
   }
 
   /**
@@ -436,7 +448,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   hideTooltip() {
     this.showsTooltip = false;
     this.topPosition = null;
-    this.leftPosition = null;
+    this.rightPosition = null;
   }
 
   /**

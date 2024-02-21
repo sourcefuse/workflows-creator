@@ -1,10 +1,4 @@
 <div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
-  <workflow-tooltip-render
-    [showsTooltip]="showsTooltip"
-    [tooltipText]="tooltipText"
-    [topPosition]="topPosition"
-    [leftPosition]="leftPosition"
-  ></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
       <span *ngIf="!isFirst"> {{ group.name }} </span>
@@ -119,6 +113,14 @@
             }}
           </span>
         </div>
+        <workflow-tooltip-render
+          *ngIf="shouldShowTooltip(nodeWithInput, input)"
+          [showsTooltip]="showsTooltip"
+          [tooltipText]="tooltipText"
+          [topPosition]="topPosition"
+          [leftPosition]="null"
+          [rightPosition]="rightPosition"
+        ></workflow-tooltip-render>
         {{
           (input.suffix?.state
             ? nodeWithInput.node.state.get(input.suffix?.state)

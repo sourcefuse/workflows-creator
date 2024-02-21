@@ -10,6 +10,7 @@ export class TooltipRenderComponent {
   @Input() tooltipText = 'Default tooltip text';
   @Input() topPosition = 215;
   @Input() leftPosition = 400;
+  @Input() rightPosition = 150;
 
   constructor() {}
 }
