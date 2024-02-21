@@ -187,13 +187,16 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <div (document:click)="hide()">
+    <div (document:click)="handleDocumentClick($event)">
       <input
         type="number"
         class="text-input"
         autofocus
         value="{{ input.setValueName(nodeWithInput.node.state) }}"
         (focusout)="callback($event.target)"
+        (mousedown)="handleMouseDown($event)"
+        (mouseup)="handleMouseUp()"
+        (mouseleave)="handleMouseLeave($event)"
       />
     </div>
   </ng-template>
