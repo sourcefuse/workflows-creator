@@ -43,7 +43,7 @@ input[type="date"]::-webkit-clear-button {
 }
 
 /* Removes the spin button */
-input[type="date"]::-webkit-inner-spin-button { 
+input[type="date"]::-webkit-inner-spin-button {
   display: none;
 }
 
@@ -79,7 +79,7 @@ input[type="time"]::-webkit-clear-button {
 }
 
 /* Removes the spin button */
-input[type="time"]::-webkit-inner-spin-button { 
+input[type="time"]::-webkit-inner-spin-button {
   display: none;
 }
 
@@ -161,7 +161,7 @@ input[type="time"]:focus {
     .value-text {
       display: inline-block;
       overflow: hidden;
-      max-width: 45%;
+      max-width: 15rem;
       text-decoration: inherit;
       text-overflow: ellipsis;
       vertical-align: top;
