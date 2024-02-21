@@ -258,6 +258,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
           (events[0].node.state.get('value') === ValueTypes.AnyValue ||
             events[0].node.state.get('valueType') === ValueTypes.AnyValue)));
+    this.updateDiagram();
   }
   /**
    * When an action is added, emit an event with the name of the action and the action itself, update
