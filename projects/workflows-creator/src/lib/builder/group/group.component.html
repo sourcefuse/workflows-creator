@@ -11,7 +11,7 @@
         [popperHideOnScroll]="true"
         [popperTrigger]="'click'"
         [popperPlacement]="'bottom'"
-        (click)="openPopup(group.nodeType)"
+        (click)="openPopup(group.nodeType, nodePopup)"
       >
         <span *ngIf="group.nodeType === types.EVENT">
           {{ localizedStringKeys.WhenThisHappens | localization }}
@@ -53,7 +53,7 @@
       [isFirst]="i === 0"
       [inputTemplate]="inputs"
       [popupTemplate]="nodePopup"
-      (add)="openPopup(group.nodeType)"
+      (add)="openPopup(group.nodeType, nodePopup)"
       (remove)="onNodeRemove(i)"
     ></workflow-node>
   </span>

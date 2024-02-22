@@ -292,8 +292,15 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * the node list to the trigger events if there is only one event group and no children, otherwise
    * set the node list to the events
    * @param {NodeTypes} type - NodeTypes
+   * @param {NgxPopperjsContentComponent} popper - NgxPopperjsContentComponent - this is the popper
    */
-  openPopup(type: NodeTypes) {
+  openPopup(type: NodeTypes, popper: NgxPopperjsContentComponent) {
+    this.prevPopperRef?.hide();
+    this.groupService.previousPopper?.hide();
+    this.groupService.previousPopper?.popperInstance.forceUpdate();
+    this.prevPopperRef = popper;
+    this.groupService.previousPopper = popper;
+
     if (type === NodeTypes.ACTION) {
       this.nodeList = this.actions;
     } else if (type === NodeTypes.EVENT) {
