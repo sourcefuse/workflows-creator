@@ -204,9 +204,8 @@ input[type="time"]:focus {
     .set-email-btn {
       text-align: right;
       padding: 10px;
-      .close-btn {
-        background: $black;
-        color: $white;
+      .close-btn-lib {
+        @include theme;
         cursor: pointer;
         font-size: 13px;
         padding: 5px 20px;
