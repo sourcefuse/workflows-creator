@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.7...@sourceloop/workflows-creator-element@1.1.8) (2024-02-21)
+
+### Bug Fixes
+
+- **core:** fix the close-button class name ([#60](https://github.com/sourcefuse/workflows-creator/issues/60)) ([9a20763](https://github.com/sourcefuse/workflows-creator/commit/9a20763813cce286bd0136605d41f56e77dbd1c2)), closes [#59](https://github.com/sourcefuse/workflows-creator/issues/59)
+
 ## [1.1.7](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator-element@1.1.5...@sourceloop/workflows-creator-element@1.1.7) (2024-02-21)
 
 ### Bug Fixes
