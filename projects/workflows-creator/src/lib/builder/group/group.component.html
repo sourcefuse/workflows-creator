@@ -278,6 +278,14 @@
           type="date"
           [(ngModel)]="date"
           (click)="$event.stopPropagation()"
+          (keydown)="
+            handleEnterEvent(
+              callback,
+              nodeWithInput.node,
+              {target: {value: date}},
+              inputType.Date
+            )
+          "
         />
       </div>
       <div>
