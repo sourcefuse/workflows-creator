@@ -278,6 +278,14 @@
           type="date"
           [(ngModel)]="date"
           (click)="$event.stopPropagation()"
+          (keydown)="
+            handleEnterEvent(
+              callback,
+              nodeWithInput.node,
+              {target: {value: date}},
+              inputType.Date
+            )
+          "
         />
       </div>
       <div>
@@ -316,7 +324,7 @@
         </div>
         <div>
           <button
-            class="close-button"
+            class="close-btn"
             (click)="
               callback(
                 getLibraryValue(
@@ -371,7 +379,7 @@
       </div>
       <div class="set-email-btn">
         <button
-          class="close-button"
+          class="close-btn"
           (click)="callback(emailInput)"
           [disabled]="!emailInput.subject || !emailInput.body"
         >

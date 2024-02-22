@@ -589,6 +589,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       this.hidePopper();
     }
   }
+
+  handleEnterEvent(callback:any, node: BpmnNode,
+    $event: any,
+    type: string, metaObj: RecordOfAnyType,){
+    const response =this.getLibraryValue(node,$event,type,metaObj)
+    callback(response)
+  }
   /**
    * It removes all the inputs that come after the current input
    * @param element - NodeWithInput<E>
