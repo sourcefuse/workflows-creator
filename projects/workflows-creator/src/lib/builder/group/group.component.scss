@@ -292,7 +292,7 @@ input[type="time"]:focus {
     padding: 20px;
     justify-content: space-between;
   }
-  .close-btn {
+  .close-btn-lib {
     @include theme;
     height: 40px;
     padding: 0 10px;
@@ -310,7 +310,7 @@ input[type="time"]:focus {
   .date-input{
     margin-right: 10px;
   }
-  .close-btn {
+  .close-btn-lib {
     @include theme;
     height: 35px;
     padding: 0 10px;
