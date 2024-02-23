@@ -458,7 +458,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           case EventTypes.OnValueEvent:
           case ActionTypes.ChangeColumnValueAction:
             const columnExists = !!node.node.state.get('column');
-            const valueExists = node.node.state.get('value') !== undefined;
+            const valueExists =
+              typeof node.node.state.get('value') !== 'undefined';
             const valueTypeIsAnyValue =
               node.node.state.get('valueType') === ValueTypes.AnyValue;
             isValid = columnExists && (valueExists || valueTypeIsAnyValue);
