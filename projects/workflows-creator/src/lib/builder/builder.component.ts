@@ -238,12 +238,12 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       name: event.node.getIdentifier(),
       event: event.newNode.node as WorkflowEvent<E>,
     });
-    this.updateDiagram();
     this.updateState(event.node, event.newNode.inputs);
     this.elseBlockHidden =
       !this.eventGroups[0]?.children?.length &&
       (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
         event.node.getIdentifier() === EventTypes.OnAddItemEvent);
+    this.updateDiagram();
   }
   /**
    * The function is called when an event is removed from the workflow.
