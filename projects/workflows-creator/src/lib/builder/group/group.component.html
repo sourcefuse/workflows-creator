@@ -278,12 +278,15 @@
           type="date"
           [(ngModel)]="date"
           (click)="$event.stopPropagation()"
+          min="0000-01-01"
+          max="9999-12-31"
           (keydown)="
             handleEnterEvent(
               callback,
               nodeWithInput.node,
               {target: {value: date}},
-              inputType.Date
+              inputType.Date,
+              $event
             )
           "
         />
