@@ -29,6 +29,7 @@
       [templateMap]="templateMap"
       [allColumns]="allColumns"
       (eventAdded)="onEventAdded($event)"
+      (eventRemoved)="onEventRemoved()"
       (actionAdded)="onActionAdded($event)"
       (itemChanged)="onItemChanged($event)"
     ></workflow-group>
@@ -56,6 +57,7 @@
         [templateMap]="templateMap"
         [allColumns]="allColumns"
         (eventAdded)="onEventAdded($event)"
+        (eventRemoved)="onEventRemoved()"
         (actionAdded)="onActionAdded($event)"
         (itemChanged)="onItemChanged($event)"
       ></workflow-group>
