@@ -590,17 +590,16 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     }
   }
 
-  handleKeyPress(event:any) {
+  handleKeyPress(event: any) {
     const keyCode = event.which || event.keyCode;
     const isDigit = keyCode >= 48 && keyCode <= 57;
-    const isBackspaceOrDelete = [8,46].includes(keyCode);
-    if (!(isDigit || isBackspaceOrDelete)) event.preventDefault();
+    const isBackspaceOrDelete = [8, 46].includes(keyCode);
     const inputValue = event.target.value;
     const isValidInput = /^-?\d*\.?\d*$/.test(inputValue);
-    if (!isValidInput) event.preventDefault();
+    if (!(isDigit || isBackspaceOrDelete) || !isValidInput) {
+      event.preventDefault();
+    }
   }
-
-
   handleEnterEvent(
     callback: any,
     node: BpmnNode,
