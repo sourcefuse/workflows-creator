@@ -106,3 +106,8 @@ export enum LocalizedStringKeys {
   SelectColumnTooltip = 'selectColumnTooltip',
   SetLbl = 'setLbl',
 }
+
+export enum DateTimeFields {
+  Date = 'date',
+  Time = 'time',
+}

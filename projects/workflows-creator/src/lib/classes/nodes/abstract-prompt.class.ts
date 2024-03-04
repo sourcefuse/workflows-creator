@@ -222,10 +222,19 @@ export abstract class WorkflowPrompt {
         });
       }
       case InputTypes.Date: {
+        if (!state.get(this.inputKey)) {
+          return '';
+        }
         const dateString = state.get(this.inputKey);
         return moment(dateString).format('YYYY-MM-DD');
       }
       case InputTypes.DateTime: {
+        if (!state.get(this.inputKey)) {
+          return {
+            date: null,
+            time: null,
+          };
+        }
         const dateString = moment(state.get(this.inputKey))?.format(
           DATE_TIME_FORMAT,
         );
