@@ -1,6 +1,6 @@
 {
   "name": "@sourceloop/workflows-creator-element",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Web Component for providing a smooth user workflow.",
   "scripts": {
     "prepublishOnly": "cp package.json dist/package.json"
@@ -18,5 +18,4 @@
     "directory": "dist"
   },
   "hash": "52e16f7339ae099b920d5eba85c8551b9ac2178d0fdb8c34eb6eb6de8aa96685"
-
 }
