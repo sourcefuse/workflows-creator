@@ -209,22 +209,32 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * This function checks if the else block should be hidden based on the type and number of events in
    * the event group.
    */
+
   hideElseBlockIfRequired() {
     const events = this.eventGroups[0].children;
-    let value = events[0].node.state.get('value');
+    const firstEvent = events[0]?.node;
+
+    if (events.length !== 1 || !firstEvent) {
+      this.elseBlockHidden = false;
+      return;
+    }
+
+    let value = firstEvent.state.get('value');
+
     if (typeof value === 'object') {
       value = value.value;
     }
-    if (events.length !== 1) {
-      this.elseBlockHidden = false;
-    } else {
-      this.elseBlockHidden =
-        events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
-        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
-        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
-          (value === ValueTypes.AnyValue ||
-            events[0].node.state.get('valueType') === ValueTypes.AnyValue));
-    }
+
+    const eventType = firstEvent.getIdentifier();
+    const eventValue = firstEvent.state.get('value');
+    const eventValueType = firstEvent.state.get('valueType');
+
+    this.elseBlockHidden =
+      eventType === EventTypes.OnIntervalEvent ||
+      eventType === EventTypes.OnAddItemEvent ||
+      (eventType === EventTypes.OnChangeEvent &&
+        (eventValue === ValueTypes.AnyValue ||
+          eventValueType === ValueTypes.AnyValue));
   }
 
   /**
