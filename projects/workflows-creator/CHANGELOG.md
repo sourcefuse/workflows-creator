@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.9](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.8...@sourceloop/workflows-creator@1.1.9) (2024-03-04)
+
+### Bug Fixes
+
+- **core:** allow date to be set on enter ([#61](https://github.com/sourcefuse/workflows-creator/issues/61)) ([daf0ab2](https://github.com/sourcefuse/workflows-creator/commit/daf0ab21c0d3632edf2201da80649b18874f67a0)), closes [#56](https://github.com/sourcefuse/workflows-creator/issues/56) [#56](https://github.com/sourcefuse/workflows-creator/issues/56)
+- **core:** allow only 4 digits for year in date input ([#64](https://github.com/sourcefuse/workflows-creator/issues/64)) ([34246b2](https://github.com/sourcefuse/workflows-creator/commit/34246b24d6ed308208227ad70ce1e0d4b3bfed3f)), closes [#56](https://github.com/sourcefuse/workflows-creator/issues/56) [#56](https://github.com/sourcefuse/workflows-creator/issues/56) [#56](https://github.com/sourcefuse/workflows-creator/issues/56)
+- **core:** fix issue of WF| 'Save' button is not getting enabled when '<Blank>' is selected for any column ([#63](https://github.com/sourcefuse/workflows-creator/issues/63)) ([408534a](https://github.com/sourcefuse/workflows-creator/commit/408534a6b454ab0af044ffa76e7b47f561a77f48)), closes [#62](https://github.com/sourcefuse/workflows-creator/issues/62) [#62](https://github.com/sourcefuse/workflows-creator/issues/62)
+- **core:** fix save button ([#66](https://github.com/sourcefuse/workflows-creator/issues/66)) ([4a74954](https://github.com/sourcefuse/workflows-creator/commit/4a749545e936a024fe358ac5235c463350ab7991)), closes [#65](https://github.com/sourcefuse/workflows-creator/issues/65)
+- **core:** fix you can add isPastToday in valid WF ([#70](https://github.com/sourcefuse/workflows-creator/issues/70)) ([a91ebd7](https://github.com/sourcefuse/workflows-creator/commit/a91ebd71f9ee66485953f3dc3dbd692b1f9fe2e5)), closes [#68](https://github.com/sourcefuse/workflows-creator/issues/68)
+- **core:** WF| Able to enter negative value in 'n' interval of "Every time period" event ([#69](https://github.com/sourcefuse/workflows-creator/issues/69)) ([6a4dad7](https://github.com/sourcefuse/workflows-creator/commit/6a4dad7e9902767c176e3bbb739534e96782943b)), closes [#67](https://github.com/sourcefuse/workflows-creator/issues/67) [#67](https://github.com/sourcefuse/workflows-creator/issues/67)
+
 ## [1.1.8](https://github.com/sourcefuse/workflows-creator/compare/@sourceloop/workflows-creator@1.1.7...@sourceloop/workflows-creator@1.1.8) (2024-02-21)
 
 ### Bug Fixes
