@@ -5,6 +5,9 @@ import {AllowedValues, RecordOfAnyType} from '../../types';
  * The current state of a workflow node.
  */
 export class State<E extends RecordOfAnyType> {
+  set(arg0: string, arg1: string) {
+    throw new Error('Method not implemented.');
+  }
   private state = new Map<keyof E, AllowedValues>();
   private current: StateNode<E>;
 
