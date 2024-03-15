@@ -219,7 +219,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       return;
     }
 
-    let value = firstEvent.state.get('value');
+    // let value = firstEvent.state.get('value');
+    let value = events.length > 0 ? firstEvent?.state.get('value') : undefined;
 
     if (typeof value === 'object') {
       value = value.value;
