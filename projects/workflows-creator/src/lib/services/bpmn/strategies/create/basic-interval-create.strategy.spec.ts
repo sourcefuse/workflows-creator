@@ -38,22 +38,17 @@ describe('CreateBasicIntervalStrategy', () => {
         workflowNode: {state: new Map([['someStateKey', 'mockedStateValue']])},
       };
 
-      // Calling the method under test
       const result = service['parseAttributes'](attrs, node);
 
-      // Expectations
       expect(result).toEqual({someAttr: 'mockedStateValue'});
     });
 
     it('should leave non-state reference attributes unchanged', () => {
-      // Mocking necessary data
       const attrs: RecordOfAnyType = {someAttr: 'someValue'};
       const node: any = {workflowNode: {state: new Map()}};
 
-      // Calling the method under test
       const result = service['parseAttributes'](attrs, node);
 
-      // Expectations
       expect(result).toEqual(attrs);
     });
   });

@@ -6,7 +6,6 @@ describe('Error Classes', () => {
   let missingError: MissingError;
 
   beforeEach(() => {
-    // Create instances of error classes before each test
     invalidEntityError = new InvalidEntityError('testEntity');
     notProvidedError = new NotProvided('testName');
     missingError = new MissingError('testName');

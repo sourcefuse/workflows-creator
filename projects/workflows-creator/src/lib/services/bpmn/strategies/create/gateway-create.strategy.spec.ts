@@ -31,12 +31,10 @@ describe('CreateGatewayStrategy', () => {
 
   describe('parseAttributes', () => {
     it('should parse state references in attributes', () => {
-      const attrs = {}; // Provide mock attributes
-      const node = {} as BpmnStatementNode; // Provide a mock of BpmnStatementNode
+      const attrs = {};
+      const node = {} as BpmnStatementNode;
 
       const parsedAttrs = service['parseAttributes'](attrs, node);
-
-      // Add expectations/assertions here
     });
   });
 });

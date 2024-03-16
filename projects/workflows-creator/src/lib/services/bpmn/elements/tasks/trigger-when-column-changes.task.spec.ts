@@ -11,7 +11,7 @@ describe('TriggerWhenColumnChanges', () => {
   let triggerWhenColumnChanges: TriggerWhenColumnChanges;
   let createStrategy: CreateStrategy<ModdleElement>;
   let linkStrategy: LinkStrategy<ModdleElement>;
-  let env: any; // Mocked environment
+  let env: any;
   let utilsService: UtilsService;
 
   beforeEach(() => {
@@ -62,6 +62,4 @@ describe('TriggerWhenColumnChanges', () => {
   it('should have the correct outputs', () => {
     expect(triggerWhenColumnChanges.outputs).toEqual('outputVariable');
   });
-
-  // Add more test cases as needed
 });

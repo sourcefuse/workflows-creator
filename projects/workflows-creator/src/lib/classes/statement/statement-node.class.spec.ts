@@ -9,11 +9,11 @@ describe('StatementNode', () => {
   let mockNode: WorkflowNode<any>;
 
   beforeEach(() => {
-    // Create mock instances for WorkflowElement and WorkflowNode
+    // mock instances for WorkflowElement and WorkflowNode
     mockElement = {} as WorkflowElement<any>;
     mockNode = {} as WorkflowNode<any>;
 
-    // Create a new StatementNode instance before each test
+    //  a new StatementNode instance before each test
     statementNode = new StatementNode(mockElement, mockNode);
   });
 

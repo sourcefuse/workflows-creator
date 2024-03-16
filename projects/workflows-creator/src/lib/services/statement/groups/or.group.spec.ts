@@ -4,7 +4,7 @@ import {OrGroup} from './or.group';
 
 describe('OrGroup', () => {
   let group: OrGroup<any>;
-  let localizedStringMap: RecordOfAnyType = {}; // You can add mock localized string data here
+  let localizedStringMap: RecordOfAnyType = {};
   let id = '';
   let type = NodeTypes.GROUP;
 

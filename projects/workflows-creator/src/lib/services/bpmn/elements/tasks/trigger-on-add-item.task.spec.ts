@@ -11,7 +11,7 @@ describe('TriggerOnAddItem', () => {
   let triggerOnAddItem: TriggerOnAddItem;
   let createStrategy: CreateStrategy<ModdleElement>;
   let linkStrategy: LinkStrategy<ModdleElement>;
-  let env: any; // Mocked environment
+  let env: any;
   let utilsService: UtilsService;
 
   beforeEach(() => {
@@ -60,6 +60,4 @@ describe('TriggerOnAddItem', () => {
   it('should have the correct outputs', () => {
     expect(triggerOnAddItem.outputs).toEqual('outputVariable');
   });
-
-  // Add more test cases as needed
 });

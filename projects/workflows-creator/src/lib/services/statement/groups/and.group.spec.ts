@@ -4,7 +4,7 @@ import {AndGroup} from './and.group';
 
 describe('AndGroup', () => {
   let group: AndGroup<any>;
-  let localizedStringMap: RecordOfAnyType = {}; // You can add mock localized string data here
+  let localizedStringMap: RecordOfAnyType = {};
   let id = '';
   let type = NodeTypes.GROUP;
   let isElseGroup = false;

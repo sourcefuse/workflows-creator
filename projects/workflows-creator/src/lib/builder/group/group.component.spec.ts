@@ -69,11 +69,9 @@ describe('GroupComponent', () => {
   let nodeServiceSpy: any;
   beforeEach(async () => {
     const nodeServiceMock = {
-      getActions: () => [], // Implement a mock method to return an empty array or mock data
+      getActions: () => [],
       getEvents: () => [],
       getNodeByName: eventStub,
-      // getIdentifier: () => 'OnChangeEvent',
-
       getGroupByName: () => {},
       getGroups: () => [],
       mapInputs: () => [],
@@ -184,16 +182,12 @@ describe('GroupComponent', () => {
     expect(popper.hide).toHaveBeenCalled();
   });
 
-  // Create a mock class for NgxPopperjsContentComponent
-
-  // Create a spy object to mock the methods of NgxPopperjsContentComponent
   const popperSpy = jasmine.createSpyObj('NgxPopperjsContentComponent', [
     'show',
     'hide',
   ]);
 
   it('should hide the previous popper and show the current popper', () => {
-    // Arrange
     const event = new MouseEvent('click');
     component.prevPopperRef = popperSpy; // Assign the spy object to prevPopperRef
 
