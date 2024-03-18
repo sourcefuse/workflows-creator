@@ -277,7 +277,8 @@
         <input
           class="date-input"
           type="date"
-          [(ngModel)]="date"
+          [(ngModel)]="input.getModelValue(nodeWithInput.node.state) || date"
+          (ngModelChange)="updateSecondVariable($event, inputType.date)"
           (click)="$event.stopPropagation()"
           min="0000-01-01"
           max="9999-12-31"
@@ -321,10 +322,36 @@
     <div class="date-time-picker" (document:click)="hide()">
       <div class="time-picker">
         <div class="date-input">
-          <input type="date" [(ngModel)]="dateTime.date" />
+          <input
+            type="date"
+            [(ngModel)]="
+              input.getModelValue(nodeWithInput.node.state).date ||
+              dateTime.date
+            "
+            (ngModelChange)="
+              updateSecondVariable(
+                $event,
+                inputType.dateTime,
+                dateTimeFields.date
+              )
+            "
+          />
         </div>
         <div class="time-input">
-          <input type="time" [(ngModel)]="dateTime.time" />
+          <input
+            type="time"
+            [(ngModel)]="
+              input.getModelValue(nodeWithInput.node.state).time ||
+              dateTime.time
+            "
+            (ngModelChange)="
+              updateSecondVariable(
+                $event,
+                inputType.dateTime,
+                dateTimeFields.time
+              )
+            "
+          />
         </div>
         <div>
           <button

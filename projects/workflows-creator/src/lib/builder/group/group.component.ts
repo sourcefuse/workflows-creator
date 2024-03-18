@@ -12,6 +12,7 @@ import {NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
 import {
+  DateTimeFields,
   InputTypes,
   LocalizedStringKeys,
   NodeTypes,
@@ -61,6 +62,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
   public inputType = InputTypes;
+  public dateTimeFields = DateTimeFields;
   private isMouseDown: boolean = false;
   @Input()
   group: AbstractBaseGroup<E>;
@@ -322,6 +324,11 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       time: '',
     };
     this.date = '';
+    this.emailInput = {
+      subject: '',
+      body: '',
+      focusKey: '',
+    };
     const newNode = {
       node: this.nodes.getNodeByName(
         node.getIdentifier(),
@@ -528,6 +535,11 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     metaObj: RecordOfAnyType,
   ) {
     const value = $event.target?.value ?? $event;
+    this.dateTime = {
+      date: '',
+      time: '',
+    };
+    this.date = '';
     switch (type) {
       case InputTypes.People:
         const selectedIds = metaObj.list.filter((item: {id: any}) =>
@@ -547,8 +559,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       }
       case InputTypes.DateTime:
         if (value) {
-          if (this.dateTime.time === '') {
-            this.dateTime.time = node.state.get('defaultTime') ?? '9:00';
+          if (value.time === '') {
+            value.time = node.state.get('defaultTime') ?? '9:00';
           }
           const dateObj = moment(`${value.date} ${value.time}`);
           return {
@@ -614,6 +626,26 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       callback(response);
     }
   }
+
+  updateSecondVariable(
+    event: any,
+    inputType: InputTypes,
+    dateTimeField?: string,
+  ) {
+    //if inputType->dateTime
+    switch (inputType) {
+      case InputTypes.DateTime:
+        if (dateTimeField == 'date') {
+          this.dateTime.date = event;
+        } else {
+          this.dateTime.time = event;
+        }
+        break;
+      case InputTypes.Date:
+        this.date = event;
+    }
+  }
+
   /**
    * It removes all the inputs that come after the current input
    * @param element - NodeWithInput<E>
