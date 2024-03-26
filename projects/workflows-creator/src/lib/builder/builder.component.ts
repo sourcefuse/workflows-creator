@@ -202,8 +202,42 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         });
       });
       this.updateDiagram();
+      this.hideElseBlockIfRequired();
     }
   }
+  /**
+   * This function checks if the else block should be hidden based on the type and number of events in
+   * the event group.
+   */
+
+  hideElseBlockIfRequired() {
+    const events = this.eventGroups[0].children;
+    const firstEvent = events[0]?.node;
+
+    if (events.length !== 1 || !firstEvent) {
+      this.elseBlockHidden = false;
+      return;
+    }
+
+    // let value = firstEvent.state.get('value');
+    let value = events.length > 0 ? firstEvent?.state.get('value') : undefined;
+
+    if (typeof value === 'object') {
+      value = value.value;
+    }
+
+    const eventType = firstEvent.getIdentifier();
+    const eventValue = firstEvent.state.get('value');
+    const eventValueType = firstEvent.state.get('valueType');
+
+    this.elseBlockHidden =
+      eventType === EventTypes.OnIntervalEvent ||
+      eventType === EventTypes.OnAddItemEvent ||
+      (eventType === EventTypes.OnChangeEvent &&
+        (eventValue === ValueTypes.AnyValue ||
+          eventValueType === ValueTypes.AnyValue));
+  }
+
   /**
    * If the group is an event, add it to the eventGroups array, otherwise if it's an action, add it to
    * the actionGroups array
@@ -273,6 +307,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     });
     this.updateDiagram();
     this.updateState(action.node, action.newNode.inputs);
+    this.hideElseBlockIfRequired();
   }
   /**
    * The function is called when an item is changed in the UI. It emits an event to the parent
@@ -286,16 +321,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       item: item.element.node,
     });
     this.updateState(item.element.node, item.element.inputs);
-    // TODO: to be refactored
-    // to hide else block when anything is selected in ValueInput or ValueTypeInput
-    this.elseBlockHidden =
-      this.eventGroups[0].children?.length === 1 &&
-      this.eventGroups[0].children[0].node.getIdentifier() ===
-        EventTypes.OnChangeEvent &&
-      (this.eventGroups[0].children[0].node.state.get('value') ===
-        ValueTypes.AnyValue ||
-        this.eventGroups[0].children[0].node.state.get('valueType') ===
-          ValueTypes.AnyValue);
+    this.hideElseBlockIfRequired();
     this.updateDiagram();
   }
   /**
