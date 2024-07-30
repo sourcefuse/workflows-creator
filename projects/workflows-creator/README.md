@@ -86,7 +86,7 @@ npm i @sourceloop/workflows-creator
 ### Installation
 
 ```bash
-npm i @sourceloop/workflows-creator
+npm i @sourceloop/workflows-creator-element
 ```
 
 - In the node modules you can find two files relevant to the element - `workflows-element/element/workflows-element.js` & `workflows-element/element/style.css`.
