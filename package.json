@@ -37,7 +37,7 @@
     "@angular/router": "~13.3.0",
     "@ng-select/ng-select": "^8.0.0",
     "@popperjs/core": "^2.11.6",
-    "@types/estree": "^1.0.0",
+    "@types/estree": "^1.0.5",
     "bpmn-moddle": "^8.0.0",
     "lerna": "^5.1.5",
     "lodash": "^4.17.21",
