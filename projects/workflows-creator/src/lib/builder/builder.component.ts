@@ -373,7 +373,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     ) {
       if (
         ((value as AllowedValuesMap)?.value as AllowedValuesMap)?.value ===
-        ValueTypes.AnyValue
+        ValueTypes.AnyValue || ((value as AllowedValuesMap)?.value === ValueTypes.AnyValue)
       ) {
         /**
          * Remove node on changes event
