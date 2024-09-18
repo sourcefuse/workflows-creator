@@ -112,12 +112,13 @@ export class OrGatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const lastNodeWithOutput = this.getLastNodeWithOutput(node);
     const read = `var readObj = JSON.parse(execution.getVariable('${lastNodeWithOutput.element.id}'));`;
-    const declarations = `var ids = [];var json = S("{}");`;
+    const declarations = `var ids = [];var json = {};`;
     const column = node.workflowNode.state.get('columnName');
     const condition = this.getCondition(node);
     const loop = this.createLoopScript(node, condition, isElse);
     const setters = `
-      json.prop("taskIds", ids);
+      json["taskIds"] = ids;
+      json.stringify(json);
       execution.setVariable('${flowId}',json);
       if(ids.length > 0){true;}else {false;}
       `;

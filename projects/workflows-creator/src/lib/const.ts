@@ -14,14 +14,14 @@ xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
 xmlns:modeler="http://camunda.org/schema/modeler/1.0"
 id="Definitions_1aj5pzu"
 targetNamespace="http://bpmn.io/schema/bpmn"
-exporter="Camunda Modeler" exporterVersion="4.12.0"
+exporter="Camunda Modeler" exporterVersion="5.21.0"
 modeler:executionPlatform="Camunda Platform"
-modeler:executionPlatformVersion="7.15.0">
+modeler:executionPlatformVersion="7.21.0">
 </bpmn:definitions>
 `;
 
-export const JSON_SCRIPT_START = `var json = S(\"{}\");\n`;
-export const JSON_SCRIPT_END = `\n        json`;
+export const JSON_SCRIPT_START = `var json = {};\n`;
+export const JSON_SCRIPT_END = `\n        JSON.stringify(json)`;
 
 export const BASE_XML = new InjectionToken<string>('diagram.bpmn.base');
 export const MODDLE = new InjectionToken<CustomBpmnModdle>(
