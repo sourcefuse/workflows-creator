@@ -193,12 +193,13 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const lastNodeWithOutput = this.getLastNodeWithOutput(node);
     const read = `var readObj = JSON.parse(execution.getVariable('${lastNodeWithOutput.element.id}'));`;
-    const declarations = `var ids = [];var json = S("{}");`;
+    const declarations = `var ids = [];var json = {};`;
     const column = node.workflowNode.state.get('columnName');
     const condition = this.getCondition(node);
     const loop = this.createLoopScript(node, condition, isElse);
     const setters = `
-      json.prop("taskIds", ids);
+      json["taskIds"] = ids;
+      json = JSON.stringify(json);
       execution.setVariable('${flowId}',json);
       if(ids.length > 0){true;}else {false;}
       `;
@@ -227,6 +228,25 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
     const valueType = node.workflowNode.state.get('valueType');
     const valueInputType = node.workflowNode.state.get('valueInputType');
 
+    if (
+      valueInputType === InputTypes.Date &&
+      (valueType === ValueTypes.Custom ||
+        conditionType === ConditionTypes.Equal)
+    ) {
+      return `
+                  for (var key in readObj) {
+                    var taskValuePair = readObj[key];
+                    if (taskValuePair && (taskValuePair.value || taskValuePair.value==='')) {
+                      var readDateValue = taskValuePair.value.split('T')[0];
+                      var customDate = "${condition}";
+
+                      if (${isElse ? '!' : ''}(readDateValue === customDate)) {
+                        ids.push(taskValuePair.id);
+                      }
+                    }
+                  }
+                `;
+    }
     if (!conditionType && valueType && valueInputType === InputTypes.Date) {
       switch (valueType) {
         case ValueTypes.PastToday:
@@ -261,9 +281,7 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                       var readDateValue = taskValuePair.value.split('T')[0];
                       var customDate = "${condition}";
 
-                      if (${
-                        isElse ? '!' : ''
-                      }(readDateValue === customDate)) {
+                      if (${isElse ? '!' : ''}(readDateValue === customDate)) {
                         ids.push(taskValuePair.id);
                       }
                     }
