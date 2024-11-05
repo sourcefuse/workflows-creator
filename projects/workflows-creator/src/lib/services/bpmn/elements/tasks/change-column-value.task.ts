@@ -45,6 +45,7 @@ export class ChangeColumnValue extends ServiceTaskElement {
           switch (state.get('valueInputType')) {
             case InputTypes.People:
               return `'${JSON.stringify(state.get('value'))}'`;
+            case InputTypes.OptionList:
             case InputTypes.List:
               if (!state.get('value')) return '';
               return `'${JSON.stringify({

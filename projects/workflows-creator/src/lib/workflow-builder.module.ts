@@ -89,6 +89,7 @@ import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.inpu
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
+import { CriteriaInput } from './services';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -143,6 +144,7 @@ import {LocalizationPipe} from './pipes/localization.pipe';
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: CriteriaInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},

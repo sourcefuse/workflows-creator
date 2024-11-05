@@ -54,6 +54,7 @@ export abstract class WorkflowPrompt {
     value: AllowedValues | AllowedValuesMap,
   ) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         return value;
       case InputTypes.People: {
@@ -146,6 +147,7 @@ export abstract class WorkflowPrompt {
    */
   getValueName<S extends RecordOfAnyType>(state: State<S>) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         if (typeof state.get(`${this.inputKey}Name`) === 'object') {
           return state.get(`${this.inputKey}Name`)?.displayValue;
@@ -184,6 +186,7 @@ export abstract class WorkflowPrompt {
    */
   setValueName<S extends RecordOfAnyType>(state: State<S>) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         if (
           typeof state.get(this.inputKey) === 'object' &&

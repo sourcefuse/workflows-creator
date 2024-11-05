@@ -20,6 +20,8 @@ export enum InputTypes {
   People = 'people',
   Percentage = 'percentage',
   Text = 'text',
+  OptionList = "optionList",
+  Item = 'Item'
 }
 
 /* Defining the types of conditions that can be used in the application. */

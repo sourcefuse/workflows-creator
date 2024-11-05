@@ -9,7 +9,7 @@ import {
 import {BpmnNode, RecordOfAnyType} from '../../../types';
 
 export class ValueInput extends WorkflowListPrompt {
-  prefix: string | {state: string} = '';
+  prefix: string | {state: string} = {state: 'valuePrefix'};
   suffix: string | {state: string} = {state: 'valueSuffix'};
   inputKey = 'value';
   listNameField = 'text';

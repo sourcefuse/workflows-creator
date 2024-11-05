@@ -337,6 +337,28 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
             }
           }`;
     }
+    if (column === InputTypes.Item) {
+      return `var selectedVals = ${condition};
+      var selCol = selectedVals.split(',');
+      for(var key in readObj){
+        var taskValuePair = readObj[key];
+        if(taskValuePair && taskValuePair.value && taskValuePair.value.length){
+            var hasItem = false;
+            var usCol = taskValuePair.value;
+
+            for(var selKey in selCol){
+                for(var myKey in usCol){
+                    if(usCol[myKey].value == selCol[selKey] && !hasItem){
+                        hasItem = true;
+                    }
+                }
+            }
+            if(${conditionExpression}(hasItem)){
+                ids.push(taskValuePair.id);
+            }
+        }
+      }`;
+    }
     switch (conditionType) {
       case ConditionTypes.PastToday:
         return `
@@ -413,6 +435,7 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
         case InputTypes.Text:
           value = `'${value}'`;
           break;
+        case InputTypes.OptionList:
         case InputTypes.List:
           value = `'${value.value}'`;
           break;
