@@ -212,6 +212,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         this.templateMap?.[InputTypes.Interval] || this.listTemplate,
       [InputTypes.Email]:
         this.templateMap?.[InputTypes.Email] || this.emailTemplate,
+      [InputTypes.OptionList]:
+      this.templateMap?.[InputTypes.OptionList] || this.listTemplate,
     };
   }
 
@@ -398,7 +400,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           element,
           input,
           input.setValue(element.node.state, value),
-          input.typeFunction(element.node.state) === InputTypes.List,
+          input.typeFunction(element.node.state) === InputTypes.List || input.typeFunction(element.node.state) === InputTypes.OptionList,
         );
         this.clearValues();
       }

@@ -7,3 +7,4 @@ export * from './value.input';
 export * from './interval.input';
 export * from './triggercolumn.input';
 export * from './valuetype.input';
+export * from './criteria.input';

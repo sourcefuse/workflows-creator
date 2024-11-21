@@ -32,6 +32,9 @@ export class ReadColumnValue extends ServiceTaskElement {
       taskIds: {
         from: 'taskIds',
       },
+      metaData: {
+        state: 'metaData',
+      },
       groupColumnId: {
         state: 'column',
       },
