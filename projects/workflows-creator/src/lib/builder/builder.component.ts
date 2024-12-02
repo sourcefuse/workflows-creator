@@ -48,6 +48,7 @@ import {
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
 import {LocalizationPipe} from '../pipes/localization.pipe';
+import {ConditionInput} from '../services';
 @Component({
   selector: 'workflow-builder',
   templateUrl: './builder.component.html',
@@ -487,6 +488,14 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           case ActionTypes.ChangeColumnValueAction:
             const columnExists = !!node.node.state.get('column');
             let valueExists = false;
+            const valueTypeIsAnyValue =
+              node.node.state.get('valueType') === ValueTypes.AnyValue;
+            let conditionExist = false;
+            if (node.node.prompts.includes(ConditionInput.identifier)) {
+              conditionExist = !!node.node.state.get('condition');
+            } else {
+              conditionExist = true;
+            }
             if (typeof node.node.state.get('value') !== 'undefined') {
               valueExists = true;
             } else if (
@@ -496,9 +505,11 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
             } else {
               valueExists = !!node.node.state.get('value');
             }
-            const valueTypeIsAnyValue =
-              node.node.state.get('valueType') === ValueTypes.AnyValue;
-            isValid = columnExists && (valueExists || valueTypeIsAnyValue);
+
+            isValid =
+              columnExists &&
+              (valueExists || valueTypeIsAnyValue) &&
+              conditionExist;
             break;
           case EventTypes.OnIntervalEvent:
             const intervalExists = !!node.node.state.get('interval');
