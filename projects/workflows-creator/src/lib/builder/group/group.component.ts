@@ -213,7 +213,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       [InputTypes.Email]:
         this.templateMap?.[InputTypes.Email] || this.emailTemplate,
       [InputTypes.OptionList]:
-      this.templateMap?.[InputTypes.OptionList] || this.listTemplate,
+        this.templateMap?.[InputTypes.OptionList] || this.listTemplate,
+      [InputTypes.Stepper]:
+        this.templateMap?.[InputTypes.Stepper] || this.listTemplate,
+      [InputTypes.IntervalDate]:
+        this.templateMap?.[InputTypes.IntervalDate] || this.listTemplate,
+      [InputTypes.IntervalTime]:
+        this.templateMap?.[InputTypes.IntervalTime] || this.listTemplate,
     };
   }
 
@@ -400,7 +406,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           element,
           input,
           input.setValue(element.node.state, value),
-          input.typeFunction(element.node.state) === InputTypes.List || input.typeFunction(element.node.state) === InputTypes.OptionList,
+          input.typeFunction(element.node.state) === InputTypes.List ||
+            input.typeFunction(element.node.state) === InputTypes.OptionList,
         );
         this.clearValues();
       }

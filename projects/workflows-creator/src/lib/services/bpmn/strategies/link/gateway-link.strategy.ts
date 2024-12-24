@@ -432,6 +432,7 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
     const valueType = node.workflowNode.state.get('valueInputType');
     if (value)
       switch (valueType) {
+        case InputTypes.Stepper:
         case InputTypes.Text:
           value = `'${value}'`;
           break;
