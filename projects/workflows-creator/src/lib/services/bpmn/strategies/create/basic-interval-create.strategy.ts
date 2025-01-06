@@ -68,27 +68,31 @@ export class CreateBasicIntervalStrategy
       state.get('TimeInterval')
     ) {
       const val =
-        state.get('value') === 1
+        state.get('value') == 1
           ? '*'
           : `${state.get('toInterval').month}/${state.get('value')}`;
-      return `0 ${state.get('TimeInterval').min} ${
-        state.get('TimeInterval').hour
-      } ${state.get('toInterval').date} ${val} ?`;
+      const timeZoneDate = new Date();
+      timeZoneDate.setHours(state.get('TimeInterval').hour);
+      timeZoneDate.setMinutes(state.get('TimeInterval').min);
+      return `0 timeZoneDate(${timeZoneDate})timeZoneDateEnd ${
+        state.get('toInterval').date
+      } ${val} ?`;
     } else if (
       state.get('interval') === 'W' &&
       state.get('toInterval') &&
       state.get('TimeInterval')
     ) {
-      const val = state.get('value') === 1 ? '' : `/${state.get('value')}`;
+      const val = state.get('value') == 1 ? '' : `/${state.get('value')}`;
       let weekDays = state
         .get('toInterval')
         ?.ids?.map(
           (day: string) => WeekDaysEnum[day as keyof typeof WeekDaysEnum],
         )
         .join(',');
-      return `0 ${state.get('TimeInterval').min} ${
-        state.get('TimeInterval').hour
-      } ? * ${weekDays}${val}`;
+      const timeZoneDate = new Date();
+      timeZoneDate.setHours(state.get('TimeInterval').hour);
+      timeZoneDate.setMinutes(state.get('TimeInterval').min);
+      return `0 timeZoneDate(${timeZoneDate})timeZoneDateEnd ? * ${weekDays}${val}`;
     } else if (state.get('interval') === 'D' && state.get('TimeInterval')) {
       const today = new Date();
       today.setHours(state.get('TimeInterval').hour);
