@@ -89,7 +89,12 @@ import {TriggerColumnInput} from './services/statement/inputs/triggercolumn.inpu
 import {ValueTypeInput} from './services/statement/inputs/valuetype.input';
 import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
-import { CriteriaInput } from './services';
+import {
+  CriteriaInput,
+  StepperInput,
+  TimeIntervalInput,
+  ToIntervalInput,
+} from './services';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -145,7 +150,10 @@ import { CriteriaInput } from './services';
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: CriteriaInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: StepperInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: TimeIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ToIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},

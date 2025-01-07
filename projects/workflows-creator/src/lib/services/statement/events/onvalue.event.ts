@@ -4,7 +4,7 @@ import {BpmnEvent} from '../../../types/bpmn.types';
 import {GatewayElement} from '../../bpmn/elements/gateways/gateway.element';
 import {ReadColumnValue} from '../../bpmn/elements/tasks/read-column.task';
 import {ConditionInput} from '../inputs/condition.input';
-import { CriteriaInput } from '../inputs/criteria.input';
+import {CriteriaInput} from '../inputs/criteria.input';
 import {ValueInput} from '../inputs/value.input';
 
 export class OnValueEvent extends BpmnEvent {

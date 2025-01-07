@@ -107,6 +107,7 @@ export abstract class WorkflowPrompt {
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         if (value) {
           return (value as HTMLInputElement).value;
@@ -169,10 +170,14 @@ export abstract class WorkflowPrompt {
               .utc(state.get(this.inputKey), 'YYYY-MM-DD hh:mm')
               .format('MMM DD, YYYY hh:mm A')
           : '';
+      case InputTypes.IntervalDate:
+      case InputTypes.IntervalTime:
+        return state.get(this.inputKey)?.value;
       case InputTypes.Number:
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         return state.get(this.inputKey);
     }
@@ -209,6 +214,7 @@ export abstract class WorkflowPrompt {
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         return state.get(this.inputKey);
     }
