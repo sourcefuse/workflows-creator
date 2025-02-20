@@ -39,7 +39,7 @@
     "@popperjs/core": "^2.11.6",
     "@types/estree": "^1.0.0",
     "bpmn-moddle": "^8.0.0",
-    "lerna": "^5.1.5",
+    "lerna": "^6.5.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "ng-multiselect-dropdown": "^0.3.9",
