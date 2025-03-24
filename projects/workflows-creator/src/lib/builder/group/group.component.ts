@@ -557,6 +557,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     element: NodeWithInput<E>,
     input: WorkflowPrompt,
   ) {
+    if (input.inputKey === 'email') {
+      return;
+    }
     const currentIndex = element.inputs.findIndex(
       i => i.getIdentifier() === input.getIdentifier(),
     );
