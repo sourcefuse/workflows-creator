@@ -9,7 +9,7 @@ export class ColumnInput extends WorkflowPrompt {
   inputKey = 'column';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Column';
+  placeholder = 'column';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('columns');
   static identifier = 'ColumnInput';

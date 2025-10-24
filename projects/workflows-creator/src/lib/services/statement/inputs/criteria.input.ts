@@ -9,7 +9,7 @@ export class CriteriaInput extends WorkflowPrompt {
   inputKey = 'column';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Criteria';
+  placeholder = 'criteria';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('columns');
   static identifier = 'CriteriaInput';

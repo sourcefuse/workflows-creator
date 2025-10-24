@@ -14,7 +14,7 @@ export class ValueInput extends WorkflowListPrompt {
   inputKey = 'value';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Something';
+  placeholder = 'something';
   customPlaceholder: string | {state: string} = {state: 'valuePlaceholder'};
 
   isHidden = (node: BpmnNode) => {

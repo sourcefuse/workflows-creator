@@ -86,6 +86,7 @@ export enum EventTypes {
 
 export enum ActionTypes {
   ChangeColumnValueAction = 'ChangeColumnValueAction',
+  CreateJiraIssueAction = 'CreateJiraIssueAction',
   SendEmailAction = 'SendEmailAction',
 }
 
@@ -110,6 +111,7 @@ export enum LocalizedStringKeys {
   TypeEmail = 'typeEmailLbl',
   SelectColumnTooltip = 'selectColumnTooltip',
   SetLbl = 'setLbl',
+  CreateJiraIssue = 'createJiraIssueLbl',
 }
 
 export enum IntervalType {

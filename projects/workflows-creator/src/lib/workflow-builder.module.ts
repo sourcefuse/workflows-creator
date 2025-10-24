@@ -91,10 +91,16 @@ import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.co
 import {LocalizationPipe} from './pipes/localization.pipe';
 import {
   CriteriaInput,
+  JiraAccountConnectInput,
+  JiraFieldMappingInput,
+  JiraIssueTypeSelectInput,
+  JiraProjectSelectInput,
   StepperInput,
   TimeIntervalInput,
   ToIntervalInput,
 } from './services';
+import {CreateJiraIssueAction} from './services/statement/actions/createjira.action';
+import {CreateJiraIssue} from './services/bpmn/elements/tasks/create-jira-issue.task';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -128,6 +134,7 @@ import {
     AutoLayoutService,
     DiFactoryService,
     {provide: BPMN_NODES, useValue: ChangeColumnValueAction, multi: true},
+    {provide: BPMN_NODES, useValue: CreateJiraIssueAction, multi: true},
     {provide: BPMN_NODES, useValue: SendEmailAction, multi: true},
     {provide: BPMN_NODES, useValue: OnChangeEvent, multi: true},
     {provide: BPMN_NODES, useValue: OnValueEvent, multi: true},
@@ -148,6 +155,7 @@ import {
     {provide: BPMN_ELEMENTS, useClass: SendEmail, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
+    {provide: BPMN_ELEMENTS, useClass: CreateJiraIssue, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
     {provide: BPMN_INPUTS, useClass: CriteriaInput, multi: true},
     {provide: BPMN_INPUTS, useClass: StepperInput, multi: true},
@@ -163,6 +171,10 @@ import {
     {provide: BPMN_INPUTS, useClass: ToValueInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ValueInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ValueTypeInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: JiraAccountConnectInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: JiraFieldMappingInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: JiraIssueTypeSelectInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: JiraProjectSelectInput, multi: true},
     {provide: CREATE_BASIC_STRATEGY, useClass: CreateBasicStrategy},
     {
       provide: CREATE_BASIC_INTERVAL_STRATEGY,

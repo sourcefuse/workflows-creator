@@ -1,3 +1,7 @@
+export * from './jira-account-connect.input';
+export * from './jira-project-select.input';
+export * from './jira-issue-type-select.input';
+export * from './jira-field-mapping.input';
 export * from './column.input';
 export * from './condition.input';
 export * from './email.input';

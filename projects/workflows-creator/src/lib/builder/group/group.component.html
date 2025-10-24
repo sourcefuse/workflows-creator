@@ -50,11 +50,15 @@
       </span>
     </span>
   </div>
-  <span *ngFor="let node of group.children; let i = index">
+  <div
+    *ngFor="let node of group.children; let i = index"
+    [style.margin-bottom.px]="
+      node.node.noMultiLine ? node.node.noMultiLine * 32 : null
+    "
+  >
     <workflow-node
       [ngClass]="{'last-node': i === group.children.length - 1}"
       [node]="node"
-      [ngClass]="{'last-node': i === group.children.length - 1}"
       [isLast]="i === group.children.length - 1"
       [isFirst]="i === 0"
       [inputTemplate]="inputs"
@@ -62,7 +66,7 @@
       (add)="openPopup(group.nodeType)"
       (remove)="onNodeRemove(i)"
     ></workflow-node>
-  </span>
+  </div>
 
   <popper-content #nodePopup>
     <div
@@ -81,47 +85,35 @@
       <ng-container
         *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node))"
       >
-        {{
-          (input.prefix.state
-            ? nodeWithInput.node.state.get(input.prefix.state)
-            : input.prefix) || ''
-        }}
-        <div
-          class="input-text"
-          [popper]="inputPopper"
-          [popperShowOnStart]="false"
-          [popperHideOnClickOutside]="false"
-          [popperHideOnScroll]="true"
-          [popperTrigger]="'none'"
-          [popperPlacement]="'bottom-start'"
-          [popperApplyClass]="'workflow-popper'"
-          (click)="onPoperClick($event, inputPopper)"
-          (mouseover)="showTooltip($event, nodeWithInput, input)"
-          (mouseout)="hideTooltip()"
-        >
-          <span
-            class="value-text"
-            *ngIf="input.getValueName(nodeWithInput.node.state)"
-            title="{{ input.getValueName(nodeWithInput.node.state) }}"
-            (click)="setInput(input, nodeWithInput)"
-            >{{ input.getValueName(nodeWithInput.node.state) }}</span
-          >
-          <span
-            class="placeholder-text"
-            *ngIf="!input.getValueName(nodeWithInput.node.state)"
-          >
-            {{
-              nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
-                input.placeholder
-            }}
-          </span>
-        </div>
-        {{
-          (input.suffix?.state
-            ? nodeWithInput.node.state.get(input.suffix?.state)
-            : input.suffix) || ''
-        }}
+        <ng-container *ngIf="input.nextLine; else defaultInput">
+          <div class="input-next-line">
+            <ng-container
+              *ngTemplateOutlet="
+                renderInput;
+                context: {
+                  input: input,
+                  nodeWithInput: nodeWithInput,
+                  inputPopper: inputPopper
+                }
+              "
+            ></ng-container>
+          </div>
+        </ng-container>
+
+        <ng-template #defaultInput>
+          <ng-container
+            *ngTemplateOutlet="
+              renderInput;
+              context: {
+                input: input,
+                nodeWithInput: nodeWithInput,
+                inputPopper: inputPopper
+              }
+            "
+          ></ng-container>
+        </ng-template>
       </ng-container>
+
       <popper-content #inputPopper>
         <ng-container
           *ngIf="
@@ -152,6 +144,55 @@
         </ng-container>
       </popper-content>
     </ng-container>
+  </ng-template>
+
+  <ng-template
+    #renderInput
+    let-input="input"
+    let-nodeWithInput="nodeWithInput"
+    let-inputPopper="inputPopper"
+  >
+    {{
+      (input.prefix?.state
+        ? nodeWithInput.node.state.get(input.prefix.state)
+        : input.prefix) || ''
+    }}
+    <div
+      class="input-text"
+      [popper]="inputPopper"
+      [popperShowOnStart]="false"
+      [popperHideOnClickOutside]="false"
+      [popperHideOnScroll]="true"
+      [popperTrigger]="'none'"
+      [popperPlacement]="'bottom-start'"
+      [popperApplyClass]="'workflow-popper'"
+      (click)="onPoperClick($event, inputPopper)"
+      (mouseover)="showTooltip($event, nodeWithInput, input)"
+      (mouseout)="hideTooltip()"
+    >
+      <span
+        class="value-text"
+        *ngIf="input.getValueName(nodeWithInput.node.state)"
+        title="{{ input.getValueName(nodeWithInput.node.state) }}"
+        (click)="setInput(input, nodeWithInput)"
+      >
+        {{ input.getValueName(nodeWithInput.node.state) }}
+      </span>
+      <span
+        class="placeholder-text"
+        *ngIf="!input.getValueName(nodeWithInput.node.state)"
+      >
+        {{
+          nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
+            input.placeholder
+        }}
+      </span>
+    </div>
+    {{
+      (input.suffix?.state
+        ? nodeWithInput.node.state.get(input.suffix?.state)
+        : input.suffix) || ''
+    }}
   </ng-template>
 
   <ng-template
