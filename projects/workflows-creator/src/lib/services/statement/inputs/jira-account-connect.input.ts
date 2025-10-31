@@ -1,3 +1,4 @@
+import {InputTypes} from '../../../enum';
 import {ValueInput} from './value.input';
 
 export class JiraAccountConnectInput extends ValueInput {
@@ -6,6 +7,7 @@ export class JiraAccountConnectInput extends ValueInput {
   placeholder = 'Jira account';
   suffix = ' to';
   isLink = true;
+  typeFunction = () => InputTypes.JiraAccountConnectInput;
 
   getIdentifier(): string {
     return JiraAccountConnectInput.identifier;

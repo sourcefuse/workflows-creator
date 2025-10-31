@@ -137,7 +137,8 @@
                 appendEmailBody: appendEmailBody,
                 setFocusKey: setFocusKey,
                 hide: hidePopper(),
-                setFocusOutPos: setFocusOutPos
+                setFocusOutPos: setFocusOutPos,
+                jiraAccountList: jiraAccountList
               }
             "
           ></ng-container>
@@ -365,3 +366,75 @@
     </div>
   </ng-template>
 </div>
+<ng-template
+  #jiraAccountTemplate
+  let-callback="callback"
+  let-input="input"
+  let-nodeWithInput="nodeWithInput"
+  let-hide="hide"
+>
+  <ng-container *ngIf="!jiraAccounts?.length; else connectedJira">
+    <div class="jira-connect-modal" (document:click)="hide()">
+      <div class="jira-connect-modal-header">
+        {{ jiraStrings.connectToJiraLbl }}
+      </div>
+      <div class="jira-connect-modal-subheader">
+        {{ jiraStrings.connectJiraDescLbl }}
+      </div>
+      <div class="jira-connect-modal-footer">
+        <button
+          mat-raised-button
+          color="accent"
+          class="jira-connect-btn"
+          (click)="onConnectJira()"
+        >
+          {{ jiraStrings.connectLbl }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #connectedJira>
+    <div class="jira-connect-modal-with-accounts">
+      <div class="jira-account-list">
+        <div class="jira-connect-modal-header">
+          {{ jiraStrings.connectToJiraLbl }}
+        </div>
+        <div
+          class="jira-connect-modal-subheader"
+          *ngIf="jiraAccounts?.length === 1"
+        >
+          {{ jiraStrings.connectOnJiraThisSiteLbl }}
+        </div>
+        <div
+          class="jira-connect-modal-subheader"
+          *ngIf="jiraAccounts?.length > 1"
+        >
+          {{ jiraStrings.jiraMultipleAccountDescLbl }}
+        </div>
+        <div *ngFor="let account of jiraAccounts" class="jira-account-item">
+          <mat-radio-group
+            class="jira-radio-group"
+            [(ngModel)]="selectedJiraAccount"
+          >
+            <mat-radio-button [value]="account">
+              {{ account.name }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <mat-icon
+            class="icomoon Delete-Outline pointer-cursor icon-delete"
+            (click)="callback('delete', account)"
+          ></mat-icon>
+        </div>
+
+        <button class="connect-btn" (click)="onConnectJira(true)">
+          <div class="jira-connect-more-btn">
+            <mat-icon class="icomoon Plus icon-add"></mat-icon>
+            <span class="jira-connect-more-text">{{
+              jiraStrings.anotherAccountLbl
+            }}</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ng-template>

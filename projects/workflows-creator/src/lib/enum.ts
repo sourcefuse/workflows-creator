@@ -25,6 +25,7 @@ export enum InputTypes {
   Stepper = 'Stepper',
   IntervalDate = 'IntervalDate',
   IntervalTime = 'IntervalTime',
+  JiraAccountConnectInput = 'JiraAccountConnectInput',
 }
 
 /* Defining the types of conditions that can be used in the application. */
@@ -112,6 +113,12 @@ export enum LocalizedStringKeys {
   SelectColumnTooltip = 'selectColumnTooltip',
   SetLbl = 'setLbl',
   CreateJiraIssue = 'createJiraIssueLbl',
+  connectToJira = 'connectToJiraLbl',
+  connectJiraDesc = 'connectJiraDescLbl',
+  connect = 'connectLbl',
+  connectOnJiraThisSite = 'connectOnJiraThisSiteLbl',
+  jiraMultipleAccountDesc = 'jiraMultipleAccountDescLbl',
+  anotherAccount = 'anotherAccountLbl',
 }
 
 export enum IntervalType {

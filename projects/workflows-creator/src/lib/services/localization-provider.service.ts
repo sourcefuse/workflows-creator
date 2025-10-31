@@ -6,6 +6,32 @@ import {LocalizedStringKeys} from '../enum';
   providedIn: 'root',
 })
 export class LocalizationProviderService {
+  /**
+   * Returns all Jira-related localization strings as a single object.
+   */
+  getJiraStrings(): Record<string, string> {
+    return {
+      connectToJiraLbl: this.getLocalizedString(
+        LocalizedStringKeys.connectToJira,
+      ),
+      connectJiraDescLbl: this.getLocalizedString(
+        LocalizedStringKeys.connectJiraDesc,
+      ),
+      connectLbl: this.getLocalizedString(LocalizedStringKeys.connect),
+      connectOnJiraThisSiteLbl: this.getLocalizedString(
+        LocalizedStringKeys.connectOnJiraThisSite,
+      ),
+      jiraMultipleAccountDescLbl: this.getLocalizedString(
+        LocalizedStringKeys.jiraMultipleAccountDesc,
+      ),
+      anotherAccountLbl: this.getLocalizedString(
+        LocalizedStringKeys.anotherAccount,
+      ),
+      createJiraIssueLbl: this.getLocalizedString(
+        LocalizedStringKeys.CreateJiraIssue,
+      ),
+    };
+  }
   localizedStringMap: RecordOfAnyType = {};
 
   constructor() {
@@ -34,6 +60,19 @@ export class LocalizationProviderService {
     this.localizedStringMap[LocalizedStringKeys.SelectColumnTooltip] =
       'Select a column first';
     this.localizedStringMap[LocalizedStringKeys.SetLbl] = 'Set';
+    this.localizedStringMap[LocalizedStringKeys.CreateJiraIssue] =
+      'Create Jira Issue';
+    this.localizedStringMap[LocalizedStringKeys.connectToJira] =
+      'Connect to Jira';
+    this.localizedStringMap[LocalizedStringKeys.connectJiraDesc] =
+      'Connect your Jira account to start creating issues.';
+    this.localizedStringMap[LocalizedStringKeys.connect] = 'Connect';
+    this.localizedStringMap[LocalizedStringKeys.connectOnJiraThisSite] =
+      'Connect on Jira with this site';
+    this.localizedStringMap[LocalizedStringKeys.jiraMultipleAccountDesc] =
+      'Your account is connected to more than one Jira site. Please pick a site to continue:';
+    this.localizedStringMap[LocalizedStringKeys.anotherAccount] =
+      'Another account';
   }
 
   setLocalizedStrings(stringMap: RecordOfAnyType) {

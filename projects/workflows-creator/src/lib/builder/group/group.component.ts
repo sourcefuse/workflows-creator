@@ -52,6 +52,8 @@ import {
   ],
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
+  jiraStrings: Record<string, string> = {};
+
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
@@ -105,6 +107,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     focusKey: '',
     caretPos: 0,
   };
+  jiraAccounts = [];
   dropdownSettings: IDropdownSettings = {
     singleSelection: false,
     idField: 'id',
@@ -168,6 +171,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   @ViewChild('dateTimeTemplate')
   dateTimeTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('jiraAccountTemplate')
+  jiraAccountTemplate: TemplateRef<RecordOfAnyType>;
 
   /**
    * It gets the events and actions from the nodes service and stores them in the events and actions
@@ -183,6 +188,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.typeEmailPlaceholder = this.localizationSvc.getLocalizedString(
       LocalizedStringKeys.TypeEmail,
     );
+
+    // Collect all Jira-related strings in a single object using the service method
+    this.jiraStrings = this.localizationSvc.getJiraStrings();
   }
 
   /**
@@ -220,6 +228,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         this.templateMap?.[InputTypes.IntervalDate] || this.listTemplate,
       [InputTypes.IntervalTime]:
         this.templateMap?.[InputTypes.IntervalTime] || this.listTemplate,
+      // Add JiraAccountConnectInput modal template
+      [InputTypes.JiraAccountConnectInput]:
+        this.templateMap?.[InputTypes.JiraAccountConnectInput] ||
+        this.jiraAccountTemplate,
     };
   }
 

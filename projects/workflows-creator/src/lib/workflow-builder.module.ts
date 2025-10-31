@@ -72,7 +72,9 @@ import {ProcessPropertiesElement} from './services/bpmn/elements/process/process
 import {FormsModule} from '@angular/forms';
 import {AndGroup, OrGroup} from './services/statement/groups';
 import {GroupComponent} from './builder/group/group.component';
-
+import {MatRadioModule} from '@angular/material/radio';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 import {
   NgbDatepickerModule,
   NgbTimepickerModule,
@@ -113,6 +115,9 @@ import {CreateJiraIssue} from './services/bpmn/elements/tasks/create-jira-issue.
   imports: [
     CommonModule,
     FormsModule,
+    MatRadioModule,
+    MatButtonModule,
+    MatIconModule,
     NgxPopperjsModule,
     NgbDatepickerModule,
     NgbTimepickerModule,
