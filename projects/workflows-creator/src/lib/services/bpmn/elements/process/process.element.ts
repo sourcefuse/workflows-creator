@@ -30,6 +30,7 @@ export class ProcessElement extends BpmnElement {
   static identifier = 'ProcessElement';
   attributes = {
     isExecutable: true,
+    historyTimeToLive: 'P3650D',
   };
 
   getIdentifier(): string {

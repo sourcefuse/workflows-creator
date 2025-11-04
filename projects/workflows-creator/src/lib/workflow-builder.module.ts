@@ -89,6 +89,12 @@ import {ENV_TOKEN} from './token';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+import {
+  CriteriaInput,
+  StepperInput,
+  TimeIntervalInput,
+  ToIntervalInput,
+} from './services';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -144,7 +150,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: CriteriaInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: StepperInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: TimeIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ToIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},

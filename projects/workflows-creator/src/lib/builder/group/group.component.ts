@@ -93,7 +93,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   eventAdded = new EventEmitter<unknown>();
 
   @Output()
-  eventRemoved = new EventEmitter<unknown>();
+  nodeRemoved = new EventEmitter<unknown>();
 
   @Output()
   actionAdded = new EventEmitter<unknown>();
@@ -110,6 +110,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     subject: '',
     body: '',
     focusKey: '',
+    caretPos: 0,
   };
 
   dropdownSettings: IDropdownSettings = {
@@ -142,6 +143,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
+  doThisLbl = '';
+  whenThisHappensLbl = '';
+  setLbl = '';
 
   localizedStringKeys = LocalizedStringKeys;
 
@@ -216,6 +220,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         this.templateMap?.[InputTypes.Interval] || this.listTemplate,
       [InputTypes.Email]:
         this.templateMap?.[InputTypes.Email] || this.emailTemplate,
+      [InputTypes.OptionList]:
+        this.templateMap?.[InputTypes.OptionList] || this.listTemplate,
+      [InputTypes.Stepper]:
+        this.templateMap?.[InputTypes.Stepper] || this.listTemplate,
+      [InputTypes.IntervalDate]:
+        this.templateMap?.[InputTypes.IntervalDate] || this.listTemplate,
+      [InputTypes.IntervalTime]:
+        this.templateMap?.[InputTypes.IntervalTime] || this.listTemplate,
     };
   }
 
@@ -229,6 +241,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     if (allowedInputs.includes(input.getIdentifier())) {
       const value = input.getModelValue(nodeWithInput.node.state);
       if (nodeWithInput.node.state.get('email')) {
+        (value as AllowedValuesMap).body = (
+          (value as AllowedValuesMap).body as string
+        ).replace(/\\"/g, '"');
+        (value as AllowedValuesMap).subject = (
+          (value as AllowedValuesMap).subject as string
+        ).replace(/\\"/g, '"');
+
         this.emailInput = value;
       } else {
         switch (nodeWithInput.node.state.get('valueInputType')) {
@@ -269,11 +288,21 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   appendEmailBody(item: Select, emailInput: EmailInput) {
     if (emailInput.focusKey === 'subject') {
-      emailInput.subject += ` ${item.value}`;
+      emailInput.subject = [
+        emailInput.subject.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.subject.slice(emailInput.caretPos),
+      ].join('');
     }
     if (emailInput.focusKey === 'body') {
-      emailInput.body += ` ${item.value}`;
+      emailInput.body = [
+        emailInput.body.slice(0, emailInput.caretPos),
+        `${item.value}`,
+        emailInput.body.slice(emailInput.caretPos),
+      ].join('');
     }
+
+    emailInput.caretPos += `${item.value}`.length;
   }
 
   /**
@@ -284,6 +313,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   setFocusKey(emailInput: EmailInput, key: string) {
     emailInput.focusKey = key;
+  }
+
+  /**
+   * @emailInput this is the object that contains the email input
+   * @caretPosition pos caret position
+   */
+  setFocusOutPos(emailInput: EmailInput, caretPosition: number) {
+    emailInput.caretPos = caretPosition;
   }
 
   /**
@@ -328,6 +365,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       subject: '',
       body: '',
       focusKey: '',
+      caretPos: 0,
     };
     const newNode = {
       node: this.nodes.getNodeByName(
@@ -340,20 +378,20 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       inputs: this.nodes.mapInputs(node),
     };
     if (node.type === NodeTypes.EVENT) {
-      this.eventAdded.emit({
-        node: node,
-        newNode: newNode,
-      });
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
       this.group.children.push(newNode as EventWithInput<E>);
+      this.eventAdded.emit({
+        node: node,
+        newNode: newNode,
+      });
     } else if (node.type === NodeTypes.ACTION) {
+      this.group.children.push(newNode as ActionWithInput<E>);
       this.actionAdded.emit({
         node: node,
         newNode: newNode,
       });
-      this.group.children.push(newNode as ActionWithInput<E>);
     } else {
       throw new InvalidEntityError('Node');
     }
@@ -365,7 +403,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   onNodeRemove(index: number) {
     this.group.children.splice(index, 1);
-    this.eventRemoved.emit();
+    this.nodeRemoved.emit();
   }
 
   /**
@@ -387,10 +425,21 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           element,
           input,
           input.setValue(element.node.state, value),
-          input.typeFunction(element.node.state) === InputTypes.List,
+          input.typeFunction(element.node.state) === InputTypes.List ||
+            input.typeFunction(element.node.state) === InputTypes.OptionList,
         );
+        this.clearValues();
       }
       popper.hide();
+    };
+  }
+
+  private clearValues() {
+    this.emailInput = {
+      subject: '',
+      body: '',
+      focusKey: '',
+      caretPos: 0,
     };
   }
 
@@ -655,6 +704,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     element: NodeWithInput<E>,
     input: WorkflowPrompt,
   ) {
+    if (input.inputKey === 'email') {
+      return;
+    }
     const currentIndex = element.inputs.findIndex(
       i => i.getIdentifier() === input.getIdentifier(),
     );

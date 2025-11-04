@@ -112,12 +112,13 @@ export class OrGatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const lastNodeWithOutput = this.getLastNodeWithOutput(node);
     const read = `var readObj = JSON.parse(execution.getVariable('${lastNodeWithOutput.element.id}'));`;
-    const declarations = `var ids = [];var json = S("{}");`;
+    const declarations = `var ids = [];var json = {};`;
     const column = node.workflowNode.state.get('columnName');
     const condition = this.getCondition(node);
     const loop = this.createLoopScript(node, condition, isElse);
     const setters = `
-      json.prop("taskIds", ids);
+      json["taskIds"] = ids;
+      json.stringify(json);
       execution.setVariable('${flowId}',json);
       if(ids.length > 0){true;}else {false;}
       `;
@@ -161,9 +162,13 @@ export class OrGatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   var taskValuePair = readObj[key];
                   if(taskValuePair && taskValuePair.value){
                     var readDateValue = new Date(taskValuePair.value);
+                    var today = new Date();
+                    readDateValue.setHours(0,0,0,0);
+                    today.setHours(0,0,0,0);
+                    readDateValue.setDate(readDateValue.getDate()${condition});
                     if(${
                       isElse ? '!' : ''
-                    }(readDateValue > new Date() && readDateValue.setDate(readDateValue.getDate()${condition}) < new Date())){
+                    }(readDateValue.valueOf() === today.valueOf())){
                       ids.push(taskValuePair.id);
                     }
                   }

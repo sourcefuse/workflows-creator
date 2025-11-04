@@ -20,6 +20,11 @@ export enum InputTypes {
   People = 'people',
   Percentage = 'percentage',
   Text = 'text',
+  OptionList = 'optionList',
+  Item = 'Item',
+  Stepper = 'Stepper',
+  IntervalDate = 'IntervalDate',
+  IntervalTime = 'IntervalTime',
 }
 
 /* Defining the types of conditions that can be used in the application. */
@@ -110,4 +115,13 @@ export enum LocalizedStringKeys {
 export enum DateTimeFields {
   Date = 'date',
   Time = 'time',
+}
+
+export enum IntervalType {
+  Day = 'day',
+  Days = 'days',
+  Weeks = 'weeks',
+  Months = 'months',
+  Week = 'week',
+  Month = 'month',
 }

@@ -20,6 +20,7 @@ export class ValueTypeInput extends WorkflowListPrompt {
       InputTypes.Number,
       InputTypes.People,
       InputTypes.Percentage,
+      InputTypes.Date,
     ].includes(node.state.get('valueInputType'));
   };
 

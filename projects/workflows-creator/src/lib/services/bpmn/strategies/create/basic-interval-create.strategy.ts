@@ -7,7 +7,17 @@ import {
   ModdleElement,
   RecordOfAnyType,
 } from '../../../../types';
-import {WorkflowElement} from '../../../../classes';
+import {State, WorkflowElement} from '../../../../classes';
+
+enum WeekDaysEnum {
+  sunday = 1,
+  monday = 2,
+  tuesday = 3,
+  wednesday = 4,
+  thursday = 5,
+  friday = 6,
+  saturday = 7,
+}
 
 @Injectable()
 export class CreateBasicIntervalStrategy
@@ -38,9 +48,7 @@ export class CreateBasicIntervalStrategy
     const state = workflowNode.state;
     const timeCycle = this.moddle.create('bpmn:FormalExpression', {
       'xsi:type': 'bpmn:tFormalExpression',
-      body: `R/P${state.get('timescale')}${state.get('value')}${state.get(
-        'interval',
-      )}`,
+      body: this.intervalBodyPrepare(state),
     });
 
     timerEventDefinition['timeCycle'] = timeCycle;
@@ -51,6 +59,53 @@ export class CreateBasicIntervalStrategy
       ...this.parseAttributes(attrs, node),
       eventDefinitions: [timerEventDefinition],
     });
+  }
+
+  private intervalBodyPrepare(state: State<RecordOfAnyType>) {
+    if (
+      state.get('interval') === 'M' &&
+      state.get('toInterval') &&
+      state.get('TimeInterval')
+    ) {
+      const val =
+        state.get('value') == 1
+          ? '*'
+          : `${state.get('toInterval').month}/${state.get('value')}`;
+      const timeZoneDate = new Date();
+      timeZoneDate.setHours(state.get('TimeInterval').hour);
+      timeZoneDate.setMinutes(state.get('TimeInterval').min);
+      return `0 timeZoneDate(${timeZoneDate})timeZoneDateEnd ${
+        state.get('toInterval').date
+      } ${val} ?`;
+    } else if (
+      state.get('interval') === 'W' &&
+      state.get('toInterval') &&
+      state.get('TimeInterval')
+    ) {
+      const val = state.get('value') == 1 ? '' : `/${state.get('value')}`;
+      let weekDays = state
+        .get('toInterval')
+        ?.ids?.map(
+          (day: string) => WeekDaysEnum[day as keyof typeof WeekDaysEnum],
+        )
+        .join(',');
+      const timeZoneDate = new Date();
+      timeZoneDate.setHours(state.get('TimeInterval').hour);
+      timeZoneDate.setMinutes(state.get('TimeInterval').min);
+      return `0 timeZoneDate(${timeZoneDate})timeZoneDateEnd ? * ${weekDays}${val}`;
+    } else if (state.get('interval') === 'D' && state.get('TimeInterval')) {
+      const today = new Date();
+      today.setHours(state.get('TimeInterval').hour);
+      today.setMinutes(state.get('TimeInterval').min);
+      let isoString = '';
+      if (today.getTime() < new Date().getTime()) {
+        today.setDate(today.getDate() + 1);
+      }
+      isoString = today.toISOString();
+      return `R/${isoString}/P${state.get('value')}${state.get('interval')}`;
+    } else {
+      return '0 0 0 ? * *';
+    }
   }
 
   /**
