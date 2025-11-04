@@ -2,7 +2,6 @@ import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import BPMNModdle from 'bpmn-moddle';
-import {BrowserModule} from '@angular/platform-browser';
 import {CustomBpmnModdle} from './types/bpmn.types';
 import {CAMUNDA} from './schema/camunda.json';
 import {BpmnElementService} from './services/bpmn/element.service';
@@ -87,7 +86,6 @@ import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.co
 import {LocalizationPipe} from './pipes/localization.pipe';
 import {ENV_TOKEN} from './token';
 import {NgSelectModule} from '@ng-select/ng-select';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {
   CriteriaInput,
@@ -109,8 +107,6 @@ import {
     CommonModule,
     FormsModule,
     NgxPopperjsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
     NgSelectModule,
   ],

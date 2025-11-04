@@ -306,7 +306,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
 
   onNodeRemoved() {
     this.updateDiagram();
-    if (this.eventGroups[0]?.children?.length) this.hideNodeElseBlockIfRequired();
+    if (this.eventGroups[0]?.children?.length)
+      this.hideNodeElseBlockIfRequired();
   }
   /**
    * When an action is added, emit an event with the name of the action and the action itself, update
