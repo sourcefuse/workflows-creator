@@ -9,7 +9,7 @@ export class IntervalInput extends WorkflowPrompt {
   inputKey = 'interval';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Interval';
+  placeholder = 'interval';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('intervalList');
   static identifier = 'IntervalInput';

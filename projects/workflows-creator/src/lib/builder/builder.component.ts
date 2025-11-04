@@ -186,6 +186,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           action: action.node as WorkflowAction<E>,
         });
       });
+      this.hideElseBlockIfRequired();
       this.updateDiagram();
     }
   }
