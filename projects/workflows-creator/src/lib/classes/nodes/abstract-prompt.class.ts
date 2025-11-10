@@ -54,6 +54,7 @@ export abstract class WorkflowPrompt {
     value: AllowedValues | AllowedValuesMap,
   ) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         return value;
       case InputTypes.People: {
@@ -94,12 +95,19 @@ export abstract class WorkflowPrompt {
         const dateTime = `${this.onDateSelect(date)} ${hours}:${min}`;
         return moment(dateTime.toString(), 'DD-MM-YYYY hh:mm').format();
       case InputTypes.Email:
+        (value as AllowedValuesMap).body = (
+          (value as AllowedValuesMap).body as string
+        ).replace(/"/g, '\\"');
+        (value as AllowedValuesMap).subject = (
+          (value as AllowedValuesMap).subject as string
+        ).replace(/"/g, '\\"');
         (value as AllowedValuesMap).displayValue = 'email';
         return value;
       case InputTypes.Number:
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         if (value) {
           return (value as HTMLInputElement).value;
@@ -140,6 +148,7 @@ export abstract class WorkflowPrompt {
    */
   getValueName<S extends RecordOfAnyType>(state: State<S>) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         if (typeof state.get(`${this.inputKey}Name`) === 'object') {
           return state.get(`${this.inputKey}Name`)?.displayValue;
@@ -161,10 +170,14 @@ export abstract class WorkflowPrompt {
               .utc(state.get(this.inputKey), 'YYYY-MM-DD hh:mm')
               .format('MMM DD, YYYY hh:mm A')
           : '';
+      case InputTypes.IntervalDate:
+      case InputTypes.IntervalTime:
+        return state.get(this.inputKey)?.value;
       case InputTypes.Number:
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         return state.get(this.inputKey);
     }
@@ -178,6 +191,7 @@ export abstract class WorkflowPrompt {
    */
   setValueName<S extends RecordOfAnyType>(state: State<S>) {
     switch (this.typeFunction(state)) {
+      case InputTypes.OptionList:
       case InputTypes.List:
         if (
           typeof state.get(this.inputKey) === 'object' &&
@@ -200,6 +214,7 @@ export abstract class WorkflowPrompt {
       case InputTypes.Text:
       case InputTypes.Boolean:
       case InputTypes.Percentage:
+      case InputTypes.Stepper:
       default:
         return state.get(this.inputKey);
     }

@@ -6,7 +6,8 @@
     "angular-library"
   ],
   "peerDependencies": {
-    "@popperjs/core": "^2.11.6"
+    "@popperjs/core": "^2.11.6",
+    "ng-multiselect-dropdown": "^0.3.9"
   },
   "scripts": {
     "checkIfNodeModulesExist": "[ -d \"../../node_modules\" ]",

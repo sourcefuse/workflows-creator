@@ -3,8 +3,8 @@ import {InputTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
 export class IntervalInput extends WorkflowPrompt {
-  prefix = '';
-  suffix = '';
+  prefix: string | {state: string} = {state: 'valuePrefix'};
+  suffix: string | {state: string} = {state: 'intervalValueSuffix'};
   typeFunction = () => InputTypes.List;
   inputKey = 'interval';
   listNameField = 'text';

@@ -142,38 +142,53 @@ export class CreateTaskStrategy implements CreateStrategy<ModdleElement> {
     let read = '';
     if (froms.length > 0) {
       if (prevIds.length) {
-        read = `var readObj = ${prevIds
-          .map(id => `JSON.parse(execution.getVariable('${id}'))`)
-          .join(' || ')} || {};`;
+        read = `${prevIds
+          .map(
+            (id, index) =>
+              `var readObj${index} = JSON.parse(execution.getVariable('${id}')) || {};`,
+          )
+          .join('\n')}
+          `;
       }
     }
-    const getVariables = froms
-      .map(
-        p =>
-          `var ${(p as FromParam).from}Local = readObj.${
-            (p as FromParam).from
-          };`,
-      )
-      .join('\n');
+    const getVariables = froms.map(
+      p =>
+        `
+          var ${(p as FromParam).from}Local;
+          ${prevIds
+            .map(
+              (_: any, index: number) => `
+                if(readObj${index}.${
+                (p as FromParam).from
+              } && readObj${index}.${(froms[0] as FromParam).from}.length){
+                  ${(froms[0] as FromParam).from}Local = readObj${index}.${
+                (froms[0] as FromParam).from
+              };
+                }
+              `,
+            )
+            .join('\n')}
+        `,
+    );
     const setVariabels = Object.keys(params).reduce(
       (p: string, key: string) => {
         const tmp = params[key];
         if (isFormattedParam(tmp)) {
-          return `${p}\njson.prop("${key}", ${tmp.formatter(state)});`;
+          return `${p}\njson["${key}"] = ${tmp.formatter(state)};`;
         } else if (isFromParam(tmp)) {
-          return `${p}\njson.prop("${key}", ${tmp.from}Local);`;
+          return `${p}\njson["${key}"] = ${tmp.from}Local;`;
         } else if (isStateParam(tmp)) {
           if (
             tmp.state === 'recipients' &&
             Array.isArray(state.get(tmp.state))
           ) {
             const metaValue = this.transposeArrayToString(state.get(tmp.state));
-            return `${p}\njson.prop("${key}", [${metaValue ?? ''}]);`;
+            return `${p}\njson["${key}"] = [${metaValue ?? ''}];`;
           }
 
-          return `${p}\njson.prop("${key}", "${state.get(tmp.state) ?? ''}");`;
+          return `${p}\njson["${key}"] = "${state.get(tmp.state) ?? ''}";`;
         } else {
-          return `${p}\njson.prop("${key}", "${tmp.value}");`;
+          return `${p}\njson["${key}"] = "${tmp.value}";`;
         }
       },
       '',
@@ -181,9 +196,9 @@ export class CreateTaskStrategy implements CreateStrategy<ModdleElement> {
     return [
       read,
       getVariables,
-      `var json = S("{}");`,
+      `var json = {};`,
       setVariabels,
-      'json',
+      'JSON.stringify(json)',
     ].join('\n');
   }
 

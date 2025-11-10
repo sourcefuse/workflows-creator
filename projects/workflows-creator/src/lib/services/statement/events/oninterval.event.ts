@@ -2,8 +2,9 @@ import {LocalizedStringKeys, StartElementTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 import {BpmnEvent} from '../../../types/bpmn.types';
 import {TriggerOnInterval} from '../../bpmn/elements/tasks/trigger-on-interval.task';
+import {TimeIntervalInput, ToIntervalInput} from '../inputs';
 import {IntervalInput} from '../inputs/interval.input';
-import {ValueInput} from '../inputs/value.input';
+import {StepperInput} from '../inputs/stepper.input';
 
 export class OnIntervalEvent extends BpmnEvent {
   groupType: string;
@@ -14,7 +15,12 @@ export class OnIntervalEvent extends BpmnEvent {
   name = 'On Interval';
   statement = 'Every ';
   properties = {};
-  prompts = [ValueInput.identifier, IntervalInput.identifier];
+  prompts = [
+    StepperInput.identifier,
+    IntervalInput.identifier,
+    ToIntervalInput.identifier,
+    TimeIntervalInput.identifier,
+  ];
   static identifier = 'OnIntervalEvent';
   constructor(
     localizedStringMap: RecordOfAnyType,

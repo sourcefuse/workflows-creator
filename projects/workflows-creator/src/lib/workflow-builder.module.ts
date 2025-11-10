@@ -2,7 +2,6 @@ import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import BPMNModdle from 'bpmn-moddle';
-import {BrowserModule} from '@angular/platform-browser';
 import {CustomBpmnModdle} from './types/bpmn.types';
 import {CAMUNDA} from './schema/camunda.json';
 import {BpmnElementService} from './services/bpmn/element.service';
@@ -87,8 +86,13 @@ import {TooltipRenderComponent} from './builder/tooltip-render/tooltip-render.co
 import {LocalizationPipe} from './pipes/localization.pipe';
 import {ENV_TOKEN} from './token';
 import {NgSelectModule} from '@ng-select/ng-select';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+import {
+  ListOptionInput,
+  StepperInput,
+  TimeIntervalInput,
+  ToIntervalInput,
+} from './services';
 @NgModule({
   declarations: [
     BuilderComponent,
@@ -103,8 +107,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     CommonModule,
     FormsModule,
     NgxPopperjsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
     NgSelectModule,
   ],
@@ -144,7 +146,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ListOptionInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: StepperInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: TimeIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ToIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},

@@ -21,7 +21,7 @@ export class GatewayElement extends BpmnElement {
   ) {
     super();
   }
-  tag = 'bpmn:ExclusiveGateway';
+  tag = 'bpmn:InclusiveGateway';
   name = 'gateway';
   properties = {};
   statement: string | undefined;

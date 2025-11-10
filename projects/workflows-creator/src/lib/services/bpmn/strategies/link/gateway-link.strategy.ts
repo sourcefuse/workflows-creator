@@ -193,12 +193,13 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const lastNodeWithOutput = this.getLastNodeWithOutput(node);
     const read = `var readObj = JSON.parse(execution.getVariable('${lastNodeWithOutput.element.id}'));`;
-    const declarations = `var ids = [];var json = S("{}");`;
+    const declarations = `var ids = [];var json = {};`;
     const column = node.workflowNode.state.get('columnName');
     const condition = this.getCondition(node);
     const loop = this.createLoopScript(node, condition, isElse);
     const setters = `
-      json.prop("taskIds", ids);
+      json["taskIds"] = ids;
+      json = JSON.stringify(json);
       execution.setVariable('${flowId}',json);
       if(ids.length > 0){true;}else {false;}
       `;
@@ -224,10 +225,30 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   ) {
     const column: string = node.workflowNode.state.get('columnName');
     const conditionType = node.workflowNode.state.get('condition');
-    const value = node.workflowNode.state.get('value');
+    const valueType = node.workflowNode.state.get('valueType');
+    const valueInputType = node.workflowNode.state.get('valueInputType');
 
-    if (!conditionType && value) {
-      switch (value) {
+    if (
+      valueInputType === InputTypes.Date &&
+      (valueType === ValueTypes.Custom ||
+        conditionType === ConditionTypes.Equal)
+    ) {
+      return `
+                  for (var key in readObj) {
+                    var taskValuePair = readObj[key];
+                    if (taskValuePair && (taskValuePair.value || taskValuePair.value==='')) {
+                      var readDateValue = taskValuePair.value.split('T')[0];
+                      var customDate = "${condition}";
+
+                      if (${isElse ? '!' : ''}(readDateValue === customDate)) {
+                        ids.push(taskValuePair.id);
+                      }
+                    }
+                  }
+                `;
+    }
+    if (!conditionType && valueType && valueInputType === InputTypes.Date) {
+      switch (valueType) {
         case ValueTypes.PastToday:
           return `
                 for(var key in readObj){
@@ -252,6 +273,20 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   }
                 }
               `;
+        case ValueTypes.Custom:
+          return `
+                  for (var key in readObj) {
+                    var taskValuePair = readObj[key];
+                    if (taskValuePair && taskValuePair.value) {
+                      var readDateValue = taskValuePair.value.split('T')[0];
+                      var customDate = "${condition}";
+
+                      if (${isElse ? '!' : ''}(readDateValue === customDate)) {
+                        ids.push(taskValuePair.id);
+                      }
+                    }
+                  }
+                `;
       }
     }
 
@@ -302,6 +337,28 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
             }
           }`;
     }
+    if (column === InputTypes.Item) {
+      return `var selectedVals = ${condition};
+      var selCol = selectedVals.split(',');
+      for(var key in readObj){
+        var taskValuePair = readObj[key];
+        if(taskValuePair && taskValuePair.value && taskValuePair.value.length){
+            var hasItem = false;
+            var usCol = taskValuePair.value;
+
+            for(var selKey in selCol){
+                for(var myKey in usCol){
+                    if(usCol[myKey].value == selCol[selKey] && !hasItem){
+                        hasItem = true;
+                    }
+                }
+            }
+            if(${conditionExpression}(hasItem)){
+                ids.push(taskValuePair.id);
+            }
+        }
+      }`;
+    }
     switch (conditionType) {
       case ConditionTypes.PastToday:
         return `
@@ -322,9 +379,13 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
                   var taskValuePair = readObj[key];
                   if(taskValuePair && taskValuePair.value){
                     var readDateValue = new Date(taskValuePair.value);
+                    var today = new Date();
+                    readDateValue.setHours(0,0,0,0);
+                    today.setHours(0,0,0,0);
+                    readDateValue.setDate(readDateValue.getDate()${condition});
                     if(${
                       isElse ? '!' : ''
-                    }(readDateValue > new Date() && readDateValue.setDate(readDateValue.getDate()${condition}) < new Date())){
+                    }(readDateValue.valueOf() === today.valueOf())){
                       ids.push(taskValuePair.id);
                     }
                   }
@@ -369,12 +430,21 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
   private getCondition(node: BpmnStatementNode) {
     let value = node.workflowNode.state.get('value');
     const valueType = node.workflowNode.state.get('valueInputType');
-    if (valueType === InputTypes.Text || valueType === InputTypes.List) {
-      value = `'${value}'`;
-    }
-    if (value && valueType === InputTypes.People) {
-      return `'${value.ids}'`;
-    }
+    if (value)
+      switch (valueType) {
+        case InputTypes.Stepper:
+        case InputTypes.Text:
+          value = `'${value}'`;
+          break;
+        case InputTypes.OptionList:
+        case InputTypes.List:
+          value = `'${value.value}'`;
+          break;
+        case InputTypes.People:
+          return `'${value.ids}'`;
+        case InputTypes.Date:
+          return `${value.split('T')[0]}`;
+      }
     const condition = node.workflowNode.state.get('condition');
     const pair = this.conditions.find(item => item.condition === condition);
     if (!pair) {
