@@ -88,7 +88,7 @@ import {ENV_TOKEN} from './token';
 import {NgSelectModule} from '@ng-select/ng-select';
 
 import {
-  CriteriaInput,
+  ListOptionInput,
   StepperInput,
   TimeIntervalInput,
   ToIntervalInput,
@@ -146,7 +146,7 @@ import {
     {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
     {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
     {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: CriteriaInput, multi: true},
+    {provide: BPMN_INPUTS, useClass: ListOptionInput, multi: true},
     {provide: BPMN_INPUTS, useClass: StepperInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TimeIntervalInput, multi: true},
     {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},

@@ -2,19 +2,22 @@ import {State, WorkflowPrompt} from '../../../classes';
 import {InputTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
-export class CriteriaInput extends WorkflowPrompt {
+export class ListOptionInput extends WorkflowPrompt {
   prefix = '';
   suffix = '';
   typeFunction = () => InputTypes.OptionList;
   inputKey = 'column';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Criteria';
+  placeholder = 'Option';
+  customPlaceholder: string | {state: string} = {
+    state: 'listOptionPlaceholder',
+  };
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('columns');
-  static identifier = 'CriteriaInput';
+  static identifier = 'ListOptionInput';
 
   getIdentifier(): string {
-    return CriteriaInput.identifier;
+    return ListOptionInput.identifier;
   }
 }
