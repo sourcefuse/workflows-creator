@@ -9,7 +9,7 @@ export class ValueTypeInput extends WorkflowListPrompt {
   inputKey = 'valueType';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Something';
+  placeholder = 'something';
 
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('valueTypes') as [];

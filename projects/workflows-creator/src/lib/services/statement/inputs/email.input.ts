@@ -9,7 +9,7 @@ export class EmailDataInput extends WorkflowPrompt {
   suffix = '';
   typeFunction = () => InputTypes.Email;
   inputKey = 'email';
-  placeholder = 'Email';
+  placeholder = 'email';
   static identifier = 'EmailDataInput';
 
   getIdentifier(): string {

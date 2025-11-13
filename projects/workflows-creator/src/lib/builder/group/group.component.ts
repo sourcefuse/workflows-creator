@@ -176,7 +176,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.events = this.nodes.getEvents();
     this.triggerEvents = this.nodes.getEvents(true);
-    this.actions = this.nodes.getActions();
+    this.actions = this.nodes
+      .getActions()
+      .sort((a, b) =>
+        a.name
+          .toString()
+          .localeCompare(b.name.toString(), undefined, {sensitivity: 'base'}),
+      );
+
     this.typeSubjectPlaceholder = this.localizationSvc.getLocalizedString(
       LocalizedStringKeys.TypeSubject,
     );
@@ -190,36 +197,29 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * use the default template
    */
   ngAfterViewInit() {
+    // Create a base template map with defaults
+    const baseTemplateMap = {
+      [InputTypes.Boolean]: this.listTemplate,
+      [InputTypes.List]: this.listTemplate,
+      [InputTypes.Text]: this.textTemplate,
+      [InputTypes.Number]: this.numberTemplate,
+      [InputTypes.Percentage]: this.numberTemplate,
+      [InputTypes.Date]: this.dateTemplate,
+      [InputTypes.DateTime]: this.dateTimeTemplate,
+      [InputTypes.People]: this.searchableDropdownTemplate,
+      [InputTypes.Interval]: this.listTemplate,
+      [InputTypes.Email]: this.emailTemplate,
+      [InputTypes.OptionList]: this.listTemplate,
+      [InputTypes.Stepper]: this.listTemplate,
+      [InputTypes.IntervalDate]: this.listTemplate,
+      [InputTypes.IntervalTime]: this.listTemplate,
+    };
+
+    // Merge consumer's custom templates with base templates
+    // Consumer templates take priority, base templates are fallbacks
     this.templateMap = {
-      [InputTypes.Boolean]:
-        this.templateMap?.[InputTypes.Boolean] || this.listTemplate,
-      [InputTypes.List]:
-        this.templateMap?.[InputTypes.List] || this.listTemplate,
-      [InputTypes.Text]:
-        this.templateMap?.[InputTypes.Text] || this.textTemplate,
-      [InputTypes.Number]:
-        this.templateMap?.[InputTypes.Number] || this.numberTemplate,
-      [InputTypes.Percentage]:
-        this.templateMap?.[InputTypes.Percentage] || this.numberTemplate,
-      [InputTypes.Date]:
-        this.templateMap?.[InputTypes.Date] || this.dateTemplate,
-      [InputTypes.DateTime]:
-        this.templateMap?.[InputTypes.DateTime] || this.dateTimeTemplate,
-      [InputTypes.People]:
-        this.templateMap?.[InputTypes.People] ||
-        this.searchableDropdownTemplate,
-      [InputTypes.Interval]:
-        this.templateMap?.[InputTypes.Interval] || this.listTemplate,
-      [InputTypes.Email]:
-        this.templateMap?.[InputTypes.Email] || this.emailTemplate,
-      [InputTypes.OptionList]:
-        this.templateMap?.[InputTypes.OptionList] || this.listTemplate,
-      [InputTypes.Stepper]:
-        this.templateMap?.[InputTypes.Stepper] || this.listTemplate,
-      [InputTypes.IntervalDate]:
-        this.templateMap?.[InputTypes.IntervalDate] || this.listTemplate,
-      [InputTypes.IntervalTime]:
-        this.templateMap?.[InputTypes.IntervalTime] || this.listTemplate,
+      ...baseTemplateMap,
+      ...this.templateMap, // Consumer's custom templates override defaults
     };
   }
 
