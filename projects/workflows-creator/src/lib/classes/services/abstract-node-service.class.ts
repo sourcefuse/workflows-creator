@@ -4,7 +4,7 @@ import {WorkflowNode} from '../../types/base.types';
 import {AbstractBaseGroup} from '../nodes';
 
 export abstract class NodeService<E> {
-  abstract getActions(): WorkflowNode<E>[];
+  abstract getActions(selectedEvent?: string): WorkflowNode<E>[];
   abstract getEvents(trigger?: boolean): WorkflowNode<E>[];
   abstract getGroups(
     trigger?: boolean,

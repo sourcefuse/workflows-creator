@@ -176,13 +176,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.events = this.nodes.getEvents();
     this.triggerEvents = this.nodes.getEvents(true);
-    this.actions = this.nodes
-      .getActions()
-      .sort((a, b) =>
-        a.name
-          .toString()
-          .localeCompare(b.name.toString(), undefined, {sensitivity: 'base'}),
-      );
+    this.actions = [];
 
     this.typeSubjectPlaceholder = this.localizationSvc.getLocalizedString(
       LocalizedStringKeys.TypeSubject,
@@ -323,15 +317,44 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    */
   openPopup(type: NodeTypes) {
     if (type === NodeTypes.ACTION) {
-      this.nodeList = this.actions;
-    } else if (type === NodeTypes.EVENT) {
+      const selectedEvent = this.fetchSelectedEvent();
+      this.nodeList = this.nodes.getActions(selectedEvent);
+      return;
+    }
+    if (type === NodeTypes.EVENT) {
       this.nodeList =
-        this.eventGroups.length === 1 && !this.group.children.length
+        this.eventGroups?.length === 1 && !this.group.children.length
           ? this.triggerEvents
           : this.events;
-    } else {
-      throw new InvalidEntityError('' + type);
+      return;
     }
+    throw new InvalidEntityError(String(type));
+  }
+
+  private fetchSelectedEvent() {
+    let selectedEvent: string | undefined;
+
+    // Method 1: find first EVENT in eventGroups
+    if (this.eventGroups?.length) {
+      for (const group of this.eventGroups) {
+        const firstChild = group?.children?.[0];
+        if (firstChild?.node?.type === NodeTypes.EVENT) {
+          selectedEvent = firstChild.node.getIdentifier();
+          break;
+        }
+      }
+    }
+
+    // Method 2: fallback - find first EVENT in current group
+    if (!selectedEvent) {
+      for (const child of this.group.children ?? []) {
+        if (child?.node?.type === NodeTypes.EVENT) {
+          selectedEvent = child.node.getIdentifier();
+          break;
+        }
+      }
+    }
+    return selectedEvent;
   }
 
   /**
@@ -362,6 +385,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
+      this.actions = this.nodes.getActions(); // Get all actions initially
       this.group.children.push(newNode as EventWithInput<E>);
       this.eventAdded.emit({
         node: node,
