@@ -113,6 +113,20 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
 
   nodeList: AbstractBaseGroup<E>[] = [];
   processId: string;
+
+  // Current selected event identifier for action filtering
+  get currentSelectedEvent(): string | undefined {
+    // Look through event groups to find the first selected event
+    for (const eventGroup of this.eventGroups) {
+      if (eventGroup?.children?.length > 0) {
+        const firstChild = eventGroup.children[0];
+        if (firstChild?.node?.type === NodeTypes.EVENT) {
+          return firstChild.node.getIdentifier();
+        }
+      }
+    }
+    return undefined;
+  }
   // sonarignore:start
   // TODO: Refactor this code to be more flexible
   // sonarignore:start
@@ -225,6 +239,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param event - ElementsWithInput<E>
    */
   onEventAdded(event: ElementsWithInput<E>) {
+    // Check if we need to clear existing actions when event changes
+    this.clearIncompatibleActions(event.node.getIdentifier());
+
     this.eventAdded.emit({
       name: event.node.getIdentifier(),
       event: event.newNode.node as WorkflowEvent<E>,
@@ -235,6 +252,44 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       this.eventGroups[0]?.children?.length === 1 &&
       (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
         event.node.getIdentifier() === EventTypes.OnAddItemEvent);
+  }
+
+  /**
+   * Clears actions that are not compatible with the selected event
+   * @param selectedEvent - The identifier of the selected event
+   */
+  private clearIncompatibleActions(selectedEvent: string) {
+    if (this.actionGroups[0]?.children?.length > 0) {
+      // Get list of actions that should remain (compatible with new event)
+      const compatibleActions = this.nodes.getActions(selectedEvent);
+      const compatibleActionIds = new Set(
+        compatibleActions.map(action => action.getIdentifier()),
+      );
+
+      // Filter out incompatible actions
+      const currentActions = [...this.actionGroups[0].children];
+      const actionsToRemove: number[] = [];
+
+      currentActions.forEach((action, index) => {
+        const actionId = action.node.getIdentifier();
+        if (!compatibleActionIds.has(actionId)) {
+          actionsToRemove.push(index);
+        }
+      });
+
+      // Remove incompatible actions (reverse order to maintain indexes)
+      actionsToRemove.reverse().forEach(index => {
+        this.actionGroups[0].children.splice(index, 1);
+      });
+
+      // Clear state for removed actions
+      actionsToRemove.forEach(index => {
+        const removedAction = currentActions[index];
+        if (removedAction) {
+          this.updateState(removedAction.node, removedAction.inputs, true);
+        }
+      });
+    }
   }
 
   /**

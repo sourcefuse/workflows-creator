@@ -34,18 +34,36 @@ export class BpmnNodesService<E> extends NodeService<E> {
    * > Get all the nodes that are of type `ACTION`
    *
    * The function is a bit more complicated than that, but that's the gist of it
+   * @param selectedEvent - Optional event identifier to filter actions by eventBinded property
    * @returns An array of action nodes.
    */
-  getActions() {
-    return this.nodes
-      .map(
-        Node =>
-          new Node(
-            this.localizationSvc.getLocalizedStringMap(),
-            this.utils.uuid(),
-          ),
-      )
-      .filter(n => n.type === NodeTypes.ACTION);
+  getActions(selectedEvent?: string) {
+    const localizedStrings = this.localizationSvc.getLocalizedStringMap();
+
+    const actions = this.nodes
+      .map(Node => new Node(localizedStrings, this.utils.uuid()))
+      .filter(n => n.type === NodeTypes.ACTION)
+      .sort((a, b) =>
+        a.name.toString().localeCompare(b.name.toString(), undefined, {
+          sensitivity: 'base',
+        }),
+      );
+
+    return actions.filter(action => {
+      const a = action as WorkflowAction<E> & {eventBinded?: string[]};
+      const events = a.eventBinded;
+
+      if (!Array.isArray(events)) {
+        // unbound actions always allowed
+        return true;
+      }
+
+      if (!selectedEvent) {
+        // no selectedEvent → return only unbound actions
+        return false;
+      }
+      return events.includes(selectedEvent);
+    });
   }
 
   /**
