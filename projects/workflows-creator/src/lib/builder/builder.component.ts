@@ -92,6 +92,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
 
   @Output()
+  actionGroupsAdded = new EventEmitter<AbstractBaseGroup<E>[]>();
+
+  @Output()
   diagramChange = new EventEmitter<Object>();
 
   @Output()
@@ -200,6 +203,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
           action: action.node as WorkflowAction<E>,
         });
       });
+      this.actionGroupsAdded.emit(this.actionGroups);
       this.hideElseBlockIfRequired();
       this.updateDiagram();
     }
