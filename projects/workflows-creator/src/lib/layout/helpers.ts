@@ -54,7 +54,9 @@ export function connectRectangles(
     if (['top-left', 'top', 'top-right'].includes(orientation)) {
       start = {original: start, x: start['x'], y: source.y + source.height};
       end = {original: end, x: end['x'], y: target.y};
-    } else if (['bottom-left', 'bottom', 'bottom-right']) {
+    } else if (
+      ['bottom-left', 'bottom', 'bottom-right'].includes(orientation)
+    ) {
       start = {original: start, x: start['x'], y: source.y};
       end = {original: end, x: end['x'], y: target.y + target.height};
     } else {

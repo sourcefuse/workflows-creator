@@ -11,13 +11,7 @@
       <span
         class="input-text"
         *ngIf="group.children.length === 0"
-        [popper]="nodePopup"
-        [popperShowOnStart]="false"
-        [popperHideOnClickOutside]="true"
-        [popperHideOnScroll]="true"
-        [popperTrigger]="'click'"
-        [popperPlacement]="'bottom'"
-        (click)="openPopup(group.nodeType)"
+        (click)="openPopup(group.nodeType, $event)"
       >
         <span *ngIf="group.nodeType === types.EVENT">
           {{ localizedStringKeys.WhenThisHappens | localization }}
@@ -35,12 +29,6 @@
       <span
         class="action-add"
         *ngIf="isLast && nodeType === types.EVENT"
-        [popper]="popupTemplate"
-        [popperShowOnStart]="false"
-        [popperHideOnClickOutside]="true"
-        [popperHideOnScroll]="true"
-        [popperTrigger]="'click'"
-        [popperPlacement]="'bottom'"
         (click)="addClick()"
       >
         <span class="action-icons icon-workflow-plus"></span>
@@ -58,26 +46,11 @@
       [isLast]="i === group.children.length - 1"
       [isFirst]="i === 0"
       [inputTemplate]="inputs"
-      [popupTemplate]="nodePopup"
-      (add)="openPopup(group.nodeType)"
+      (add)="openPopup(group.nodeType, $event)"
       (remove)="onNodeRemove(i)"
     ></workflow-node>
   </span>
 
-  <popper-content #nodePopup>
-    <div
-      class="option-div"
-      (click)="
-        onNodeAdd(node, group.getIdentifier(), group.id);
-        nodePopup.hide();
-        $event.stopPropagation();
-        $event.stopPropagation()
-      "
-      *ngFor="let node of nodeList"
-    >
-      {{ node.name }}
-    </div>
-  </popper-content>
 
   <ng-template #inputs let-nodeWithInput="node">
     <ng-container *ngFor="let input of nodeWithInput.inputs || []">
@@ -91,14 +64,20 @@
         }}
         <div
           class="input-text"
-          [popper]="inputPopper"
-          [popperShowOnStart]="false"
-          [popperHideOnClickOutside]="false"
-          [popperHideOnScroll]="true"
-          [popperTrigger]="'none'"
-          [popperPlacement]="'bottom-start'"
-          [popperApplyClass]="'workflow-popper'"
-          (click)="onPoperClick($event, inputPopper)"
+          (click)="
+            openOverlay($event, inputPopupTemplate, {
+              nodeWithInput: nodeWithInput,
+              input: input,
+              list: input.options
+                ? input.options(nodeWithInput.node.state)
+                : [],
+              callback: createCallback(nodeWithInput, input),
+              emailInput: emailInput,
+              appendEmailBody: appendEmailBody,
+              setFocusKey: setFocusKey,
+              hide: closeOverlay.bind(this)
+            })
+          "
           (mouseover)="showTooltip($event, nodeWithInput, input)"
           (mouseout)="hideTooltip()"
         >
@@ -125,36 +104,6 @@
             : input.suffix) || ''
         }}
       </ng-container>
-      <popper-content #inputPopper>
-        <div (click)="$event.stopPropagation()">
-          <ng-container
-            *ngIf="
-              inputPopper.displayType === 'block' &&
-              templateMap &&
-              templateMap[input.typeFunction(nodeWithInput.node.state)]
-            "
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                templateMap[input.typeFunction(nodeWithInput.node.state)] ||
-                  listTemplate;
-                context: {
-                  list: input.options
-                    ? input.options(nodeWithInput.node.state)
-                    : [],
-                  callback: createCallback(nodeWithInput, input, inputPopper),
-                  nodeWithInput: nodeWithInput,
-                  input: input,
-                  emailInput: emailInput,
-                  appendEmailBody: appendEmailBody,
-                  setFocusKey: setFocusKey,
-                  hide: hidePopper()
-                }
-              "
-            ></ng-container>
-          </ng-container>
-        </div>
-      </popper-content>
     </ng-container>
   </ng-template>
 
@@ -277,8 +226,10 @@
         <input
           class="date-input"
           type="date"
-          [(ngModel)]="input.getModelValue(nodeWithInput.node.state) || date"
-          (ngModelChange)="updateSecondVariable($event, inputType.date)"
+          [ngModel]="input.getModelValue(nodeWithInput.node.state) || date"
+          (ngModelChange)="
+            date = $event; updateSecondVariable($event, inputType.date)
+          "
           (click)="$event.stopPropagation()"
           min="0000-01-01"
           max="9999-12-31"
@@ -324,11 +275,12 @@
         <div class="date-input">
           <input
             type="date"
-            [(ngModel)]="
-              input.getModelValue(nodeWithInput.node.state).date ||
+            [ngModel]="
+              input.getModelValue(nodeWithInput.node.state)?.date ||
               dateTime.date
             "
             (ngModelChange)="
+              dateTime.date = $event;
               updateSecondVariable(
                 $event,
                 inputType.dateTime,
@@ -340,11 +292,12 @@
         <div class="time-input">
           <input
             type="time"
-            [(ngModel)]="
-              input.getModelValue(nodeWithInput.node.state).time ||
+            [ngModel]="
+              input.getModelValue(nodeWithInput.node.state)?.time ||
               dateTime.time
             "
             (ngModelChange)="
+              dateTime.time = $event;
               updateSecondVariable(
                 $event,
                 inputType.dateTime,
@@ -416,6 +369,67 @@
         >
           {{ localizedStringKeys.SetLbl | localization }}
         </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- CDK Overlay Template for Input Popup -->
+  <ng-template
+    #inputPopupTemplate
+    let-nodeWithInput="nodeWithInput"
+    let-input="input"
+    let-list="list"
+    let-callback="callback"
+    let-emailInput="emailInput"
+    let-appendEmailBody="appendEmailBody"
+    let-setFocusKey="setFocusKey"
+    let-hide="hide"
+  >
+    <div class="workflow-popper" (click)="$event.stopPropagation()">
+      <ng-container
+        *ngIf="
+          templateMap &&
+          templateMap[input.typeFunction(nodeWithInput.node.state)]
+        "
+      >
+        <ng-container
+          *ngTemplateOutlet="
+            templateMap[input.typeFunction(nodeWithInput.node.state)] ||
+              listTemplate;
+            context: {
+              list: list,
+              callback: callback,
+              nodeWithInput: nodeWithInput,
+              input: input,
+              emailInput: emailInput,
+              appendEmailBody: appendEmailBody,
+              setFocusKey: setFocusKey,
+              hide: hide
+            }
+          "
+        ></ng-container>
+      </ng-container>
+    </div>
+  </ng-template>
+
+  <!-- CDK Overlay Template for Node Popup -->
+  <ng-template
+    #nodePopupTemplate
+    let-nodeList="nodeList"
+    let-groupId="groupId"
+    let-groupIdentifier="groupIdentifier"
+  >
+    <div class="workflow-popper">
+      <div
+        class="option-div"
+        (click)="
+          onNodeAdd(node, groupIdentifier, groupId);
+          closeOverlay();
+          $event.stopPropagation()
+        "
+        *ngFor="let node of nodeList"
+      >
+        {{ node.name }}
       </div>
     </div>
   </ng-template>

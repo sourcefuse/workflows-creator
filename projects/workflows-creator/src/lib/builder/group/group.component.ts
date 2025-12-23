@@ -7,8 +7,10 @@ import {
   Output,
   TemplateRef,
   ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
-import {NgxPopperjsContentComponent} from 'ngx-popperjs';
+import {Overlay, OverlayRef, OverlayModule} from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
 import {
@@ -46,6 +48,11 @@ import {
 } from '../../services';
 import {LocalizationPipe} from '../../pipes/localization.pipe';
 import moment from 'moment';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {NodeComponent} from '../node/node.component';
+import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component';
 
 @Component({
   selector: 'workflow-group',
@@ -54,12 +61,24 @@ import moment from 'moment';
     './group.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    OverlayModule,
+    NgSelectModule,
+    NodeComponent,
+    TooltipRenderComponent,
+    LocalizationPipe,
+  ],
   providers: [LocalizationPipe],
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
   ) {}
   public inputType = InputTypes;
   public dateTimeFields = DateTimeFields;
@@ -78,10 +97,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   @Input()
   nodeType: NodeTypes;
-
-  /* A decorator that tells Angular that the popupTemplate property is an input property. */
-  @Input()
-  popupTemplate!: NgxPopperjsContentComponent;
 
   @Output()
   remove = new EventEmitter<boolean>();
@@ -138,7 +153,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   leftPosition: any;
 
   public types = NodeTypes;
-  public prevPopperRef: NgxPopperjsContentComponent;
+  private overlayRef: OverlayRef | null = null;
+  private currentTriggerElement: HTMLElement | null = null;
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
@@ -172,6 +188,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   @ViewChild('dateTimeTemplate')
   dateTimeTemplate: TemplateRef<RecordOfAnyType>;
+
+  @ViewChild('inputPopupTemplate')
+  inputPopupTemplate: TemplateRef<RecordOfAnyType>;
+
+  @ViewChild('nodePopupTemplate')
+  nodePopupTemplate: TemplateRef<any>;
 
   /**
    * It gets the events and actions from the nodes service and stores them in the events and actions
@@ -289,10 +311,11 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   /**
    * If the type is an action, set the node list to the actions, otherwise if the type is an event, set
    * the node list to the trigger events if there is only one event group and no children, otherwise
-   * set the node list to the events
+   * set the node list to the events. If event is provided, open overlay with node popup.
    * @param {NodeTypes} type - NodeTypes
+   * @param {MouseEvent} event - Optional click event to trigger overlay
    */
-  openPopup(type: NodeTypes) {
+  openPopup(type: NodeTypes, event?: MouseEvent) {
     if (type === NodeTypes.ACTION) {
       this.nodeList = this.actions;
     } else if (type === NodeTypes.EVENT) {
@@ -303,6 +326,69 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     } else {
       throw new InvalidEntityError('' + type);
     }
+
+    // If event and popupTemplate are provided, open the overlay
+    if (event && this.nodePopupTemplate) {
+      this.openNodeOverlay(event);
+    }
+  }
+
+  /**
+   * Opens overlay for node selection
+   * @param {MouseEvent} event - The click event
+   */
+  openNodeOverlay(event: MouseEvent) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const target = event.currentTarget as HTMLElement;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create a simple node list template
+    const context = {
+      nodeList: this.nodeList,
+      groupId: this.group.id,
+      groupIdentifier: this.group.getIdentifier(),
+    };
+
+    const portal = new TemplatePortal(
+      this.nodePopupTemplate,
+      this.viewContainerRef,
+      context,
+    );
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
   }
 
   /**
@@ -369,18 +455,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   }
 
   /**
-   * It takes in an element, an input, and a popper, and returns a function that takes in a value, and
-   * if that value is defined, it adds the value to the element, and hides the popper
+   * It takes in an element, an input, and returns a function that takes in a value, and
+   * if that value is defined, it adds the value to the element, and hides the overlay
    * @param element - NodeWithInput<E>
    * @param {WorkflowPrompt} input - WorkflowPrompt - this is the input object that was clicked on
-   * @param {NgxPopperjsContentComponent} popper - NgxPopperjsContentComponent
    * @returns A function that takes a value and returns a function that takes a value and emits an event
    */
-  createCallback(
-    element: NodeWithInput<E>,
-    input: WorkflowPrompt,
-    popper: NgxPopperjsContentComponent,
-  ) {
+  createCallback(element: NodeWithInput<E>, input: WorkflowPrompt) {
     return (value?: AllowedValues) => {
       if (value) {
         this.addValue(
@@ -390,23 +471,70 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           input.typeFunction(element.node.state) === InputTypes.List,
         );
       }
-      popper.hide();
+      this.closeOverlay();
     };
   }
 
   /**
-   * It hides the previous popper and shows the current popper.
-   * @param {MouseEvent} event - MouseEvent - The event that triggered the popper to show.
-   * @param {NgxPopperjsContentComponent} popper - NgxPopperjsContentComponent - this is the popper
-   * component that you want to show/hide.
+   * Opens an overlay at the trigger element position.
+   * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
+   * @param {TemplateRef} template - The template to display in the overlay
+   * @param {any} context - Context data to pass to the template
    */
-  onPoperClick(event: MouseEvent, popper: NgxPopperjsContentComponent) {
-    this.prevPopperRef?.hide();
-    this.prevPopperRef = popper;
+  openOverlay(event: MouseEvent, template: TemplateRef<any>, context: any) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
     event.preventDefault();
     event.stopPropagation();
-    this.prevPopperRef.show();
-    popper?.popperInstance?.forceUpdate();
+
+    const target = event.currentTarget as HTMLElement;
+    this.currentTriggerElement = target;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create portal from template
+    const portal = new TemplatePortal(template, this.viewContainerRef, context);
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+  }
+
+  /**
+   * Closes the currently open overlay
+   */
+  closeOverlay() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+      this.currentTriggerElement = null;
+    }
   }
 
   /**
@@ -442,12 +570,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   }
 
   /**
-   * It returns a function that hides the previous popper
-   * @returns A function that calls the hide method on the previous popper reference.
+   * It returns a function that hides the overlay
+   * @returns A function that calls the closeOverlay method.
    */
   hidePopper() {
     return () => {
-      this.prevPopperRef?.hide();
+      this.closeOverlay();
     };
   }
 

@@ -1,13 +1,11 @@
 import {TestBed} from '@angular/core/testing';
-import {NgxPopperjsModule} from 'ngx-popperjs';
 import {BuilderService, ElementService, NodeService} from '../classes';
 import {BuilderComponent} from './builder.component';
 
 describe('BuilderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NgxPopperjsModule],
-      declarations: [BuilderComponent],
+      imports: [BuilderComponent],
       providers: [
         {
           provide: BuilderService,

@@ -10,7 +10,11 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewEncapsulation,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
+import {Overlay, OverlayRef, OverlayModule} from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {
   isSelectInput,
   Statement,
@@ -48,12 +52,28 @@ import {
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
 import {LocalizationPipe} from '../pipes/localization.pipe';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+// import {NgxPopperjsModule} from 'ngx-popperjs';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {GroupComponent} from './group/group.component';
+import {NodeComponent} from './node/node.component';
+import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
 @Component({
   selector: 'workflow-builder',
   templateUrl: './builder.component.html',
   styleUrls: [
     './builder.component.scss',
     '../../assets/icons/icomoon/style.css',
+  ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    OverlayModule,
+    NgSelectModule,
+    GroupComponent,
+    LocalizationPipe,
   ],
   providers: [LocalizationPipe],
   encapsulation: ViewEncapsulation.None,
@@ -66,6 +86,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
   ) {}
   private _state: StateMap<RecordOfAnyType> = {};
   public get state(): StateMap<RecordOfAnyType> {
@@ -128,6 +150,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   elseBlockRemoved = false;
   public types = NodeTypes;
   localizedStringKeys = LocalizedStringKeys;
+
+  private overlayRef: OverlayRef | null = null;
+  @ViewChild('nodePopupTemplate') nodePopupTemplate: TemplateRef<any>;
+
   /**
    * We're getting all the groups from the node service, and then we're adding them to the list of groups
    */
@@ -329,14 +355,81 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    *
    * The above function is a good example of how to use the enum
    * @param {NodeTypes} type - The type of node to be added.
+   * @param {MouseEvent} event - The click event from the trigger element
    */
-  openPopup(type: NodeTypes) {
+  openPopup(type: NodeTypes, event?: MouseEvent) {
     if (type === NodeTypes.GROUP) {
       this.nodeList = this.nodes.getGroups();
+      if (event && this.nodePopupTemplate) {
+        this.openOverlay(event, this.nodePopupTemplate, {
+          nodeList: this.nodeList,
+        });
+      }
     } else {
       throw new InvalidEntityError('' + type);
     }
   }
+
+  /**
+   * Opens an overlay at the trigger element position.
+   * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
+   * @param {TemplateRef} template - The template to display in the overlay
+   * @param {any} context - Context data to pass to the template
+   */
+  openOverlay(event: MouseEvent, template: TemplateRef<any>, context: any) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const target = event.currentTarget as HTMLElement;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create portal from template
+    const portal = new TemplatePortal(template, this.viewContainerRef, context);
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+  }
+
+  /**
+   * Closes the currently open overlay
+   */
+  closeOverlay() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+    }
+  }
+
   /**
    * It takes a state object, merges it with the current state, and then loops through the state object
    * and adds the values to the inputs

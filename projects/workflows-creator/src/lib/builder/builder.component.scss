@@ -1,5 +1,4 @@
-@import '../../assets/styles/colors';
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@use '../../assets/styles/colors';
 
 :host {
   overflow-y: scroll;
@@ -12,8 +11,8 @@
   user-select: none;
   cursor: pointer;
   text-decoration: underline;
-  text-decoration-color: $grey1;
-  color: $grey1;
+  text-decoration-color: colors.$grey1;
+  color: colors.$grey1;
   p {
     margin-bottom: 0;
   }
@@ -21,7 +20,7 @@
 .input-text {
   display: inline;
   .value-text {
-    color: $black;
+    color: colors.$black;
     text-decoration: dotted;
   }
 }
@@ -48,10 +47,10 @@
     font-weight: 600;
     font-size: 30px;
     &.green {
-      color: $green;
+      color: colors.$green;
     }
     &.red {
-      color: $red;
+      color: colors.$red;
     }
   }
 }
@@ -76,7 +75,7 @@
     padding: 5px;
     &:hover {
       &.icon-workflow-delete {
-        background: $grey2;
+        background: colors.$grey2;
         border-radius: 5px;
       }
     }

@@ -5,8 +5,8 @@ import {
   Output,
   TemplateRef,
 } from '@angular/core';
-import {NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {RecordOfAnyType, NodeWithInput} from '../../types';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'workflow-node',
@@ -15,6 +15,8 @@ import {RecordOfAnyType, NodeWithInput} from '../../types';
     './node.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
+  standalone: true,
+  imports: [CommonModule],
 })
 export class NodeComponent<E> {
   @Input()
@@ -29,14 +31,11 @@ export class NodeComponent<E> {
   @Input()
   inputTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @Input()
-  popupTemplate!: NgxPopperjsContentComponent;
-
   @Output()
   remove = new EventEmitter<boolean>();
 
   @Output()
-  add = new EventEmitter<boolean>();
+  add = new EventEmitter<MouseEvent>();
 
   /**
    * The removeClick() function emits a boolean value of true to the parent component
@@ -46,9 +45,10 @@ export class NodeComponent<E> {
   }
 
   /**
-   * The addClick() function emits the add event, which is a boolean value of true
+   * The addClick() function emits the click event to the parent component
+   * @param {MouseEvent} event - The mouse click event
    */
-  addClick() {
-    this.add.emit(true);
+  addClick(event: MouseEvent) {
+    this.add.emit(event);
   }
 }

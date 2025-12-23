@@ -21,35 +21,35 @@
     "test": "echo \"No tests available !\""
   },
   "devDependencies": {
-    "@angular-eslint/schematics": "^13.5.0",
-    "@angular/common": "~13.3.11",
-    "@angular/core": "~13.3.11",
-    "@angular/elements": "~13.3.0",
-    "@angular/forms": "~13.3.11",
-    "@angular/platform-browser": "~13.3.11",
-    "@angular/platform-browser-dynamic": "~13.3.11",
-    "@semantic-release/changelog": "^6.0.2",
+    "@angular-eslint/schematics": "^19.0.0",
+    "@angular/common": "~19.2.17",
+    "@angular/core": "~19.2.17",
+    "@angular/cdk": "^19.2.17",
+    "@angular/elements": "~19.2.17",
+    "@angular/forms": "~19.2.17",
+    "@angular/platform-browser": "~19.2.17",
+    "@angular/platform-browser-dynamic": "~19.2.17",
+    "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^10.0.4",
-    "@semantic-release/release-notes-generator": "^11.0.3",
+    "@semantic-release/npm": "^13.1.1",
+    "@semantic-release/release-notes-generator": "^10.0.3",
     "@types/bpmn-moddle": "^5.1.6",
     "@types/fs-extra": "^11.0.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^20.2.5",
-    "@typescript-eslint/eslint-plugin": "5.27.1",
-    "@typescript-eslint/parser": "5.27.1",
+    "@typescript-eslint/eslint-plugin": "8.0.0",
+    "@typescript-eslint/parser": "8.0.0",
     "bpmn-moddle": "^8.0.0",
     "concat": "^1.0.3",
-    "eslint": "^8.17.0",
+    "eslint": "^8.57.0",
     "husky": "^8.0.3",
     "lodash": "^4.17.21",
-    "ng-packagr": "~13.0.0",
-    "ngx-popperjs": "^13.3.0",
-    "semantic-release": "^21.0.5",
+    "ng-packagr": "^19.2.0",
+    "semantic-release": "^25.0.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.0.0",
-    "typedoc-umlclass": "^0.6.1"
+    "typedoc-umlclass": "^0.10.2"
   },
   "repository": {
     "type": "git",
@@ -63,13 +63,7 @@
     "access": "public",
     "directory": "dist"
   },
-  "overrides": {
-    "ng-packagr": {
-      "@angular/compiler-cli": "~13.3.10",
-      "typescript": "~4.6.4"
-    }
-  },
   "dependencies": {
-    "@ng-select/ng-select": "^8.0.0"
+    "@ng-select/ng-select": "^14.0.0"
   }
 }

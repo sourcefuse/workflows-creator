@@ -26,6 +26,10 @@ describe('YourFile Tests', () => {
       },
     };
     value = {};
+    // Initialize dummy objects for tests
+    workflowEvent = {id: 'we', type: 'test'} as any;
+    workflowAction = {id: 'wa', type: 'test'} as any;
+    node = {id: 'n', name: 'node'} as any;
   });
 
   it('isChangeEvent should return true for a ChangeEvent', () => {
