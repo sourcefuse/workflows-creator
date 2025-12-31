@@ -1,4 +1,4 @@
-<div class="tree-group" [ngClass]="{'no-node': !group.children?.length}">
+<div class="tree-group" [ngClass]="{'no-node': !group().children?.length}">
   <workflow-tooltip-render
     [showsTooltip]="showsTooltip"
     [tooltipText]="tooltipText"
@@ -7,16 +7,16 @@
   ></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
-      <span *ngIf="!isFirst"> {{ group.name }} </span>
+      <span *ngIf="!isFirst()"> {{ group().name }} </span>
       <span
         class="input-text"
-        *ngIf="group.children.length === 0"
-        (click)="openPopup(group.nodeType, $event)"
+        *ngIf="group().children.length === 0"
+        (click)="openPopup(group().nodeType, $event)"
       >
-        <span *ngIf="group.nodeType === types.EVENT">
+        <span *ngIf="group().nodeType === types.EVENT">
           {{ localizedStringKeys.WhenThisHappens | localization }}
         </span>
-        <span *ngIf="group.nodeType === types.ACTION">
+        <span *ngIf="group().nodeType === types.ACTION">
           {{ localizedStringKeys.DoThis | localization }}
         </span>
       </span>
@@ -24,33 +24,32 @@
 
     <span
       class="action-items hide"
-      *ngIf="group.children.length && enableActionIcon"
+      *ngIf="group().children.length && enableActionIcon"
     >
       <span
         class="action-add"
-        *ngIf="isLast && nodeType === types.EVENT"
+        *ngIf="isLast() && nodeType() === types.EVENT"
         (click)="addClick()"
       >
         <span class="action-icons icon-workflow-plus"></span>
       </span>
-      <span class="delete" *ngIf="!isFirst" (click)="removeClick()">
+      <span class="delete" *ngIf="!isFirst()" (click)="removeClick()">
         <span class="action-icons icon-workflow-delete"></span>
       </span>
     </span>
   </div>
-  <span *ngFor="let node of group.children; let i = index">
+  <span *ngFor="let node of group().children; let i = index">
     <workflow-node
-      [ngClass]="{'last-node': i === group.children.length - 1}"
+      [ngClass]="{'last-node': i === group().children.length - 1}"
       [node]="node"
-      [ngClass]="{'last-node': i === group.children.length - 1}"
-      [isLast]="i === group.children.length - 1"
+      [ngClass]="{'last-node': i === group().children.length - 1}"
+      [isLast]="i === group().children.length - 1"
       [isFirst]="i === 0"
       [inputTemplate]="inputs"
-      (add)="openPopup(group.nodeType, $event)"
+      (add)="openPopup(group().nodeType, $event)"
       (remove)="onNodeRemove(i)"
     ></workflow-node>
   </span>
-
 
   <ng-template #inputs let-nodeWithInput="node">
     <ng-container *ngFor="let input of nodeWithInput.inputs || []">
@@ -355,7 +354,7 @@
         [(ngModel)]="emailInput.body"
       ></textarea>
       <div class="auto-populate">
-        <ng-container *ngFor="let item of allColumns">
+        <ng-container *ngFor="let item of allColumns()">
           <div class="item" (click)="appendEmailBody(item, emailInput)">
             {{ item.text }}
           </div>
@@ -388,13 +387,13 @@
     <div class="workflow-popper" (click)="$event.stopPropagation()">
       <ng-container
         *ngIf="
-          templateMap &&
-          templateMap[input.typeFunction(nodeWithInput.node.state)]
+          computedTemplateMap &&
+          computedTemplateMap[input.typeFunction(nodeWithInput.node.state)]
         "
       >
         <ng-container
           *ngTemplateOutlet="
-            templateMap[input.typeFunction(nodeWithInput.node.state)] ||
+            computedTemplateMap[input.typeFunction(nodeWithInput.node.state)] ||
               listTemplate;
             context: {
               list: list,

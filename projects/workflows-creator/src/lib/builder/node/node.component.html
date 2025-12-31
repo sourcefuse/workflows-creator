@@ -1,7 +1,7 @@
 <div class="tree-node">
   <span
     class="action-icons icon-workflow-plus"
-    *ngIf="isLast"
+    *ngIf="isLast()"
     (click)="addClick($event)"
   ></span>
   <span
@@ -10,11 +10,11 @@
   ></span>
 
   <div class="workflow-content">
-    <span *ngIf="!isFirst"> and </span>
-    {{ node?.node?.statement || '' }}
+    <span *ngIf="!isFirst()"> and </span>
+    {{ node()?.node?.statement || '' }}
 
     <ng-container
-      *ngTemplateOutlet="inputTemplate; context: {node: node}"
+      *ngTemplateOutlet="inputTemplate(); context: {node: node()}"
     ></ng-container>
   </div>
 </div>

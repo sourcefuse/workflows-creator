@@ -1,9 +1,9 @@
-<ng-container *ngIf="showsTooltip">
+<ng-container *ngIf="showsTooltip()">
   <div
     class="tooltip"
-    [style.top]="topPosition + 'px'"
-    [style.left]="leftPosition + 'px'"
+    [style.top]="topPosition() + 'px'"
+    [style.left]="leftPosition() + 'px'"
   >
-    {{ tooltipText }}
+    {{ tooltipText() }}
   </div>
 </ng-container>

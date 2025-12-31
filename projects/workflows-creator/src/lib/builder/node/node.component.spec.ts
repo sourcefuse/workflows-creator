@@ -1,26 +1,38 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-} from '@angular/core';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {NodeComponent} from './node.component';
 
 describe('NodeComponent', () => {
   let component: NodeComponent<any>;
   let fixture: ComponentFixture<NodeComponent<any>>;
 
+  @Component({
+    template: '<ng-template #testTemplate></ng-template>',
+    standalone: true,
+  })
+  class TestHostComponent {
+    @ViewChild('testTemplate', {static: true}) template!: TemplateRef<any>;
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NodeComponent],
+      imports: [NodeComponent, TestHostComponent],
     }).compileComponents();
   });
 
   beforeEach(() => {
+    const hostFixture = TestBed.createComponent(TestHostComponent);
+    const mockTemplate = hostFixture.componentInstance.template;
+
     fixture = TestBed.createComponent(NodeComponent);
     component = fixture.componentInstance;
+
+    // Set required inputs using fixture.componentRef.setInput()
+    fixture.componentRef.setInput('node', {
+      node: {statement: 'test'},
+    });
+    fixture.componentRef.setInput('inputTemplate', mockTemplate);
+
     fixture.detectChanges();
   });
 

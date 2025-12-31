@@ -2,12 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
-  Input,
-  OnChanges,
+  input,
+  output,
+  effect,
   OnInit,
-  Output,
-  SimpleChanges,
   TemplateRef,
   ViewEncapsulation,
   ViewChild,
@@ -54,7 +52,6 @@ import {LocalizationProviderService} from '../services/localization-provider.ser
 import {LocalizationPipe} from '../pipes/localization.pipe';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-// import {NgxPopperjsModule} from 'ngx-popperjs';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {GroupComponent} from './group/group.component';
 import {NodeComponent} from './node/node.component';
@@ -79,7 +76,12 @@ import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component'
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BuilderComponent<E> implements OnInit, OnChanges {
+export class BuilderComponent<E> implements OnInit {
+  private previousDiagram = '';
+  private previousState: StateMap<RecordOfAnyType> | null = null;
+  private previousLocalizedStringMap: RecordOfAnyType | null = null;
+  private isInitialized = false;
+
   constructor(
     private readonly builder: BuilderService<E, RecordOfAnyType>,
     private readonly nodes: NodeService<E>,
@@ -88,53 +90,58 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     private readonly localizationSvc: LocalizationProviderService,
     private overlay: Overlay,
     private viewContainerRef: ViewContainerRef,
-  ) {}
-  private _state: StateMap<RecordOfAnyType> = {};
-  public get state(): StateMap<RecordOfAnyType> {
-    return this._state;
+  ) {
+    // Effect to handle input changes similar to ngOnChanges
+    effect(() => {
+      const currentLocalizedStringMap = this.localizedStringMap();
+      const currentDiagram = this.diagram();
+      const currentState = this.state();
+
+      // Handle localizedStringMap changes (after initialization)
+      if (
+        this.isInitialized &&
+        currentLocalizedStringMap &&
+        currentLocalizedStringMap !== this.previousLocalizedStringMap &&
+        Object.keys(currentLocalizedStringMap).length > 0
+      ) {
+        this.handleLocalizedStringMapChange(currentLocalizedStringMap);
+        this.previousLocalizedStringMap = currentLocalizedStringMap;
+      }
+
+      // Handle diagram and state changes (after initialization)
+      if (
+        this.isInitialized &&
+        currentDiagram &&
+        currentState &&
+        (currentDiagram !== this.previousDiagram ||
+          currentState !== this.previousState)
+      ) {
+        this.handleDiagramAndStateChange(currentDiagram, currentState);
+        this.previousDiagram = currentDiagram;
+        this.previousState = currentState;
+      }
+    });
   }
-  @Input()
-  public set state(value: StateMap<RecordOfAnyType>) {
-    this._state = value;
-  }
-  private _localizedStringMap: RecordOfAnyType = {};
-  public get localizedStringMap() {
-    return this._localizedStringMap;
-  }
-  @Input()
-  public set localizedStringMap(value: RecordOfAnyType) {
-    this._localizedStringMap = value;
-  }
-  @Input()
-  public diagram: string = '';
-  private _templateMap: {
-    [key: string]: TemplateRef<RecordOfAnyType>;
-  };
-  public get templateMap() {
-    return this._templateMap;
-  }
-  @Input()
-  public set templateMap(value: {[key: string]: TemplateRef<RecordOfAnyType>}) {
-    this._templateMap = value;
-  }
-  private _allColumns: Select[] = [];
-  @Input()
-  public set allColumns(value: Select[]) {
-    this._allColumns = value;
-  }
-  public get allColumns() {
-    return this._allColumns;
-  }
-  @Output()
-  stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
-  @Output()
-  diagramChange = new EventEmitter<Object>();
-  @Output()
-  eventAdded = new EventEmitter<EventAddition<E>>();
-  @Output()
-  actionAdded = new EventEmitter<ActionAddition<E>>();
-  @Output()
-  itemChanged = new EventEmitter<InputChanged<E>>();
+
+  state = input<StateMap<RecordOfAnyType>>({});
+
+  localizedStringMap = input<RecordOfAnyType>({});
+
+  diagram = input('');
+
+  templateMap = input<{[key: string]: TemplateRef<RecordOfAnyType>}>({});
+
+  allColumns = input<Select[]>([]);
+
+  stateChange = output<StateMap<RecordOfAnyType>>();
+
+  diagramChange = output<Object>();
+
+  eventAdded = output<EventAddition<E>>();
+
+  actionAdded = output<ActionAddition<E>>();
+
+  itemChanged = output<InputChanged<E>>();
   selectedElseActions: ActionWithInput<E>[] = [];
   selectedEvents: EventWithInput<E>[] = [];
   selectedActions: ActionWithInput<E>[] = [];
@@ -159,9 +166,16 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   ngOnInit(): void {
     this.initiateNode();
+    // Set initial values
+    this.previousLocalizedStringMap = this.localizedStringMap();
+    this.previousDiagram = this.diagram();
+    this.previousState = this.state();
+    // Mark as initialized to enable effect-based change detection
+    this.isInitialized = true;
   }
+
   initiateNode() {
-    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.localizationSvc.setLocalizedStrings(this.localizedStringMap());
     this.eventGroups = [];
     this.actionGroups = [];
     this.elseActionGroups = [];
@@ -176,18 +190,33 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       .forEach(group => this.elseActionGroups.push(group));
     this.cdr.detectChanges();
   }
+
   /**
-   * > If the diagram and state have changed, restore the diagram and state from the builder
-   * @param {SimpleChanges} changes - SimpleChanges - the changes that have occurred in the component
+   * Handle changes to localizedStringMap
    */
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes['localizedStringMap'] && this.localizedStringMap) {
+  private handleLocalizedStringMapChange(localizedStringMap: RecordOfAnyType) {
+    if (localizedStringMap && Object.keys(localizedStringMap).length > 0) {
       this.initiateNode();
       this.updateDiagram();
     }
-    if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
-      const {events, actions, elseActions, groups, process, state} =
-        await this.builder.restore(this.diagram);
+  }
+
+  /**
+   * Handle changes to diagram and state
+   */
+  private async handleDiagramAndStateChange(
+    diagram: string,
+    state: StateMap<RecordOfAnyType>,
+  ) {
+    if (diagram && state && Object.keys(state).length > 0) {
+      const {
+        events,
+        actions,
+        elseActions,
+        groups,
+        process,
+        state: restoredState,
+      } = await this.builder.restore(diagram);
       this.processId = process.id;
       this.selectedActions = actions;
       this.selectedEvents = events;
@@ -195,7 +224,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       if (this.selectedActions.length) this.actionGroups = [];
       if (this.selectedEvents) this.eventGroups = [];
       groups.forEach(group => this.onGroupAdd(group));
-      this.restoreState(state);
+      this.restoreState(restoredState);
       this.elseActionGroups[0].children = elseActions;
       this.elseActionGroups[0].children.forEach(action =>
         this.actionAdded.emit({
@@ -436,7 +465,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param state - StateMap<RecordOfAnyType>
    */
   private restoreState(state: StateMap<RecordOfAnyType>) {
-    state = this.mergeState(this.state, state);
+    state = this.mergeState(this.state(), state);
     const allNodes = [
       ...this.selectedEvents,
       ...this.selectedActions,
@@ -511,8 +540,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @returns A function that takes a state and returns a boolean.
    */
   build() {
-    const statement = new Statement<E>(this.state);
-    const elseStatement = new Statement<E>(this.state);
+    const statement = new Statement<E>(this.state());
+    const elseStatement = new Statement<E>(this.state());
     if (this.processId) {
       statement.processId = this.processId;
     }
@@ -616,8 +645,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         }
       }
     }
-    this.diagram = await this.build();
-    this.diagramChange.emit({diagram: this.diagram, isValid: isValid});
+    const newDiagram = await this.build();
+    this.diagramChange.emit({diagram: newDiagram, isValid: isValid});
     this.cdr.detectChanges();
   }
   /**
@@ -627,19 +656,22 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param [remove=false] - boolean - if true, the state for the node will be removed
    */
   updateState(node: WorkflowNode<E>, inputs: WorkflowPrompt[], remove = false) {
-    if (!this.state) {
-      this.state = {};
+    let currentState = this.state();
+    if (!currentState) {
+      currentState = {};
     }
+    // Create a mutable copy
+    const newState = {...currentState};
     if (remove) {
-      delete this.state[node.id];
+      delete newState[node.id];
     } else {
       const keys = inputs.map(input => input.inputKey);
-      this.state[node.id] = node.state.getAll([
+      newState[node.id] = node.state.getAll([
         ...keys,
         ...keys.map(k => `${k}Name`),
       ]);
     }
-    this.stateChange.emit(this.state);
+    this.stateChange.emit(newState);
   }
   /**
    * > If the user has already entered data for a subsequent input, remove it

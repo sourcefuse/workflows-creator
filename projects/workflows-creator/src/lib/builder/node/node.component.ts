@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-} from '@angular/core';
+import {Component, input, output, TemplateRef} from '@angular/core';
 import {RecordOfAnyType, NodeWithInput} from '../../types';
 import {CommonModule} from '@angular/common';
 
@@ -19,23 +13,17 @@ import {CommonModule} from '@angular/common';
   imports: [CommonModule],
 })
 export class NodeComponent<E> {
-  @Input()
-  node: NodeWithInput<E>;
+  node = input.required<NodeWithInput<E>>();
 
-  @Input()
-  isLast = false;
+  isLast = input(false);
 
-  @Input()
-  isFirst = false;
+  isFirst = input(false);
 
-  @Input()
-  inputTemplate!: TemplateRef<RecordOfAnyType>;
+  inputTemplate = input.required<TemplateRef<RecordOfAnyType>>();
 
-  @Output()
-  remove = new EventEmitter<boolean>();
+  remove = output<boolean>();
 
-  @Output()
-  add = new EventEmitter<MouseEvent>();
+  add = output<MouseEvent>();
 
   /**
    * The removeClick() function emits a boolean value of true to the parent component

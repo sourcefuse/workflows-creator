@@ -37,7 +37,7 @@ jobs:
 
       - name: Bootstrap
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm i -g lerna@5.1.5
           lerna bootstrap
       - name: Test

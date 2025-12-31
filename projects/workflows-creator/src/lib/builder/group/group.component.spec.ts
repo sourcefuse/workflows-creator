@@ -1,5 +1,4 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-// ngx-popperjs removed; tests adapted to CDK Overlay behavior
 import {
   NodeService,
   AbstractBaseGroup,
@@ -103,13 +102,17 @@ describe('GroupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GroupComponent);
     component = fixture.componentInstance;
-    component.group = new AndGroup({}, '', NodeTypes.EVENT, false);
-    component.isLast = false;
-    component.isFirst = false;
-    component.eventGroups = [];
-    component.nodeType = NodeTypes.ACTION;
-    component.nodeType = NodeTypes.EVENT;
-    component.allColumns = [];
+
+    // Set inputs using fixture.componentRef.setInput() for signals
+    fixture.componentRef.setInput(
+      'group',
+      new AndGroup({}, '', NodeTypes.EVENT, false),
+    );
+    fixture.componentRef.setInput('isLast', false);
+    fixture.componentRef.setInput('isFirst', false);
+    fixture.componentRef.setInput('eventGroups', []);
+    fixture.componentRef.setInput('nodeType', NodeTypes.EVENT);
+    fixture.componentRef.setInput('allColumns', []);
 
     fixture.detectChanges();
   });
@@ -127,7 +130,7 @@ describe('GroupComponent', () => {
   it('should set the templateMap', () => {
     component.ngAfterViewInit();
 
-    expect(component.templateMap).toBeDefined();
+    expect(component.computedTemplateMap).toBeDefined();
   });
 
   it('should emit the remove event', () => {
@@ -144,7 +147,7 @@ describe('GroupComponent', () => {
 
   it('should add the node to the group', () => {
     component.onNodeAdd(eventStub, 'groupType', 'groupId', 'id');
-    expect(component.group.children.length).toBeGreaterThan(0);
+    expect(component.group().children.length).toBeGreaterThan(0);
   });
 
   it('should throw an error if the node type is neither EVENT nor ACTION', () => {
@@ -156,12 +159,12 @@ describe('GroupComponent', () => {
   });
 
   it('should remove the node at the given index from the group', () => {
-    component.group.children.push({
+    component.group().children.push({
       node: eventStub,
       inputs: [],
     });
     component.onNodeRemove(0);
-    expect(component.group.children.length).toEqual(0);
+    expect(component.group().children.length).toEqual(0);
   });
 
   it('should emit the eventRemoved event', () => {

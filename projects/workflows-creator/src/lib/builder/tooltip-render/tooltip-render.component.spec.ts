@@ -22,9 +22,9 @@ describe('TooltipRenderComponent', () => {
   });
 
   it('should have default values for inputs', () => {
-    expect(component.showsTooltip).toBeTrue();
-    expect(component.tooltipText).toBe('Default tooltip text');
-    expect(component.topPosition).toBe(215);
-    expect(component.leftPosition).toBe(400);
+    expect(component.showsTooltip()).toBeTrue();
+    expect(component.tooltipText()).toBe('Default tooltip text');
+    expect(component.topPosition()).toBe(215);
+    expect(component.leftPosition()).toBe(400);
   });
 });

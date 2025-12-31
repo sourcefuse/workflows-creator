@@ -1,10 +1,9 @@
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
-  Input,
+  input,
+  output,
   OnInit,
-  Output,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -83,38 +82,27 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   public inputType = InputTypes;
   public dateTimeFields = DateTimeFields;
   private isMouseDown: boolean = false;
-  @Input()
-  group: AbstractBaseGroup<E>;
+  group = input.required<AbstractBaseGroup<E>>();
 
-  @Input()
-  isLast = false;
+  isLast = input(false);
 
-  @Input()
-  isFirst = false;
+  isFirst = input(false);
 
-  @Input()
-  eventGroups: AbstractBaseGroup<E>[];
+  eventGroups = input<AbstractBaseGroup<E>[]>([]);
 
-  @Input()
-  nodeType: NodeTypes;
+  nodeType = input.required<NodeTypes>();
 
-  @Output()
-  remove = new EventEmitter<boolean>();
+  remove = output<boolean>();
 
-  @Output()
-  add = new EventEmitter<boolean>();
+  add = output<boolean>();
 
-  @Output()
-  eventAdded = new EventEmitter<unknown>();
+  eventAdded = output<unknown>();
 
-  @Output()
-  eventRemoved = new EventEmitter<unknown>();
+  eventRemoved = output<void>();
 
-  @Output()
-  actionAdded = new EventEmitter<unknown>();
+  actionAdded = output<unknown>();
 
-  @Output()
-  itemChanged = new EventEmitter<unknown>();
+  itemChanged = output<unknown>();
 
   date: string = '';
   dateTime: any = {
@@ -161,13 +149,19 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   localizedStringKeys = LocalizedStringKeys;
 
-  @Input()
-  templateMap?: {
+  templateMap = input<{
     [key: string]: TemplateRef<RecordOfAnyType>;
-  };
+  }>();
 
-  @Input()
-  allColumns: Select[];
+  allColumns = input<Select[]>([]);
+
+  // Local variable to store computed template map
+  private _computedTemplateMap: {[key: string]: TemplateRef<RecordOfAnyType>} =
+    {};
+
+  get computedTemplateMap() {
+    return this._computedTemplateMap;
+  }
 
   @ViewChild('emailTemplate') emailTemplate: TemplateRef<RecordOfAnyType>;
 
@@ -216,28 +210,29 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * use the default template
    */
   ngAfterViewInit() {
-    this.templateMap = {
+    const inputTemplateMap = this.templateMap();
+    this._computedTemplateMap = {
       [InputTypes.Boolean]:
-        this.templateMap?.[InputTypes.Boolean] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.Boolean] || this.listTemplate,
       [InputTypes.List]:
-        this.templateMap?.[InputTypes.List] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.List] || this.listTemplate,
       [InputTypes.Text]:
-        this.templateMap?.[InputTypes.Text] || this.textTemplate,
+        inputTemplateMap?.[InputTypes.Text] || this.textTemplate,
       [InputTypes.Number]:
-        this.templateMap?.[InputTypes.Number] || this.numberTemplate,
+        inputTemplateMap?.[InputTypes.Number] || this.numberTemplate,
       [InputTypes.Percentage]:
-        this.templateMap?.[InputTypes.Percentage] || this.numberTemplate,
+        inputTemplateMap?.[InputTypes.Percentage] || this.numberTemplate,
       [InputTypes.Date]:
-        this.templateMap?.[InputTypes.Date] || this.dateTemplate,
+        inputTemplateMap?.[InputTypes.Date] || this.dateTemplate,
       [InputTypes.DateTime]:
-        this.templateMap?.[InputTypes.DateTime] || this.dateTimeTemplate,
+        inputTemplateMap?.[InputTypes.DateTime] || this.dateTimeTemplate,
       [InputTypes.People]:
-        this.templateMap?.[InputTypes.People] ||
+        inputTemplateMap?.[InputTypes.People] ||
         this.searchableDropdownTemplate,
       [InputTypes.Interval]:
-        this.templateMap?.[InputTypes.Interval] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.Interval] || this.listTemplate,
       [InputTypes.Email]:
-        this.templateMap?.[InputTypes.Email] || this.emailTemplate,
+        inputTemplateMap?.[InputTypes.Email] || this.emailTemplate,
     };
   }
 
@@ -320,7 +315,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       this.nodeList = this.actions;
     } else if (type === NodeTypes.EVENT) {
       this.nodeList =
-        this.eventGroups.length === 1 && !this.group.children.length
+        this.eventGroups().length === 1 && !this.group().children.length
           ? this.triggerEvents
           : this.events;
     } else {
@@ -376,8 +371,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     // Create a simple node list template
     const context = {
       nodeList: this.nodeList,
-      groupId: this.group.id,
-      groupIdentifier: this.group.getIdentifier(),
+      groupId: this.group().id,
+      groupIdentifier: this.group().getIdentifier(),
     };
 
     const portal = new TemplatePortal(
@@ -421,7 +416,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         groupType,
         groupId,
         id,
-        this.group.isElseGroup,
+        this.group().isElseGroup,
       ),
       inputs: this.nodes.mapInputs(node),
     };
@@ -433,13 +428,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
-      this.group.children.push(newNode as EventWithInput<E>);
+      this.group().children.push(newNode as EventWithInput<E>);
     } else if (node.type === NodeTypes.ACTION) {
       this.actionAdded.emit({
         node: node,
         newNode: newNode,
       });
-      this.group.children.push(newNode as ActionWithInput<E>);
+      this.group().children.push(newNode as ActionWithInput<E>);
     } else {
       throw new InvalidEntityError('Node');
     }
@@ -450,8 +445,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * @param {number} index - The index of the node that was removed.
    */
   onNodeRemove(index: number) {
-    this.group.children.splice(index, 1);
-    this.eventRemoved.emit();
+    this.group().children.splice(index, 1);
+    this.eventRemoved.emit(undefined);
   }
 
   /**
