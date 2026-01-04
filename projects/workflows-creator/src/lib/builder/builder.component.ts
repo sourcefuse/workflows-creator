@@ -88,6 +88,12 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   @Input()
   allColumns: Select[];
 
+  @Input()
+  eventsWithoutElseBlock: string[] = [
+    EventTypes.OnIntervalEvent,
+    EventTypes.OnAddItemEvent,
+  ];
+
   @Output()
   stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
 
@@ -254,8 +260,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.updateState(event.node, event.newNode.inputs);
     this.elseBlockHidden =
       this.eventGroups[0]?.children?.length === 1 &&
-      (event.node.getIdentifier() === EventTypes.OnIntervalEvent ||
-        event.node.getIdentifier() === EventTypes.OnAddItemEvent);
+      this.eventsWithoutElseBlock.includes(event.node.getIdentifier());
   }
 
   /**
@@ -348,10 +353,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     if (events.length !== 1) {
       this.elseBlockHidden = false;
     } else {
+      const eventIdentifier = events[0].node.getIdentifier();
       this.elseBlockHidden =
-        events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
-        events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
-        (events[0].node.getIdentifier() === EventTypes.OnChangeEvent &&
+        this.eventsWithoutElseBlock.includes(eventIdentifier) ||
+        (eventIdentifier === EventTypes.OnChangeEvent &&
           (value === ValueTypes.AnyValue ||
             events[0].node.state.get('valueType') === ValueTypes.AnyValue));
     }
