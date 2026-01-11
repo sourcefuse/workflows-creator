@@ -54,13 +54,14 @@ import {
 import {GatewayElement} from '../services/bpmn/elements/gateways';
 
 @Component({
-  selector: 'workflow-builder',
-  templateUrl: './builder.component.html',
-  styleUrls: [
-    './builder.component.scss',
-    '../../assets/icons/icomoon/style.css',
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'workflow-builder',
+    templateUrl: './builder.component.html',
+    styleUrls: [
+        './builder.component.scss',
+        '../../assets/icons/icomoon/style.css',
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BuilderComponent<E> implements OnInit, OnChanges {
   constructor(

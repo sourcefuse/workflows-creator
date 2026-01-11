@@ -9,12 +9,13 @@ import {NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {RecordOfAnyType, NodeWithInput} from '../../types';
 
 @Component({
-  selector: 'workflow-node',
-  templateUrl: './node.component.html',
-  styleUrls: [
-    './node.component.scss',
-    '../../../assets/icons/icomoon/style.css',
-  ],
+    selector: 'workflow-node',
+    templateUrl: './node.component.html',
+    styleUrls: [
+        './node.component.scss',
+        '../../../assets/icons/icomoon/style.css',
+    ],
+    standalone: false
 })
 export class NodeComponent<E> {
   @Input()

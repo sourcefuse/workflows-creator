@@ -45,12 +45,13 @@ import {
 } from '../../services';
 
 @Component({
-  selector: 'workflow-group',
-  templateUrl: './group.component.html',
-  styleUrls: [
-    './group.component.scss',
-    '../../../assets/icons/icomoon/style.css',
-  ],
+    selector: 'workflow-group',
+    templateUrl: './group.component.html',
+    styleUrls: [
+        './group.component.scss',
+        '../../../assets/icons/icomoon/style.css',
+    ],
+    standalone: false
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
