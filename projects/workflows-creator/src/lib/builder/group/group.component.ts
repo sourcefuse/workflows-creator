@@ -149,25 +149,25 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   @Input()
   allColumns: Select[];
 
-  @ViewChild('emailTemplate') emailTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('emailTemplate', { static: false }) emailTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('listTemplate')
-  listTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('listTemplate', { static: false })
+  listTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('numberTemplate')
-  numberTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('numberTemplate', { static: false })
+  numberTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('textTemplate')
-  textTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('textTemplate', { static: false })
+  textTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('searchableDropdownTemplate')
-  searchableDropdownTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('searchableDropdownTemplate', { static: false })
+  searchableDropdownTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('dateTemplate')
-  dateTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('dateTemplate', { static: false })
+  dateTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('dateTimeTemplate')
-  dateTimeTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('dateTimeTemplate', { static: false })
+  dateTimeTemplate!: TemplateRef<RecordOfAnyType>;
 
   /**
    * It gets the events and actions from the nodes service and stores them in the events and actions
