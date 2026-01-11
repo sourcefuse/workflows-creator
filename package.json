@@ -25,14 +25,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@angular/animations": "^16.2.12",
-    "@angular/common": "^16.2.12",
-    "@angular/compiler": "^16.2.12",
-    "@angular/core": "^16.2.12",
-    "@angular/forms": "^16.2.12",
-    "@angular/platform-browser": "^16.2.12",
-    "@angular/platform-browser-dynamic": "^16.2.12",
-    "@angular/router": "^16.2.12",
+    "@angular/animations": "^17.3.12",
+    "@angular/common": "^17.3.12",
+    "@angular/compiler": "^17.3.12",
+    "@angular/core": "^17.3.12",
+    "@angular/forms": "^17.3.12",
+    "@angular/platform-browser": "^17.3.12",
+    "@angular/platform-browser-dynamic": "^17.3.12",
+    "@angular/router": "^17.3.12",
     "@ng-bootstrap/ng-bootstrap": "^12.1.2",
     "@popperjs/core": "^2.11.6",
     "@types/estree": "^1.0.0",
@@ -43,17 +43,17 @@
     "ngx-popperjs": "^13.3.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.13.3"
+    "zone.js": "~0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.16",
+    "@angular-devkit/build-angular": "^17.3.17",
     "@angular-eslint/builder": "13.5.0",
     "@angular-eslint/eslint-plugin": "13.5.0",
     "@angular-eslint/eslint-plugin-template": "13.5.0",
     "@angular-eslint/schematics": "13.5.0",
     "@angular-eslint/template-parser": "13.5.0",
-    "@angular/cli": "^16.2.16",
-    "@angular/compiler-cli": "^16.2.12",
+    "@angular/cli": "^17.3.17",
+    "@angular/compiler-cli": "^17.3.12",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^17.4.4",
     "@semantic-release/changelog": "^6.0.2",
@@ -81,13 +81,13 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "lodash": "^4.17.21",
-    "ng-packagr": "^16.2.3",
+    "ng-packagr": "^17.3.0",
     "ngx-popperjs": "^13.3.0",
     "prettier": "^2.7.1",
     "semantic-release": "^19.0.3",
     "typedoc": "^0.23.24",
     "typedoc-umlclass": "^0.7.0",
-    "typescript": "~4.9.5"
+    "typescript": "~5.4.5"
   },
   "husky": {
     "hooks": {
