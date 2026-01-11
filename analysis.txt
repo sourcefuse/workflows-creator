@@ -1,0 +1,400 @@
+The WorkflowCreator is a sophisticated Angular library (@sourceloop/workflows-creator) that provides a visual, statement-based interface for building workflow automation. Key highlights:
+
+  - Architecture: Angular 13.3 library using BPMN 2.0 for workflow representation
+  - Design: Extensible plugin system with strategy patterns, abstract base classes, and dependency injection
+  - Components: BuilderComponent (main UI), GroupComponent, NodeComponent, TooltipRenderComponent
+  - Workflow Models: Events (triggers), Actions (tasks), Groups (AND/OR logic), with full state management
+  - Tech Stack: Angular, TypeScript, RxJS, bpmn-moddle, ng-bootstrap, lodash, moment
+  - Extensibility: Custom nodes, elements, and inputs via DI tokens
+
+  Documentation Plan
+
+  I've created a detailed plan that outlines a 21-section comprehensive documentation covering:
+
+  1. Introduction & architecture
+  2. Component hierarchy & workflows
+  3. State management & BPMN integration
+  4. Extensibility & plugin system
+  5. Technology stack & dependencies
+  6. Build, test, and deployment
+  7. Integration guide with code examples
+  8. Recent features from git history
+
+  The final documentation will be created as WORKFLOW_CREATOR_DOCUMENTATION.md at the project root with ~1500-2000 lines of detailed content.
+                                                                                                                      
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/validated-discovering-wozniak.md · /plan to edit
+     WorkflowCreator Application - Documentation Plan
+
+     Executive Summary
+
+     The WorkflowCreator is a sophisticated Angular library that enables developers to build workflow automation tools
+     with an intuitive, statement-based visual interface. It generates BPMN 2.0 compliant workflow diagrams, making it
+     portable across various workflow engines.
+
+     Package Name: @sourceloop/workflows-creator
+     Purpose: Reusable UI library for workflow creation and visualization
+     Key Technology: Angular 13.3.0 + BPMN 2.0 (bpmn-moddle)
+     Architecture: Extensible plugin-based system with strategy patterns
+
+     ---
+     Final Documentation Structure
+
+     The final .md file will be created at the project root as WORKFLOW_CREATOR_DOCUMENTATION.md and will contain:
+
+     1. Introduction & Overview
+
+     - What is WorkflowCreator
+     - Core capabilities and use cases
+     - Target audience (developers integrating workflow builders)
+
+     2. Architecture & Design
+
+     - Technology Stack: Angular 13.3+, TypeScript, BPMN, RxJS
+     - Design Patterns:
+       - Abstract Base Classes for extensibility
+       - Strategy Pattern (Create/Link strategies)
+       - Factory Pattern (Element/Node creation)
+       - State Pattern (Undo/Redo snapshots)
+       - Linked List Pattern (Workflow sequencing)
+       - Observer Pattern (EventEmitters)
+       - Dependency Injection (Angular DI + multi-provider tokens)
+
+     3. Project Structure
+
+     WorkflowCreator/
+     ├── projects/workflows-creator/
+     │   └── src/lib/
+     │       ├── builder/              # UI Components
+     │       ├── services/             # Business Logic
+     │       │   ├── bpmn/            # BPMN services
+     │       │   └── statement/       # Workflow models
+     │       ├── classes/             # Domain models
+     │       ├── types/               # TypeScript types
+     │       └── assets/              # Styles & icons
+
+     4. Core Components Deep Dive
+
+     BuilderComponent (Main UI)
+
+     - Location: lib/builder/builder.component.ts
+     - Responsibility: Orchestrates entire workflow UI
+     - Key Features:
+       - Event management (triggers)
+       - Action management (tasks)
+       - Else block (alternative flows)
+       - State synchronization with parent
+     - Inputs: state, diagram, localizedStringMap, allColumns
+     - Outputs: stateChange, diagramChange, eventAdded, actionAdded, itemChanged, actionGroupsAdded
+
+     GroupComponent
+
+     - Purpose: Renders event/action groups with AND/OR logic
+     - Features: Add/remove nodes, group management
+
+     NodeComponent
+
+     - Purpose: Displays individual workflow nodes
+     - Features: Input rendering, value editing, deletion
+
+     TooltipRenderComponent
+
+     - Purpose: Custom input field rendering
+     - Supports: 15+ input types (text, email, date, people, etc.)
+
+     5. Workflow Nodes Hierarchy
+
+     AbstractWorkflowNode<E>
+     ├── WorkflowEvent<E> (Triggers)
+     │   ├── OnChangeEvent (column changes)
+     │   ├── OnIntervalEvent (time-based)
+     │   ├── OnAddItemEvent (new items)
+     │   └── OnValueEvent (value checks)
+     │
+     └── WorkflowAction<E> (Tasks)
+         ├── ChangeColumnValueAction
+         ├── SendEmailAction
+         └── [Extensible]
+
+     AbstractBaseGroup<E> (Logic)
+     ├── AndGroup (all conditions must match)
+     └── OrGroup (any condition matches)
+
+     6. State Management
+
+     State Class: Immutable state with undo/redo
+     - Map-based storage
+     - Linked list of StateNodes (snapshots)
+     - Methods: change(), undo(), redo(), get(), getAll()
+
+     Statement Class: Workflow representation
+     - Doubly-linked list of StatementNodes
+     - Head/Tail tracking
+     - Methods: addHead(), addTail(), splice(), append()
+
+     7. Services Architecture
+
+     Core Services:
+     - BpmnBuilderService: Converts Statement ↔ BPMN XML
+       - build(): Statement → BPMN diagram
+       - restore(): BPMN XML → editable state
+     - BpmnElementService: Element lifecycle management
+     - BpmnNodesService: Node registration and retrieval
+     - AutoLayoutService: Automatic diagram layout
+     - LocalizationProviderService: i18n support
+     - UtilsService: Shared utilities
+
+     Service Layers:
+     1. Abstract base services (extensible)
+     2. BPMN-specific implementations
+     3. Statement management services
+
+     8. BPMN Integration
+
+     Elements:
+     - Start/End Events
+     - Service Tasks (actual operations)
+     - Exclusive/Parallel/Inclusive Gateways
+     - Sequence Flows (connections)
+     - Process containers
+
+     Strategies:
+     - Create Strategies: How elements are created
+       - BasicStrategy, GatewayStrategy, TaskStrategy, etc.
+     - Link Strategies: How elements connect
+       - BasicLinkStrategy, GatewayLinkStrategy, NoLinkStrategy
+
+     9. Extensibility & Plugin System
+
+     Extension Points (via DI tokens):
+     1. Custom Nodes: BPMN_NODES token
+       - Extend WorkflowEvent or WorkflowAction
+       - Register in module providers
+     2. Custom Elements: BPMN_ELEMENTS token
+       - Extend WorkflowElement
+       - Define create/link strategies
+     3. Custom Inputs: BPMN_INPUTS token
+       - Extend WorkflowPrompt
+       - Define validation/rendering logic
+
+     Example Extension:
+     @Injectable()
+     export class CustomApprovalAction extends WorkflowAction<RecordOfAnyType> {
+       name = 'Request Approval';
+       inputs = [/* custom prompts */];
+       // implementation
+     }
+
+     @NgModule({
+       providers: [
+         { provide: BPMN_NODES, useClass: CustomApprovalAction, multi: true }
+       ]
+     })
+
+     10. User Interaction Flow
+
+     1. Add Event: Click "When this happens" → select trigger → provide inputs
+     2. Add Action: Click "Do this" → select action → provide inputs
+     3. Group Logic: Combine with AND/OR groups
+     4. Edit Values: Click nodes to modify
+     5. Delete Nodes: Hover and click delete icon
+     6. Else Block: Add alternative actions
+     7. Export: Generate BPMN XML diagram
+     8. Import: Load existing BPMN workflows
+
+     11. Input Types Supported
+
+     - Basic: Text, Number, Boolean
+     - Complex: Email (subject/body), People (multi-select)
+     - Temporal: Date, DateTime, Interval, IntervalDate, IntervalTime
+     - Selection: Lists, OptionLists, Criteria
+     - Special: Percentage, Stepper, TimeZone
+
+     12. Technology Stack Details
+
+     Frontend:
+     - Angular 13.3.0 (Core framework)
+     - TypeScript 4.6.2 (Type safety)
+     - RxJS 7.5.0 (Reactive programming)
+
+     UI Libraries:
+     - @ng-bootstrap/ng-bootstrap 12.1.2 (Bootstrap components)
+     - ng-multiselect-dropdown 0.3.9 (Multi-select)
+     - ngx-popperjs 13.3.0 (Tooltips/popups)
+
+     Workflow Engine:
+     - bpmn-moddle 8.0.0 (BPMN 2.0 parser/modeler)
+     - Custom Camunda BPMN schema
+
+     Utilities:
+     - lodash 4.17.21 (Utility functions)
+     - moment 2.29.4 (Date handling)
+
+     13. Build & Development
+
+     Build Tools:
+     - Angular CLI 13.3.10
+     - ng-packagr 13.0.0 (library packaging)
+     - TypeScript Compiler 4.6.2
+
+     Key Commands:
+     npm start              # Development server
+     npm run build          # Build library
+     npm run workflowBuild  # Production build + assets
+     npm test               # Run tests
+     npm run lint           # ESLint checks
+     npm run prettier:fix   # Format code
+
+     Output: /dist/workflows-creator/ (publishable npm package)
+
+     14. Testing Infrastructure
+
+     Framework: Karma + Jasmine
+     - Unit tests for components/services
+     - Code coverage reporting (HTML, LCOV, JSON)
+     - CI/CD integration (GitHub Actions)
+
+     Test Commands:
+     npm test        # Watch mode
+     npm run test:ci # Headless mode (CI)
+
+     15. Code Quality & Standards
+
+     Linting:
+     - ESLint 8.17.0 with Angular rules
+     - @typescript-eslint 5.27.1
+     - Custom rules: component/directive prefixes (workflow)
+
+     Formatting:
+     - Prettier 2.7.1
+     - Single quotes, 80-char lines
+     - Trailing commas, no arrow parens
+
+     Git Hooks (Husky):
+     - pre-commit: Lint checks
+     - prepare-commit-msg: Commitizen prompts
+     - commit-msg: Conventional commit validation
+
+     Semantic Versioning:
+     - Commitizen + semantic-release
+     - Automated changelog generation
+
+     16. Styling Approach
+
+     Technology: SCSS (Sass)
+
+     Structure:
+     - Component-scoped styles
+     - Centralized color palette (_colors.scss)
+     - IcoMoon custom icon fonts
+     - Responsive design (mobile 480px, tablet 768px)
+
+     Color Palette:
+     - Primary: #323338
+     - Hover: rgb(240, 239, 239)
+     - Grey shades: grey, #9e9a9a, #dcdfec
+     - Accent: green, #8c0000 (red)
+
+     17. Integration Guide
+
+     Installation:
+     npm install @sourceloop/workflows-creator
+
+     Module Import:
+     import { WorkflowBuilderModule } from '@sourceloop/workflows-creator';
+
+     @NgModule({
+       imports: [WorkflowBuilderModule]
+     })
+     export class AppModule {}
+
+     Component Usage:
+     <workflow-builder
+       [(state)]="workflowState"
+       [(diagram)]="bpmnDiagram"
+       [localizedStringMap]="translations"
+       [allColumns]="availableColumns"
+       (eventAdded)="onEventAdded($event)"
+       (actionAdded)="onActionAdded($event)"
+       (stateChange)="onStateChange($event)"
+       (diagramChange)="onDiagramChange($event)">
+     </workflow-builder>
+
+     18. Recent Features (Git History)
+
+     - Multi-line action inputs support (#91)
+     - Filter actions based on selected event (#94)
+     - Emit updated action groups to parent (#95)
+     - Hover delete with line-through for multi-step inputs (#96)
+     - Edit email without removing sequence selection (#90)
+     - Handle time intervals and date options
+
+     19. Key Files Reference
+
+     Critical Files:
+     - lib/workflow-builder.module.ts - Main module
+     - lib/builder/builder.component.ts - Main UI component (520+ lines)
+     - lib/services/bpmn/builder.service.ts - BPMN generation logic
+     - lib/classes/statement/statement.ts - Workflow model
+     - lib/classes/nodes/node.ts - Node base classes
+     - public-api.ts - Public exports
+
+     Configuration:
+     - angular.json - Angular project config
+     - ng-package.json - Library packaging config
+     - tsconfig.json - TypeScript settings
+     - karma.conf.js - Test runner config
+
+     20. Best Practices & Recommendations
+
+     For Library Users:
+     1. Extend base classes for custom nodes
+     2. Use DI tokens for plugin registration
+     3. Handle state changes reactively
+     4. Store BPMN diagrams for persistence
+     5. Implement proper localization
+
+     For Contributors:
+     1. Follow conventional commit standards
+     2. Maintain test coverage
+     3. Use Prettier for formatting
+     4. Update documentation for new features
+     5. Consider backwards compatibility
+
+     21. Limitations & Considerations
+
+     - No built-in backend integration (by design)
+     - Parent app handles API calls and data persistence
+     - Requires Angular 13+
+     - BPMN diagram parsing depends on bpmn-moddle
+     - Localization strings must be provided by parent
+
+     ---
+     Verification Plan
+
+     After documentation is created:
+     1. Review Completeness: Ensure all sections are covered
+     2. Code Examples: Add practical usage examples
+     3. Diagrams: Consider adding architecture diagrams
+     4. API Reference: Link to TypeDoc generated docs
+     5. User Feedback: Share with team for review
+
+     ---
+     Critical Files to Create
+
+     Primary Output: WORKFLOW_CREATOR_DOCUMENTATION.md (project root)
+
+     Content Sections: 21 comprehensive sections covering:
+     - Architecture & design patterns
+     - Component hierarchy & responsibilities
+     - State management & data flow
+     - BPMN integration & workflow representation
+     - Extensibility & plugin system
+     - Integration guide & usage examples
+     - Technology stack & dependencies
+     - Build, test, and deployment processes
+     - Code quality standards
+     - Recent features & git history
+
+     Estimated Length: 1500-2000 lines of markdown
+     Format: GitHub-flavored markdown with code blocks, diagrams, and examples

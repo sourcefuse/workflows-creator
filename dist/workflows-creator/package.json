@@ -72,13 +72,13 @@
   "esm2020": "esm2020/sourceloop-workflows-creator.mjs",
   "fesm2020": "fesm2020/sourceloop-workflows-creator.mjs",
   "fesm2015": "fesm2015/sourceloop-workflows-creator.mjs",
-  "typings": "sourceloop-workflows-creator.d.ts",
+  "typings": "index.d.ts",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
-      "types": "./sourceloop-workflows-creator.d.ts",
+      "types": "./index.d.ts",
       "esm2020": "./esm2020/sourceloop-workflows-creator.mjs",
       "es2020": "./fesm2020/sourceloop-workflows-creator.mjs",
       "es2015": "./fesm2015/sourceloop-workflows-creator.mjs",
