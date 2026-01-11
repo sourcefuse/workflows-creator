@@ -261,7 +261,10 @@
     let-callback="callback"
     let-hide="hide"
   >
-    <ng-multiselect-dropdown
+    <!-- TEMPORARY: ng-multiselect-dropdown commented out for Angular 16+ migration -->
+    <!-- Will be replaced with ng-select in Phase 3 -->
+    <div class="temporary-dropdown-placeholder">
+      <!-- ng-multiselect-dropdown
       [placeholder]="'Please Select'"
       [settings]="dropdownSettings"
       [data]="list"
@@ -269,8 +272,9 @@
       (onDropDownClose)="hide()"
       (onSelect)="callback($event)"
       (onSelectAll)="callback($event)"
-    >
-    </ng-multiselect-dropdown>
+    -->
+      <input type="text" placeholder="Multiselect dropdown (temporarily disabled for migration)" disabled />
+    </div>
   </ng-template>
 
   <ng-template
