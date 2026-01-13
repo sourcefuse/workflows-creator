@@ -34,8 +34,7 @@ import {
   Select,
   DateType,
 } from '../../types/base.types';
-// TEMPORARY: Commented out for Angular 16+ migration
-// import {IDropdownSettings} from 'ng-multiselect-dropdown';
+// ng-select doesn't require settings type import
 import {
   ChangeColumnValue,
   GatewayElement,
@@ -107,20 +106,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     focusKey: '',
     caretPos: 0,
   };
-  // TEMPORARY: Changed to 'any' type for Angular 16+ migration
-  // Will use @ng-select types in Phase 3
-  dropdownSettings: any = {
-    singleSelection: false,
-    idField: 'id',
-    textField: 'fullName',
-    selectAllText: 'Select All',
-    unSelectAllText: 'UnSelect All',
-    enableCheckAll: true,
-    itemsShowLimit: 2,
-    allowSearchFilter: true,
-    defaultOpen: true,
-  };
-  selectedItems: any = [];
+  // ng-select configuration (properties set directly on component)
+  selectedItems: any[] = [];
   showDateTimePicker = true;
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
@@ -464,7 +451,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     event.preventDefault();
     event.stopPropagation();
     this.prevPopperRef.show();
-    popper?.popperInstance?.forceUpdate();
+    // NOTE: forceUpdate() removed in ngx-popperjs v17 - position updates automatically
+    // popper?.popperInstance?.forceUpdate();
   }
 
   /**

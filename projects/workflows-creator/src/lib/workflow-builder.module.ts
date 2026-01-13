@@ -78,9 +78,7 @@ import {
   NgbTimepickerModule,
   NgbPopoverModule,
 } from '@ng-bootstrap/ng-bootstrap';
-// TEMPORARY: Commented out for Angular 16+ migration - not Ivy compatible
-// Will be replaced with @ng-select/ng-select in Phase 3
-// import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
+import {NgSelectModule} from '@ng-select/ng-select';
 import {OrGatewayElement} from './services/bpmn/elements/gateways/or-gateway.element';
 import {OnIntervalEvent} from './services/statement/events/oninterval.event';
 import {TriggerOnInterval} from './services/bpmn/elements/tasks/trigger-on-interval.task';
@@ -113,8 +111,7 @@ import {
     NgbDatepickerModule,
     NgbTimepickerModule,
     NgbPopoverModule,
-    // TEMPORARY: Commented out for Angular 16+ migration
-    // NgMultiSelectDropDownModule.forRoot(),
+    NgSelectModule,
   ],
   providers: [
     {
