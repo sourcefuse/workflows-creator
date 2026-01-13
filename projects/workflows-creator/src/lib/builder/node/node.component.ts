@@ -18,8 +18,8 @@ import {RecordOfAnyType, NodeWithInput} from '../../types';
     standalone: false
 })
 export class NodeComponent<E> {
-  @Input()
-  node: NodeWithInput<E>;
+  @Input({ required: true })
+  node!: NodeWithInput<E>;
 
   @Input()
   isLast = false;
@@ -27,10 +27,10 @@ export class NodeComponent<E> {
   @Input()
   isFirst = false;
 
-  @Input()
+  @Input({ required: true })
   inputTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @Input()
+  @Input({ required: true })
   popupTemplate!: NgxPopperjsContentComponent;
 
   @Output()

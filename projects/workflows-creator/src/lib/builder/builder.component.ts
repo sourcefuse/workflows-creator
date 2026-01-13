@@ -75,8 +75,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   @Input()
   state: StateMap<RecordOfAnyType> = {};
 
-  @Input()
-  localizedStringMap: RecordOfAnyType;
+  @Input({ required: true })
+  localizedStringMap!: RecordOfAnyType;
 
   @Input()
   diagram = '';
@@ -86,8 +86,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
 
-  @Input()
-  allColumns: Select[];
+  @Input({ required: true })
+  allColumns!: Select[];
 
   @Input()
   eventsWithoutElseBlock: string[] = [

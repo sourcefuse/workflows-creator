@@ -58,8 +58,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
 
-  @Input()
-  group: AbstractBaseGroup<E>;
+  @Input({ required: true })
+  group!: AbstractBaseGroup<E>;
 
   @Input()
   isLast = false;
@@ -67,14 +67,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   @Input()
   isFirst = false;
 
-  @Input()
-  eventGroups: AbstractBaseGroup<E>[];
+  @Input({ required: true })
+  eventGroups!: AbstractBaseGroup<E>[];
 
-  @Input()
-  nodeType: NodeTypes;
+  @Input({ required: true })
+  nodeType!: NodeTypes;
 
   /* A decorator that tells Angular that the popupTemplate property is an input property. */
-  @Input()
+  @Input({ required: true })
   popupTemplate!: NgxPopperjsContentComponent;
 
   @Output()
@@ -137,8 +137,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
 
-  @Input()
-  allColumns: Select[];
+  @Input({ required: true })
+  allColumns!: Select[];
 
   @ViewChild('emailTemplate', { static: false }) emailTemplate!: TemplateRef<RecordOfAnyType>;
 
