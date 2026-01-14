@@ -141,6 +141,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   // sonarignore:start
   elseBlockHidden = false;
   elseBlockRemoved = false;
+  events: WorkflowNode<E>[] = [];
   public types = NodeTypes;
 
   localizedStringKeys = LocalizedStringKeys;
@@ -158,6 +159,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
     this.nodes
       .getGroups(true, NodeTypes.ACTION, true)
       .forEach(group => this.elseActionGroups.push(group));
+    this.events = this.nodes.getEvents();
 
     this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
   }
@@ -268,6 +270,14 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param selectedEvent - The identifier of the selected event
    */
   private clearIncompatibleActions(selectedEvent: string) {
+    // Validate if selected event is (non trigger) then return
+    const foundEvent = this.events.find(
+      e => e.getIdentifier() === selectedEvent,
+    );
+    if (foundEvent) {
+      return;
+    }
+
     if (this.actionGroups[0]?.children?.length > 0) {
       // Get list of actions that should remain (compatible with new event)
       const compatibleActions = this.nodes.getActions(selectedEvent);
