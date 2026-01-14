@@ -33,9 +33,9 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/workflows-creator/src/test.ts",
             "tsConfig": "projects/workflows-creator/tsconfig.spec.json",
-            "karmaConfig": "projects/workflows-creator/karma.conf.js"
+            "karmaConfig": "projects/workflows-creator/karma.conf.js",
+            "polyfills": ["zone.js", "zone.js/testing"]
           }
         },
         "lint": {

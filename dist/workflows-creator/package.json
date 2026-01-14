@@ -6,19 +6,26 @@
     "angular-library"
   ],
   "peerDependencies": {
-    "@angular/common": "~13.3.11",
-    "@angular/core": "~13.3.11",
-    "@angular/forms": "~13.3.11",
-    "@popperjs/core": "^2.11.6",
-    "bpmn-moddle": "^8.0.0",
-    "lodash": "^4.17.21",
-    "ngx-popperjs": "^13.3.0"
+    "@angular/animations": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/platform-browser-dynamic": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^20.0.0",
+    "@ng-select/ng-select": "^21.0.0",
+    "@popperjs/core": "^2.11.0",
+    "bootstrap": "^5.3.0",
+    "ngx-popperjs": "^17.0.0",
+    "rxjs": "^7.8.0",
+    "zone.js": "~0.15.0"
   },
   "dependencies": {
-    "@ng-bootstrap/ng-bootstrap": "^12.1.2",
+    "bpmn-moddle": "^8.0.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "ng-multiselect-dropdown": "^0.3.9",
-    "tslib": "^2.2.0"
+    "tslib": "^2.8.1"
   },
   "repository": {
     "type": "git",
