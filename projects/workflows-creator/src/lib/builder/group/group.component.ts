@@ -34,7 +34,7 @@ import {
   Select,
   DateType,
 } from '../../types/base.types';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
+// ng-select doesn't require settings type import
 import {
   ChangeColumnValue,
   GatewayElement,
@@ -44,12 +44,13 @@ import {
 } from '../../services';
 
 @Component({
-  selector: 'workflow-group',
-  templateUrl: './group.component.html',
-  styleUrls: [
-    './group.component.scss',
-    '../../../assets/icons/icomoon/style.css',
-  ],
+    selector: 'workflow-group',
+    templateUrl: './group.component.html',
+    styleUrls: [
+        './group.component.scss',
+        '../../../assets/icons/icomoon/style.css',
+    ],
+    standalone: false
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit {
   constructor(
@@ -57,8 +58,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     private readonly localizationSvc: LocalizationProviderService,
   ) {}
 
-  @Input()
-  group: AbstractBaseGroup<E>;
+  @Input({ required: true })
+  group!: AbstractBaseGroup<E>;
 
   @Input()
   isLast = false;
@@ -66,14 +67,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   @Input()
   isFirst = false;
 
-  @Input()
-  eventGroups: AbstractBaseGroup<E>[];
+  @Input({ required: true })
+  eventGroups!: AbstractBaseGroup<E>[];
 
-  @Input()
-  nodeType: NodeTypes;
+  @Input({ required: true })
+  nodeType!: NodeTypes;
 
   /* A decorator that tells Angular that the popupTemplate property is an input property. */
-  @Input()
+  @Input({ required: true })
   popupTemplate!: NgxPopperjsContentComponent;
 
   @Output()
@@ -105,18 +106,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     focusKey: '',
     caretPos: 0,
   };
-  dropdownSettings: IDropdownSettings = {
-    singleSelection: false,
-    idField: 'id',
-    textField: 'fullName',
-    selectAllText: 'Select All',
-    unSelectAllText: 'UnSelect All',
-    enableCheckAll: true,
-    itemsShowLimit: 2,
-    allowSearchFilter: true,
-    defaultOpen: true,
-  };
-  selectedItems = [];
+  // ng-select configuration (properties set directly on component)
+  selectedItems: any[] = [];
   showDateTimePicker = true;
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
@@ -146,28 +137,28 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     [key: string]: TemplateRef<RecordOfAnyType>;
   };
 
-  @Input()
-  allColumns: Select[];
+  @Input({ required: true })
+  allColumns!: Select[];
 
-  @ViewChild('emailTemplate') emailTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('emailTemplate', { static: false }) emailTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('listTemplate')
-  listTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('listTemplate', { static: false })
+  listTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('numberTemplate')
-  numberTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('numberTemplate', { static: false })
+  numberTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('textTemplate')
-  textTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('textTemplate', { static: false })
+  textTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('searchableDropdownTemplate')
-  searchableDropdownTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('searchableDropdownTemplate', { static: false })
+  searchableDropdownTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('dateTemplate')
-  dateTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('dateTemplate', { static: false })
+  dateTemplate!: TemplateRef<RecordOfAnyType>;
 
-  @ViewChild('dateTimeTemplate')
-  dateTimeTemplate: TemplateRef<RecordOfAnyType>;
+  @ViewChild('dateTimeTemplate', { static: false })
+  dateTimeTemplate!: TemplateRef<RecordOfAnyType>;
 
   /**
    * It gets the events and actions from the nodes service and stores them in the events and actions
@@ -460,7 +451,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     event.preventDefault();
     event.stopPropagation();
     this.prevPopperRef.show();
-    popper?.popperInstance?.forceUpdate();
+    // NOTE: forceUpdate() removed in ngx-popperjs v17 - position updates automatically
+    // popper?.popperInstance?.forceUpdate();
   }
 
   /**

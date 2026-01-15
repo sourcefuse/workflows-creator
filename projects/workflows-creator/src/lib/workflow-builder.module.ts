@@ -78,7 +78,7 @@ import {
   NgbTimepickerModule,
   NgbPopoverModule,
 } from '@ng-bootstrap/ng-bootstrap';
-import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
+import {NgSelectModule} from '@ng-select/ng-select';
 import {OrGatewayElement} from './services/bpmn/elements/gateways/or-gateway.element';
 import {OnIntervalEvent} from './services/statement/events/oninterval.event';
 import {TriggerOnInterval} from './services/bpmn/elements/tasks/trigger-on-interval.task';
@@ -111,7 +111,7 @@ import {
     NgbDatepickerModule,
     NgbTimepickerModule,
     NgbPopoverModule,
-    NgMultiSelectDropDownModule.forRoot(),
+    NgSelectModule,
   ],
   providers: [
     {

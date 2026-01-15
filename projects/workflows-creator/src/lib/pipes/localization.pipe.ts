@@ -3,7 +3,8 @@ import {LocalizationProviderService} from '../services/localization-provider.ser
 import {LocalizedStringKeys} from '../enum';
 
 @Pipe({
-  name: 'localization',
+    name: 'localization',
+    standalone: false
 })
 export class LocalizationPipe implements PipeTransform {
   constructor(private readonly localizationSvc: LocalizationProviderService) {}

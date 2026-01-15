@@ -15,17 +15,20 @@
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "paths": {
-      "@sourceloop/workflows-creator": ["dist"]
+      "@sourceloop/workflows-creator": [
+        "dist"
+      ]
     },
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
-    "target": "es2017",
-    "module": "es2020",
-    "lib": ["es2018", "dom"]
-  },
-  "paths": {
-    "@angular/*": ["./node_modules/@angular/*"]
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
