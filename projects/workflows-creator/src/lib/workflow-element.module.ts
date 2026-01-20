@@ -1,6 +1,7 @@
 /* eslint-disable @angular-eslint/use-lifecycle-interface */
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {Injector} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 import {createCustomElement} from '@angular/elements';
 import {BuilderComponent} from './builder/builder.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
@@ -24,7 +25,8 @@ import {
 import {InputTypes} from './enum';
 
 @NgModule({
-  imports: [BuilderComponent],
+  imports: [BrowserModule, BuilderComponent],
+  providers: [LocalizationPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WorkflowElementModule {
@@ -33,7 +35,6 @@ export class WorkflowElementModule {
   ngDoBootstrap() {
     const webComponent = createCustomElement(BuilderComponent, {
       injector: this.injector,
-      // Render the web component's template
     });
     customElements.define('sourceloop-workflow-element', webComponent);
 

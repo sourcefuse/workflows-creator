@@ -7,7 +7,9 @@
   ></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
-      <span *ngIf="!isFirst()"> {{ group().name }} </span>
+      <span *ngIf="!isFirst() && group().children.length > 0">
+        {{ group().name }}
+      </span>
       <span
         class="input-text"
         *ngIf="group().children.length === 0"

@@ -1,155 +1,56 @@
-import {enableProdMode} from '@angular/core';
-// import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {WorkflowElementModule} from './lib/workflow-element.module';
-import {bootstrapApplication} from '@angular/platform-browser';
-import BPMNModdle from 'bpmn-moddle';
-import {CAMUNDA} from './lib/schema/camunda.json';
-import {LocalizationPipe} from './lib/pipes/localization.pipe';
+import {createApplication} from '@angular/platform-browser';
+import {createCustomElement} from '@angular/elements';
+import {Injector} from '@angular/core';
+import {BuilderComponent} from './lib/builder/builder.component';
+import {provideWorkflowCreator} from './lib/provide-workflow-creator';
+import {InputTypes} from './lib/enum';
 import {
-  CustomBpmnModdle,
-  BpmnElementService,
-  AutoLayoutService,
-  DiFactoryService,
-  StartElement,
-  EndElement,
-  GatewayElement,
-  ProcessElement,
-  BASE_XML,
-  BASE_XML_VALUE,
-  BPMN_ELEMENTS,
-  BPMN_INPUTS,
-  BPMN_NODES,
-  CONDITION_LIST,
-  typeTuppleList,
-  EmailDataInput,
-  EmailRecepientInput,
-  EmailToInput,
-  TriggerWhenColumnChanges,
-  ReadColumnValue,
-  SendEmail,
-  OnChangeEvent,
-  SendEmailAction,
   ChangeColumnValueAction,
-  BpmnBuilderService,
-  ChangeColumnValue,
-  ValueInput,
-  ToValueInput,
-  ToColumnInput,
-  ConditionInput,
-  IntervalInput,
-  ColumnInput,
-  OnValueEvent,
-  CreateBasicStrategy,
-  CreateGatewayStrategy,
-  CreateOrGatewayStrategy,
-  CreateTaskStrategy,
-  CreatePropertyStrategy,
-  CREATE_BASIC_STRATEGY,
-  CREATE_GATEWAY_STRATEGY,
-  CREATE_OR_GATEWAY_STRATEGY,
-  CREATE_PROPERTIES_STRATEGY,
-  CREATE_TASK_STRATEGY,
-  CreateBasicIntervalStrategy,
-  CREATE_BASIC_INTERVAL_STRATEGY,
-  BuilderService,
-  ElementService,
-  NodeService,
-  BasicLinkStrategy,
-  GatewayLinkStrategy,
-  OrGatewayLinkStrategy,
-  NoLinkStrategy,
-  LINK_BASIC_STRATEGY,
-  LINK_GATEWAY_STRATEGY,
-  LINK_OR_GATEWAY_STRATEGY,
-  LINK_NONE_STRATEGY,
-  BpmnNodesService,
-  ProcessPropertiesElement,
-  AndGroup,
-  OrGroup,
-  OrGatewayElement,
-  OnIntervalEvent,
-  TriggerOnInterval,
-  StartOnIntervalElement,
-  TriggerOnAddItem,
   OnAddItemEvent,
+  OnIntervalEvent,
+  ColumnInput,
+  ConditionInput,
+  ToColumnInput,
+  ValueInput,
+  OnChangeEvent,
+  IntervalInput,
+  OnValueEvent,
+  EmailDataInput,
+  EmailToInput,
   TriggerColumnInput,
   ValueTypeInput,
-  ENV_TOKEN,
+  EmailRecepientInput,
 } from './lib';
 
-// enableProdMode();
-// platformBrowserDynamic()
-//   .bootstrapModule(WorkflowElementModule)
-//   .catch(err => console.error(err));
+// Create application context for custom element (no component bootstrapping)
+createApplication({
+  providers: [provideWorkflowCreator((window as any).workflowEnv)],
+})
+  .then(appRef => {
+    // Create and register the custom element
+    const webComponent = createCustomElement(BuilderComponent, {
+      injector: appRef.injector,
+    });
+    customElements.define('sourceloop-workflow-element', webComponent);
 
-bootstrapApplication(WorkflowElementModule, {
-  providers: [
-    {
-      provide: CustomBpmnModdle,
-      useFactory: () => new BPMNModdle({camunda: CAMUNDA}),
-    },
-    {
-      provide: BASE_XML,
-      useValue: BASE_XML_VALUE,
-    },
-    {provide: ElementService, useClass: BpmnElementService},
-    {provide: NodeService, useClass: BpmnNodesService},
-    {provide: BuilderService, useClass: BpmnBuilderService},
-    AutoLayoutService,
-    DiFactoryService,
-    {provide: BPMN_NODES, useValue: ChangeColumnValueAction, multi: true},
-    {provide: BPMN_NODES, useValue: SendEmailAction, multi: true},
-    {provide: BPMN_NODES, useValue: OnChangeEvent, multi: true},
-    {provide: BPMN_NODES, useValue: OnValueEvent, multi: true},
-    {provide: BPMN_NODES, useValue: OnIntervalEvent, multi: true},
-    {provide: BPMN_NODES, useValue: OnAddItemEvent, multi: true},
-    {provide: BPMN_NODES, useValue: AndGroup, multi: true},
-    {provide: BPMN_NODES, useValue: OrGroup, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: StartElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: StartOnIntervalElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: EndElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: GatewayElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: OrGatewayElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: ProcessElement, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: TriggerWhenColumnChanges, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: TriggerOnInterval, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: TriggerOnAddItem, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: ReadColumnValue, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: SendEmail, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: ChangeColumnValue, multi: true},
-    {provide: BPMN_ELEMENTS, useClass: ProcessPropertiesElement, multi: true},
-    {provide: BPMN_INPUTS, useClass: ColumnInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: TriggerColumnInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: IntervalInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: ConditionInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: EmailDataInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: EmailToInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: EmailRecepientInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: ToColumnInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: ToValueInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: ValueInput, multi: true},
-    {provide: BPMN_INPUTS, useClass: ValueTypeInput, multi: true},
-    {provide: CREATE_BASIC_STRATEGY, useClass: CreateBasicStrategy},
-    {
-      provide: CREATE_BASIC_INTERVAL_STRATEGY,
-      useClass: CreateBasicIntervalStrategy,
-    },
-    {provide: CREATE_GATEWAY_STRATEGY, useClass: CreateGatewayStrategy},
-    {provide: CREATE_OR_GATEWAY_STRATEGY, useClass: CreateOrGatewayStrategy},
-    {provide: CREATE_TASK_STRATEGY, useClass: CreateTaskStrategy},
-    {provide: CREATE_PROPERTIES_STRATEGY, useClass: CreatePropertyStrategy},
-    {provide: LINK_BASIC_STRATEGY, useClass: BasicLinkStrategy},
-    {provide: LINK_GATEWAY_STRATEGY, useClass: GatewayLinkStrategy},
-    {provide: LINK_OR_GATEWAY_STRATEGY, useClass: OrGatewayLinkStrategy},
-    {provide: LINK_NONE_STRATEGY, useClass: NoLinkStrategy},
-    {provide: CONDITION_LIST, useValue: typeTuppleList},
-    {
-      provide: ENV_TOKEN,
-      useValue: (
-        window as Window &
-          typeof globalThis & {workflowEnv: {envIdentifier: string}}
-      ).workflowEnv,
-    },
-    LocalizationPipe,
-  ],
-}).catch(err => console.error(err));
+    // Export services for vanilla JS projects
+    Object.assign(window, {
+      ChangeColumnValueAction,
+      OnAddItemEvent,
+      OnIntervalEvent,
+      ColumnInput,
+      ConditionInput,
+      ToColumnInput,
+      ValueInput,
+      OnChangeEvent,
+      IntervalInput,
+      OnValueEvent,
+      EmailDataInput,
+      EmailToInput,
+      TriggerColumnInput,
+      ValueTypeInput,
+      EmailRecepientInput,
+      InputTypes,
+    });
+  })
+  .catch(err => console.error(err));

@@ -67,6 +67,7 @@
 .else-block {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
   .action-icons {
     cursor: pointer;
     display: inline !important;

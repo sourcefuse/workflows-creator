@@ -10,8 +10,10 @@ import {
   ViewEncapsulation,
   ViewChild,
   ViewContainerRef,
+  Injector,
+  runInInjectionContext,
 } from '@angular/core';
-import {Overlay, OverlayRef, OverlayModule} from '@angular/cdk/overlay';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
   isSelectInput,
@@ -67,7 +69,6 @@ import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component'
   imports: [
     CommonModule,
     FormsModule,
-    OverlayModule,
     NgSelectModule,
     GroupComponent,
     LocalizationPipe,
@@ -83,6 +84,7 @@ export class BuilderComponent<E> implements OnInit {
   private isInitialized = false;
 
   constructor(
+    private injector: Injector,
     private readonly builder: BuilderService<E, RecordOfAnyType>,
     private readonly nodes: NodeService<E>,
     private readonly elements: ElementService<E>,
@@ -92,34 +94,36 @@ export class BuilderComponent<E> implements OnInit {
     private viewContainerRef: ViewContainerRef,
   ) {
     // Effect to handle input changes similar to ngOnChanges
-    effect(() => {
-      const currentLocalizedStringMap = this.localizedStringMap();
-      const currentDiagram = this.diagram();
-      const currentState = this.state();
+    runInInjectionContext(this.injector, () => {
+      effect(() => {
+        const currentLocalizedStringMap = this.localizedStringMap();
+        const currentDiagram = this.diagram();
+        const currentState = this.state();
 
-      // Handle localizedStringMap changes (after initialization)
-      if (
-        this.isInitialized &&
-        currentLocalizedStringMap &&
-        currentLocalizedStringMap !== this.previousLocalizedStringMap &&
-        Object.keys(currentLocalizedStringMap).length > 0
-      ) {
-        this.handleLocalizedStringMapChange(currentLocalizedStringMap);
-        this.previousLocalizedStringMap = currentLocalizedStringMap;
-      }
+        // Handle localizedStringMap changes (after initialization)
+        if (
+          this.isInitialized &&
+          currentLocalizedStringMap &&
+          currentLocalizedStringMap !== this.previousLocalizedStringMap &&
+          Object.keys(currentLocalizedStringMap).length > 0
+        ) {
+          this.handleLocalizedStringMapChange(currentLocalizedStringMap);
+          this.previousLocalizedStringMap = currentLocalizedStringMap;
+        }
 
-      // Handle diagram and state changes (after initialization)
-      if (
-        this.isInitialized &&
-        currentDiagram &&
-        currentState &&
-        (currentDiagram !== this.previousDiagram ||
-          currentState !== this.previousState)
-      ) {
-        this.handleDiagramAndStateChange(currentDiagram, currentState);
-        this.previousDiagram = currentDiagram;
-        this.previousState = currentState;
-      }
+        // Handle diagram and state changes (after initialization)
+        if (
+          this.isInitialized &&
+          currentDiagram &&
+          currentState &&
+          (currentDiagram !== this.previousDiagram ||
+            currentState !== this.previousState)
+        ) {
+          this.handleDiagramAndStateChange(currentDiagram, currentState);
+          this.previousDiagram = currentDiagram;
+          this.previousState = currentState;
+        }
+      });
     });
   }
 
@@ -208,7 +212,13 @@ export class BuilderComponent<E> implements OnInit {
     diagram: string,
     state: StateMap<RecordOfAnyType>,
   ) {
-    if (diagram && state && Object.keys(state).length > 0) {
+    if (
+      diagram &&
+      typeof diagram === 'string' &&
+      diagram.trim().length > 0 &&
+      state &&
+      Object.keys(state).length > 0
+    ) {
       const {
         events,
         actions,

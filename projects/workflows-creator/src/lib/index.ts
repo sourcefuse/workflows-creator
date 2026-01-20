@@ -11,3 +11,4 @@ export * from './builder/group/group.component';
 export * from './token';
 export * from './classes';
 export * from './layout';
+export * from './pipes/localization.pipe';

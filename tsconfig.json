@@ -20,7 +20,6 @@
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "paths": {
-      "@sourceloop/workflows-creator": ["dist"],
       "@angular/*": ["./node_modules/@angular/*"]
     },
     "experimentalDecorators": true,

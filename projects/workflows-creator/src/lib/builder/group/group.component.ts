@@ -6,9 +6,9 @@ import {
   OnInit,
   TemplateRef,
   ViewChild,
-  ViewContainerRef,
+  ViewContainerRef, 
 } from '@angular/core';
-import {Overlay, OverlayRef, OverlayModule} from '@angular/cdk/overlay';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
@@ -64,7 +64,6 @@ import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component
   imports: [
     CommonModule,
     FormsModule,
-    OverlayModule,
     NgSelectModule,
     NodeComponent,
     TooltipRenderComponent,

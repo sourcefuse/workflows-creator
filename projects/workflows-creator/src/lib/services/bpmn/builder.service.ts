@@ -219,6 +219,11 @@ export class BpmnBuilderService extends BuilderService<
    *   -
    */
   async restore(xml: string) {
+    if (!xml || typeof xml !== 'string' || xml.trim().length === 0) {
+      throw new Error(
+        'Invalid XML: XML string is required and cannot be empty',
+      );
+    }
     const result = await this.moddle.fromXML(xml);
     this.root = result.rootElement;
     const process = this.root.get('rootElements')[0];
