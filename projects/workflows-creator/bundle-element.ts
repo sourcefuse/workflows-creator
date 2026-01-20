@@ -14,7 +14,6 @@ async function elementsBundler() {
   const distBase = './projects/workflows-creator/dist/workflows-element';
   const browserDir = `${distBase}/browser`;
 
-  // collect chunk files produced by Angular build (names can include hashes)
   const filesPresent: string[] = [];
   if (existsSync(browserDir)) {
     const all = readdirSync(browserDir);
@@ -23,10 +22,8 @@ async function elementsBundler() {
     const runtime = all.find((f: string) => /^runtime(.*)\.js$/.test(f));
     const vendor = all.find((f: string) => /^vendor(.*)\.js$/.test(f));
 
-    // Modern Angular application builder outputs polyfills and main
     if (polyfills) filesPresent.push(`${browserDir}/${polyfills}`);
     if (main) filesPresent.push(`${browserDir}/${main}`);
-    // Legacy builder outputs (optional)
     if (runtime) filesPresent.push(`${browserDir}/${runtime}`);
     if (vendor) filesPresent.push(`${browserDir}/${vendor}`);
   }
@@ -36,11 +33,10 @@ async function elementsBundler() {
     return;
   }
 
-  // target output directory (sibling project `workflows-element/dist`)
   const outDir = './projects/workflows-element/dist';
   await ensureDir(outDir);
 
-  // concatenate detected files into a single element bundle (simple sync append)
+  // concatenate detected files into a single element bundle
   const outFile = `${outDir}/workflows-element.js`;
   const ws = createWriteStream(outFile);
   for (const f of filesPresent) {

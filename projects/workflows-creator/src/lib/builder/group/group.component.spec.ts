@@ -34,7 +34,6 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {AllowedValues, RecordOfAnyType} from '../../types';
-import {popper} from '@popperjs/core';
 
 describe('GroupComponent', () => {
   let component: GroupComponent<any>;

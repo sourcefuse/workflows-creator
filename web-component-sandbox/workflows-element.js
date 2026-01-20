@@ -9597,7 +9597,7 @@ var require_lodash = __commonJS({
           var length = array == null ? 0 : array.length;
           return length ? baseSlice(array, 1, length) : [];
         }
-        function take(array, n, guard) {
+        function take2(array, n, guard) {
           if (!(array && array.length)) {
             return [];
           }
@@ -11283,7 +11283,7 @@ var require_lodash = __commonJS({
         lodash.split = split;
         lodash.spread = spread;
         lodash.tail = tail;
-        lodash.take = take;
+        lodash.take = take2;
         lodash.takeRight = takeRight;
         lodash.takeRightWhile = takeRightWhile;
         lodash.takeWhile = takeWhile2;
@@ -14065,6 +14065,21 @@ function debounceTime(dueTime, scheduler2 = asyncScheduler) {
       subscriber.complete();
     }, void 0, () => {
       lastValue = activeTask = null;
+    }));
+  });
+}
+
+// node_modules/rxjs/dist/esm/internal/operators/take.js
+function take(count) {
+  return count <= 0 ? () => EMPTY : operate((source, subscriber) => {
+    let seen = 0;
+    source.subscribe(createOperatorSubscriber(subscriber, (value) => {
+      if (++seen <= count) {
+        subscriber.next(value);
+        if (count <= seen) {
+          subscriber.complete();
+        }
+      }
     }));
   });
 }
@@ -63017,7 +63032,7 @@ function GroupComponent_span_7_Template(rf, ctx) {
     const ctx_r0 = \u0275\u0275nextContext();
     const inputs_r8 = \u0275\u0275reference(9);
     \u0275\u0275advance();
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction1(6, _c10, i_r6 === ctx_r0.group().children.length - 1))("node", node_r7)("ngClass", \u0275\u0275pureFunction1(8, _c10, i_r6 === ctx_r0.group().children.length - 1))("isLast", i_r6 === ctx_r0.group().children.length - 1)("isFirst", i_r6 === 0)("inputTemplate", inputs_r8);
+    \u0275\u0275property("ngClass", \u0275\u0275pureFunction1(5, _c10, i_r6 === ctx_r0.group().children.length - 1))("node", node_r7)("isLast", i_r6 === ctx_r0.group().children.length - 1)("isFirst", i_r6 === 0)("inputTemplate", inputs_r8);
   }
 }
 function GroupComponent_ng_template_8_ng_container_0_ng_container_1_span_3_Template(rf, ctx) {
@@ -63756,7 +63771,7 @@ var GroupComponent = class _GroupComponent {
     };
     const portal = new TemplatePortal(this.nodePopupTemplate, this.viewContainerRef, context2);
     this.overlayRef.attach(portal);
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef.backdropClick().pipe(take(1)).subscribe(() => this.closeOverlay());
   }
   /**
    * `onNodeAdd` is a function that takes in a node, a group type, a group id, and an id, and then
@@ -63857,7 +63872,7 @@ var GroupComponent = class _GroupComponent {
     });
     const portal = new TemplatePortal(template, this.viewContainerRef, context2);
     this.overlayRef.attach(portal);
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef.backdropClick().pipe(take(1)).subscribe(() => this.closeOverlay());
   }
   /**
    * Closes the currently open overlay
@@ -64053,6 +64068,9 @@ var GroupComponent = class _GroupComponent {
       element.node.state.remove(`${nextKey}Name`);
     }
   }
+  ngOnDestroy() {
+    this.closeOverlay();
+  }
   static {
     this.\u0275fac = function GroupComponent_Factory(__ngFactoryType__) {
       return new (__ngFactoryType__ || _GroupComponent)(\u0275\u0275directiveInject(NodeService), \u0275\u0275directiveInject(LocalizationProviderService), \u0275\u0275directiveInject(Overlay), \u0275\u0275directiveInject(ViewContainerRef));
@@ -64092,7 +64110,7 @@ var GroupComponent = class _GroupComponent {
         \u0275\u0275elementEnd();
         \u0275\u0275template(6, GroupComponent_span_6_Template, 3, 2, "span", 17);
         \u0275\u0275elementEnd();
-        \u0275\u0275template(7, GroupComponent_span_7_Template, 2, 10, "span", 18)(8, GroupComponent_ng_template_8_Template, 1, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor)(10, GroupComponent_ng_template_10_Template, 2, 1, "ng-template", null, 1, \u0275\u0275templateRefExtractor)(12, GroupComponent_ng_template_12_Template, 2, 1, "ng-template", null, 2, \u0275\u0275templateRefExtractor)(14, GroupComponent_ng_template_14_Template, 1, 1, "ng-template", null, 3, \u0275\u0275templateRefExtractor)(16, GroupComponent_ng_template_16_Template, 3, 4, "ng-template", null, 4, \u0275\u0275templateRefExtractor)(18, GroupComponent_ng_template_18_Template, 6, 1, "ng-template", null, 5, \u0275\u0275templateRefExtractor)(20, GroupComponent_ng_template_20_Template, 9, 3, "ng-template", null, 6, \u0275\u0275templateRefExtractor)(22, GroupComponent_ng_template_22_Template, 9, 9, "ng-template", null, 7, \u0275\u0275templateRefExtractor)(24, GroupComponent_ng_template_24_Template, 2, 1, "ng-template", null, 8, \u0275\u0275templateRefExtractor)(26, GroupComponent_ng_template_26_Template, 2, 1, "ng-template", null, 9, \u0275\u0275templateRefExtractor);
+        \u0275\u0275template(7, GroupComponent_span_7_Template, 2, 7, "span", 18)(8, GroupComponent_ng_template_8_Template, 1, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor)(10, GroupComponent_ng_template_10_Template, 2, 1, "ng-template", null, 1, \u0275\u0275templateRefExtractor)(12, GroupComponent_ng_template_12_Template, 2, 1, "ng-template", null, 2, \u0275\u0275templateRefExtractor)(14, GroupComponent_ng_template_14_Template, 1, 1, "ng-template", null, 3, \u0275\u0275templateRefExtractor)(16, GroupComponent_ng_template_16_Template, 3, 4, "ng-template", null, 4, \u0275\u0275templateRefExtractor)(18, GroupComponent_ng_template_18_Template, 6, 1, "ng-template", null, 5, \u0275\u0275templateRefExtractor)(20, GroupComponent_ng_template_20_Template, 9, 3, "ng-template", null, 6, \u0275\u0275templateRefExtractor)(22, GroupComponent_ng_template_22_Template, 9, 9, "ng-template", null, 7, \u0275\u0275templateRefExtractor)(24, GroupComponent_ng_template_24_Template, 2, 1, "ng-template", null, 8, \u0275\u0275templateRefExtractor)(26, GroupComponent_ng_template_26_Template, 2, 1, "ng-template", null, 9, \u0275\u0275templateRefExtractor);
         \u0275\u0275elementEnd();
       }
       if (rf & 2) {
@@ -64184,7 +64202,7 @@ var GroupComponent = class _GroupComponent {
     <workflow-node
       [ngClass]="{'last-node': i === group().children.length - 1}"
       [node]="node"
-      [ngClass]="{'last-node': i === group().children.length - 1}"
+
       [isLast]="i === group().children.length - 1"
       [isFirst]="i === 0"
       [inputTemplate]="inputs"
@@ -64606,7 +64624,7 @@ var GroupComponent = class _GroupComponent {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GroupComponent, { className: "GroupComponent", filePath: "projects/workflows-creator/src/lib/builder/group/group.component.ts", lineNumber: 74 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GroupComponent, { className: "GroupComponent", filePath: "projects/workflows-creator/src/lib/builder/group/group.component.ts", lineNumber: 76 });
 })();
 
 // projects/workflows-creator/src/lib/builder/builder.component.ts
@@ -64808,17 +64826,21 @@ var BuilderComponent = class _BuilderComponent {
     this.overlayRef = null;
     runInInjectionContext(this.injector, () => {
       effect(() => {
-        const currentLocalizedStringMap = this.localizedStringMap();
-        const currentDiagram = this.diagram();
-        const currentState = this.state();
-        if (this.isInitialized && currentLocalizedStringMap && currentLocalizedStringMap !== this.previousLocalizedStringMap && Object.keys(currentLocalizedStringMap).length > 0) {
-          this.handleLocalizedStringMapChange(currentLocalizedStringMap);
-          this.previousLocalizedStringMap = currentLocalizedStringMap;
-        }
-        if (this.isInitialized && currentDiagram && currentState && (currentDiagram !== this.previousDiagram || currentState !== this.previousState)) {
-          this.handleDiagramAndStateChange(currentDiagram, currentState);
-          this.previousDiagram = currentDiagram;
-          this.previousState = currentState;
+        try {
+          const currentLocalizedStringMap = this.localizedStringMap();
+          const currentDiagram = this.diagram();
+          const currentState = this.state();
+          if (this.isInitialized && currentLocalizedStringMap && currentLocalizedStringMap !== this.previousLocalizedStringMap && Object.keys(currentLocalizedStringMap).length > 0) {
+            this.handleLocalizedStringMapChange(currentLocalizedStringMap);
+            this.previousLocalizedStringMap = currentLocalizedStringMap;
+          }
+          if (this.isInitialized && currentDiagram && currentState && (currentDiagram !== this.previousDiagram || currentState !== this.previousState)) {
+            this.handleDiagramAndStateChange(currentDiagram, currentState);
+            this.previousDiagram = currentDiagram;
+            this.previousState = currentState;
+          }
+        } catch (error3) {
+          console.error("Effect error in BuilderComponent:", error3);
         }
       });
     });
@@ -65052,7 +65074,7 @@ var BuilderComponent = class _BuilderComponent {
     });
     const portal = new TemplatePortal(template, this.viewContainerRef, context2);
     this.overlayRef.attach(portal);
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef.backdropClick().pipe(take(1)).subscribe(() => this.closeOverlay());
   }
   /**
    * Closes the currently open overlay
@@ -65283,6 +65305,9 @@ var BuilderComponent = class _BuilderComponent {
     });
     return stateA;
   }
+  ngOnDestroy() {
+    this.closeOverlay();
+  }
   static {
     this.\u0275fac = function BuilderComponent_Factory(__ngFactoryType__) {
       return new (__ngFactoryType__ || _BuilderComponent)(\u0275\u0275directiveInject(Injector), \u0275\u0275directiveInject(BuilderService), \u0275\u0275directiveInject(NodeService), \u0275\u0275directiveInject(ElementService), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(LocalizationProviderService), \u0275\u0275directiveInject(Overlay), \u0275\u0275directiveInject(ViewContainerRef));
@@ -65343,7 +65368,7 @@ var BuilderComponent = class _BuilderComponent {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(BuilderComponent, { className: "BuilderComponent", filePath: "projects/workflows-creator/src/lib/builder/builder.component.ts", lineNumber: 80 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(BuilderComponent, { className: "BuilderComponent", filePath: "projects/workflows-creator/src/lib/builder/builder.component.ts", lineNumber: 82 });
 })();
 
 // node_modules/min-dash/dist/index.esm.js

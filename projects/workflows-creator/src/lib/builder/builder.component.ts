@@ -6,6 +6,7 @@ import {
   output,
   effect,
   OnInit,
+  OnDestroy,
   TemplateRef,
   ViewEncapsulation,
   ViewChild,
@@ -14,6 +15,7 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {take} from 'rxjs/operators';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
   isSelectInput,
@@ -77,7 +79,7 @@ import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component'
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BuilderComponent<E> implements OnInit {
+export class BuilderComponent<E> implements OnInit, OnDestroy {
   private previousDiagram = '';
   private previousState: StateMap<RecordOfAnyType> | null = null;
   private previousLocalizedStringMap: RecordOfAnyType | null = null;
@@ -96,32 +98,37 @@ export class BuilderComponent<E> implements OnInit {
     // Effect to handle input changes similar to ngOnChanges
     runInInjectionContext(this.injector, () => {
       effect(() => {
-        const currentLocalizedStringMap = this.localizedStringMap();
-        const currentDiagram = this.diagram();
-        const currentState = this.state();
+        try {
+          const currentLocalizedStringMap = this.localizedStringMap();
+          const currentDiagram = this.diagram();
+          const currentState = this.state();
 
-        // Handle localizedStringMap changes (after initialization)
-        if (
-          this.isInitialized &&
-          currentLocalizedStringMap &&
-          currentLocalizedStringMap !== this.previousLocalizedStringMap &&
-          Object.keys(currentLocalizedStringMap).length > 0
-        ) {
-          this.handleLocalizedStringMapChange(currentLocalizedStringMap);
-          this.previousLocalizedStringMap = currentLocalizedStringMap;
-        }
+          // Handle localizedStringMap changes (after initialization)
+          if (
+            this.isInitialized &&
+            currentLocalizedStringMap &&
+            currentLocalizedStringMap !== this.previousLocalizedStringMap &&
+            Object.keys(currentLocalizedStringMap).length > 0
+          ) {
+            this.handleLocalizedStringMapChange(currentLocalizedStringMap);
+            this.previousLocalizedStringMap = currentLocalizedStringMap;
+          }
 
-        // Handle diagram and state changes (after initialization)
-        if (
-          this.isInitialized &&
-          currentDiagram &&
-          currentState &&
-          (currentDiagram !== this.previousDiagram ||
-            currentState !== this.previousState)
-        ) {
-          this.handleDiagramAndStateChange(currentDiagram, currentState);
-          this.previousDiagram = currentDiagram;
-          this.previousState = currentState;
+          // Handle diagram and state changes (after initialization)
+          if (
+            this.isInitialized &&
+            currentDiagram &&
+            currentState &&
+            (currentDiagram !== this.previousDiagram ||
+              currentState !== this.previousState)
+          ) {
+            this.handleDiagramAndStateChange(currentDiagram, currentState);
+            this.previousDiagram = currentDiagram;
+            this.previousState = currentState;
+          }
+        } catch (error) {
+          console.error('Effect error in BuilderComponent:', error);
+          // Handle gracefully - reset state or show user error if needed
         }
       });
     });
@@ -456,7 +463,10 @@ export class BuilderComponent<E> implements OnInit {
     this.overlayRef.attach(portal);
 
     // Close overlay on backdrop click
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
   }
 
   /**
@@ -726,5 +736,9 @@ export class BuilderComponent<E> implements OnInit {
       });
     });
     return stateA;
+  }
+
+  ngOnDestroy(): void {
+    this.closeOverlay();
   }
 }

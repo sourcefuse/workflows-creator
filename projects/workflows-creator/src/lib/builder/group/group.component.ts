@@ -4,11 +4,13 @@ import {
   input,
   output,
   OnInit,
+  OnDestroy,
   TemplateRef,
   ViewChild,
-  ViewContainerRef, 
+  ViewContainerRef,
 } from '@angular/core';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {take} from 'rxjs/operators';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
@@ -71,7 +73,7 @@ import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component
   ],
   providers: [LocalizationPipe],
 })
-export class GroupComponent<E> implements OnInit, AfterViewInit {
+export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
@@ -382,7 +384,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.overlayRef.attach(portal);
 
     // Close overlay on backdrop click
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
   }
 
   /**
@@ -517,7 +522,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.overlayRef.attach(portal);
 
     // Close overlay on backdrop click
-    this.overlayRef.backdropClick().subscribe(() => this.closeOverlay());
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
   }
 
   /**
@@ -787,5 +795,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       element.node.state.remove(nextKey);
       element.node.state.remove(`${nextKey}Name`);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.closeOverlay();
   }
 }
