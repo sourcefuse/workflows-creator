@@ -4,6 +4,7 @@ import {BpmnEvent} from '../../../types/bpmn.types';
 import {TriggerOnAddItem} from '../../bpmn/elements/tasks/trigger-on-add-item.task';
 
 export class OnAddItemEvent extends BpmnEvent {
+  static isEnabled = true;
   groupType: string;
   groupId: string;
   trigger = true;
@@ -33,5 +34,8 @@ export class OnAddItemEvent extends BpmnEvent {
 
   getIdentifier(): string {
     return OnAddItemEvent.identifier;
+  }
+  checkIsEnabled(): boolean {
+    return OnAddItemEvent.isEnabled;
   }
 }

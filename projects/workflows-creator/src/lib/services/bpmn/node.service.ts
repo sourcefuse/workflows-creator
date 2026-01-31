@@ -43,6 +43,7 @@ export class BpmnNodesService<E> extends NodeService<E> {
     const actions = this.nodes
       .map(Node => new Node(localizedStrings, this.utils.uuid()))
       .filter(n => n.type === NodeTypes.ACTION)
+      .filter(action => (action as WorkflowAction<E>).checkIsEnabled())
       .sort((a, b) =>
         a.name.toString().localeCompare(b.name.toString(), undefined, {
           sensitivity: 'base',
@@ -83,7 +84,8 @@ export class BpmnNodesService<E> extends NodeService<E> {
           ),
       )
       .filter(n => n.type === NodeTypes.EVENT)
-      .filter(instance => trigger === (instance as WorkflowEvent<E>).trigger);
+      .filter(instance => trigger === (instance as WorkflowEvent<E>).trigger)
+      .filter(instance => (instance as WorkflowEvent<E>).checkIsEnabled());
   }
 
   /**

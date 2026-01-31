@@ -12,7 +12,9 @@ export abstract class AbstractWorkflowNode<E> {
   abstract state: State<RecordOfAnyType>;
   abstract name: string;
   static identifier: string;
+  static isEnabled: boolean;
   id: string;
 
   abstract getIdentifier(): string;
+  abstract checkIsEnabled(): boolean;
 }
