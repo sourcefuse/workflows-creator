@@ -6,7 +6,6 @@ import {LocalizedStringKeys} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
 export class ChangeColumnValueAction extends BpmnAction {
-  static isEnabled = true;
   isElseAction: boolean;
   groupType: string;
   groupId: string;
@@ -34,8 +33,5 @@ export class ChangeColumnValueAction extends BpmnAction {
 
   getIdentifier(): string {
     return ChangeColumnValueAction.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return ChangeColumnValueAction.isEnabled;
   }
 }

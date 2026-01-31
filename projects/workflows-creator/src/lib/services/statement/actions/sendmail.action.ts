@@ -9,7 +9,6 @@ import {
 } from '../inputs/email.input';
 
 export class SendEmailAction extends BpmnAction {
-  static isEnabled = true;
   isElseAction: boolean;
   groupType: string;
   groupId: string;
@@ -40,8 +39,5 @@ export class SendEmailAction extends BpmnAction {
 
   getIdentifier(): string {
     return SendEmailAction.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return SendEmailAction.isEnabled;
   }
 }

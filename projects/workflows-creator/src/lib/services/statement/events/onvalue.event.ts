@@ -8,7 +8,6 @@ import {CriteriaInput} from '../inputs/criteria.input';
 import {ValueInput} from '../inputs/value.input';
 
 export class OnValueEvent extends BpmnEvent {
-  static isEnabled = true;
   groupType: string;
   groupId: string;
   trigger = false;
@@ -38,8 +37,5 @@ export class OnValueEvent extends BpmnEvent {
 
   getIdentifier(): string {
     return OnValueEvent.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return OnValueEvent.isEnabled;
   }
 }

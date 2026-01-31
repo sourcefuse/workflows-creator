@@ -7,7 +7,6 @@ import {IntervalInput} from '../inputs/interval.input';
 import {StepperInput} from '../inputs/stepper.input';
 
 export class OnIntervalEvent extends BpmnEvent {
-  static isEnabled = true;
   groupType: string;
   groupId: string;
   trigger = true;
@@ -39,8 +38,5 @@ export class OnIntervalEvent extends BpmnEvent {
 
   getIdentifier(): string {
     return OnIntervalEvent.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return OnIntervalEvent.isEnabled;
   }
 }

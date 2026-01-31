@@ -2,7 +2,6 @@ import {RecordOfAnyType} from '../../../types';
 import {BpmnAction} from '../../../types/bpmn.types';
 
 export class ReadColumnValueAction extends BpmnAction {
-  static isEnabled = true;
   isElseAction: boolean;
   groupType: string;
   groupId: string;
@@ -27,8 +26,5 @@ export class ReadColumnValueAction extends BpmnAction {
 
   getIdentifier(): string {
     return ReadColumnValueAction.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return ReadColumnValueAction.isEnabled;
   }
 }

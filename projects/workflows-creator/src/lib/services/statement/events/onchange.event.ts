@@ -8,7 +8,6 @@ import {TriggerColumnInput, ValueTypeInput} from '../inputs';
 import {ValueInput} from '../inputs/value.input';
 
 export class OnChangeEvent extends BpmnEvent {
-  static isEnabled = true;
   groupType: string;
   groupId: string;
   trigger = true;
@@ -43,8 +42,5 @@ export class OnChangeEvent extends BpmnEvent {
 
   getIdentifier(): string {
     return OnChangeEvent.identifier;
-  }
-  checkIsEnabled(): boolean {
-    return OnChangeEvent.isEnabled;
   }
 }
