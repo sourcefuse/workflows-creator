@@ -1,0 +1,9 @@
+<workflow-builder
+  [(state)]="state"
+  [(diagram)]="_diagram"
+  [allColumns]="allColumns"
+  [localizedStringMap]="localizedStringMap"
+  (eventAdded)="onEventAdded($event)"
+  (actionAdded)="onActionAdded($event)"
+  (itemChanged)="onItemChanged($event)"
+></workflow-builder>

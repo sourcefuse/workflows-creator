@@ -3,18 +3,18 @@ import {InputTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
 export class IntervalInput extends WorkflowPrompt {
-  prefix = '';
-  suffix = '';
-  typeFunction = () => InputTypes.List;
-  inputKey = 'interval';
+  override prefix = '';
+  override suffix = '';
+  override typeFunction = () => InputTypes.List;
+  override inputKey = 'interval';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Interval';
+  override placeholder = 'Interval';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('intervalList');
   static identifier = 'IntervalInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return IntervalInput.identifier;
   }
 }

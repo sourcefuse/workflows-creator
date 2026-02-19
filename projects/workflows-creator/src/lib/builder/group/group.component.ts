@@ -1,14 +1,18 @@
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
-  Input,
+  input,
+  output,
   OnInit,
-  Output,
+  OnDestroy,
   TemplateRef,
   ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
-import {NgxPopperjsContentComponent} from 'ngx-popperjs';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {take} from 'rxjs/operators';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {DateTimeValue, OverlayContext, SelectableItem} from '../../interfaces';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
 import {
@@ -24,6 +28,7 @@ import {
   AllowedValues,
   AllowedValuesMap,
   BpmnNode,
+  InputChanged,
   NodeWithInput,
   RecordOfAnyType,
   WorkflowNode,
@@ -46,6 +51,11 @@ import {
 } from '../../services';
 import {LocalizationPipe} from '../../pipes/localization.pipe';
 import moment from 'moment';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {NodeComponent} from '../node/node.component';
+import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component';
 
 @Component({
   selector: 'workflow-group',
@@ -54,55 +64,51 @@ import moment from 'moment';
     './group.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgSelectModule,
+    NodeComponent,
+    TooltipRenderComponent,
+    LocalizationPipe,
+  ],
   providers: [LocalizationPipe],
 })
-export class GroupComponent<E> implements OnInit, AfterViewInit {
+export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly nodes: NodeService<E>,
     private readonly localizationSvc: LocalizationProviderService,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
   ) {}
   public inputType = InputTypes;
   public dateTimeFields = DateTimeFields;
   private isMouseDown: boolean = false;
-  @Input()
-  group: AbstractBaseGroup<E>;
+  group = input.required<AbstractBaseGroup<E>>();
 
-  @Input()
-  isLast = false;
+  isLast = input(false);
 
-  @Input()
-  isFirst = false;
+  isFirst = input(false);
 
-  @Input()
-  eventGroups: AbstractBaseGroup<E>[];
+  eventGroups = input<AbstractBaseGroup<E>[]>([]);
 
-  @Input()
-  nodeType: NodeTypes;
+  nodeType = input.required<NodeTypes>();
 
-  /* A decorator that tells Angular that the popupTemplate property is an input property. */
-  @Input()
-  popupTemplate!: NgxPopperjsContentComponent;
+  remove = output<boolean>();
 
-  @Output()
-  remove = new EventEmitter<boolean>();
+  add = output<boolean>();
 
-  @Output()
-  add = new EventEmitter<boolean>();
+  eventAdded = output<unknown>();
 
-  @Output()
-  eventAdded = new EventEmitter<unknown>();
+  eventRemoved = output<void>();
 
-  @Output()
-  eventRemoved = new EventEmitter<unknown>();
+  actionAdded = output<unknown>();
 
-  @Output()
-  actionAdded = new EventEmitter<unknown>();
-
-  @Output()
-  itemChanged = new EventEmitter<unknown>();
+  itemChanged = output<InputChanged<E>>();
 
   date: string = '';
-  dateTime: any = {
+  dateTime: DateTimeValue = {
     date: '',
     time: '',
   };
@@ -123,7 +129,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     allowSearchFilter: true,
     defaultOpen: true,
   };
-  selectedItems = [];
+  selectedItems: Array<string | number> = [];
   showDateTimePicker = true;
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
@@ -134,24 +140,31 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   showsTooltip = false;
   tooltipText = 'This is default parent component text';
-  topPosition: any;
-  leftPosition: any;
+  topPosition: number | null = 0;
+  leftPosition: number | null = 0;
 
   public types = NodeTypes;
-  public prevPopperRef: NgxPopperjsContentComponent;
+  private overlayRef: OverlayRef | null = null;
+  private currentTriggerElement: HTMLElement | null = null;
 
   typeSubjectPlaceholder = '';
   typeEmailPlaceholder = '';
 
   localizedStringKeys = LocalizedStringKeys;
 
-  @Input()
-  templateMap?: {
+  templateMap = input<{
     [key: string]: TemplateRef<RecordOfAnyType>;
-  };
+  }>();
 
-  @Input()
-  allColumns: Select[];
+  allColumns = input<Select[]>([]);
+
+  // Local variable to store computed template map
+  private _computedTemplateMap: {[key: string]: TemplateRef<RecordOfAnyType>} =
+    {};
+
+  get computedTemplateMap() {
+    return this._computedTemplateMap;
+  }
 
   @ViewChild('emailTemplate') emailTemplate: TemplateRef<RecordOfAnyType>;
 
@@ -172,6 +185,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   @ViewChild('dateTimeTemplate')
   dateTimeTemplate: TemplateRef<RecordOfAnyType>;
+
+  @ViewChild('inputPopupTemplate')
+  inputPopupTemplate: TemplateRef<RecordOfAnyType>;
+
+  @ViewChild('nodePopupTemplate')
+  nodePopupTemplate: TemplateRef<any>;
 
   /**
    * It gets the events and actions from the nodes service and stores them in the events and actions
@@ -194,28 +213,29 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * use the default template
    */
   ngAfterViewInit() {
-    this.templateMap = {
+    const inputTemplateMap = this.templateMap();
+    this._computedTemplateMap = {
       [InputTypes.Boolean]:
-        this.templateMap?.[InputTypes.Boolean] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.Boolean] || this.listTemplate,
       [InputTypes.List]:
-        this.templateMap?.[InputTypes.List] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.List] || this.listTemplate,
       [InputTypes.Text]:
-        this.templateMap?.[InputTypes.Text] || this.textTemplate,
+        inputTemplateMap?.[InputTypes.Text] || this.textTemplate,
       [InputTypes.Number]:
-        this.templateMap?.[InputTypes.Number] || this.numberTemplate,
+        inputTemplateMap?.[InputTypes.Number] || this.numberTemplate,
       [InputTypes.Percentage]:
-        this.templateMap?.[InputTypes.Percentage] || this.numberTemplate,
+        inputTemplateMap?.[InputTypes.Percentage] || this.numberTemplate,
       [InputTypes.Date]:
-        this.templateMap?.[InputTypes.Date] || this.dateTemplate,
+        inputTemplateMap?.[InputTypes.Date] || this.dateTemplate,
       [InputTypes.DateTime]:
-        this.templateMap?.[InputTypes.DateTime] || this.dateTimeTemplate,
+        inputTemplateMap?.[InputTypes.DateTime] || this.dateTimeTemplate,
       [InputTypes.People]:
-        this.templateMap?.[InputTypes.People] ||
+        inputTemplateMap?.[InputTypes.People] ||
         this.searchableDropdownTemplate,
       [InputTypes.Interval]:
-        this.templateMap?.[InputTypes.Interval] || this.listTemplate,
+        inputTemplateMap?.[InputTypes.Interval] || this.listTemplate,
       [InputTypes.Email]:
-        this.templateMap?.[InputTypes.Email] || this.emailTemplate,
+        inputTemplateMap?.[InputTypes.Email] || this.emailTemplate,
     };
   }
 
@@ -289,20 +309,87 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   /**
    * If the type is an action, set the node list to the actions, otherwise if the type is an event, set
    * the node list to the trigger events if there is only one event group and no children, otherwise
-   * set the node list to the events
+   * set the node list to the events. If event is provided, open overlay with node popup.
    * @param {NodeTypes} type - NodeTypes
+   * @param {MouseEvent} event - Optional click event to trigger overlay
    */
-  openPopup(type: NodeTypes) {
+  openPopup(type: NodeTypes, event?: MouseEvent) {
     if (type === NodeTypes.ACTION) {
       this.nodeList = this.actions;
     } else if (type === NodeTypes.EVENT) {
       this.nodeList =
-        this.eventGroups.length === 1 && !this.group.children.length
+        this.eventGroups().length === 1 && !this.group().children.length
           ? this.triggerEvents
           : this.events;
     } else {
       throw new InvalidEntityError('' + type);
     }
+
+    // If event and popupTemplate are provided, open the overlay
+    if (event && this.nodePopupTemplate) {
+      this.openNodeOverlay(event);
+    }
+  }
+
+  /**
+   * Opens overlay for node selection
+   * @param {MouseEvent} event - The click event
+   */
+  openNodeOverlay(event: MouseEvent) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const target = event.currentTarget as HTMLElement;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create a simple node list template
+    const context = {
+      nodeList: this.nodeList,
+      groupId: this.group().id,
+      groupIdentifier: this.group().getIdentifier(),
+    };
+
+    const portal = new TemplatePortal(
+      this.nodePopupTemplate,
+      this.viewContainerRef,
+      context,
+    );
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
   }
 
   /**
@@ -335,7 +422,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         groupType,
         groupId,
         id,
-        this.group.isElseGroup,
+        this.group().isElseGroup,
       ),
       inputs: this.nodes.mapInputs(node),
     };
@@ -347,13 +434,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       if (newNode.node.getIdentifier() === 'OnIntervalEvent') {
         newNode.node.state.change('valueInputType', 'number');
       }
-      this.group.children.push(newNode as EventWithInput<E>);
+      this.group().children.push(newNode as EventWithInput<E>);
     } else if (node.type === NodeTypes.ACTION) {
       this.actionAdded.emit({
         node: node,
         newNode: newNode,
       });
-      this.group.children.push(newNode as ActionWithInput<E>);
+      this.group().children.push(newNode as ActionWithInput<E>);
     } else {
       throw new InvalidEntityError('Node');
     }
@@ -364,23 +451,18 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
    * @param {number} index - The index of the node that was removed.
    */
   onNodeRemove(index: number) {
-    this.group.children.splice(index, 1);
-    this.eventRemoved.emit();
+    this.group().children.splice(index, 1);
+    this.eventRemoved.emit(undefined);
   }
 
   /**
-   * It takes in an element, an input, and a popper, and returns a function that takes in a value, and
-   * if that value is defined, it adds the value to the element, and hides the popper
+   * It takes in an element, an input, and returns a function that takes in a value, and
+   * if that value is defined, it adds the value to the element, and hides the overlay
    * @param element - NodeWithInput<E>
    * @param {WorkflowPrompt} input - WorkflowPrompt - this is the input object that was clicked on
-   * @param {NgxPopperjsContentComponent} popper - NgxPopperjsContentComponent
    * @returns A function that takes a value and returns a function that takes a value and emits an event
    */
-  createCallback(
-    element: NodeWithInput<E>,
-    input: WorkflowPrompt,
-    popper: NgxPopperjsContentComponent,
-  ) {
+  createCallback(element: NodeWithInput<E>, input: WorkflowPrompt) {
     return (value?: AllowedValues) => {
       if (value) {
         this.addValue(
@@ -390,23 +472,77 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           input.typeFunction(element.node.state) === InputTypes.List,
         );
       }
-      popper.hide();
+      this.closeOverlay();
     };
   }
 
   /**
-   * It hides the previous popper and shows the current popper.
-   * @param {MouseEvent} event - MouseEvent - The event that triggered the popper to show.
-   * @param {NgxPopperjsContentComponent} popper - NgxPopperjsContentComponent - this is the popper
-   * component that you want to show/hide.
+   * Opens an overlay at the trigger element position.
+   * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
+   * @param {TemplateRef} template - The template to display in the overlay
+   * @param context - Context data to pass to the template
    */
-  onPoperClick(event: MouseEvent, popper: NgxPopperjsContentComponent) {
-    this.prevPopperRef?.hide();
-    this.prevPopperRef = popper;
+  openOverlay(
+    event: MouseEvent,
+    template: TemplateRef<OverlayContext>,
+    context: OverlayContext,
+  ) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
     event.preventDefault();
     event.stopPropagation();
-    this.prevPopperRef.show();
-    popper?.popperInstance?.forceUpdate();
+
+    const target = event.currentTarget as HTMLElement;
+    this.currentTriggerElement = target;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create portal from template
+    const portal = new TemplatePortal(template, this.viewContainerRef, context);
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
+  }
+
+  /**
+   * Closes the currently open overlay
+   */
+  closeOverlay() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+      this.currentTriggerElement = null;
+    }
   }
 
   /**
@@ -442,12 +578,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
   }
 
   /**
-   * It returns a function that hides the previous popper
-   * @returns A function that calls the hide method on the previous popper reference.
+   * It returns a function that hides the overlay
+   * @returns A function that calls the closeOverlay method.
    */
   hidePopper() {
     return () => {
-      this.prevPopperRef?.hide();
+      this.closeOverlay();
     };
   }
 
@@ -506,7 +642,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
           input.inputKey === 'value'
             ? (value as AllowedValuesMap)[input.listValueField]
             : value,
-        element: element,
+        item: element.node,
       });
     }
     element.node.state.change(input.inputKey, value);
@@ -514,14 +650,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.itemChanged.emit({
       field: input.getIdentifier(),
       value: value,
-      element: element,
+      item: element.node,
     });
     this.enableActionIcon =
       element.node.state.get('value') !== ValueTypes.AnyValue;
   }
 
-  onSelectAll(list: any) {
-    this.selectedItems = list.map((item: any) => item.id);
+  onSelectAll(list: SelectableItem[]) {
+    this.selectedItems = list.map(item => item.id);
   }
 
   onClearAll() {
@@ -530,11 +666,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
 
   getLibraryValue(
     node: BpmnNode,
-    $event: any,
+    $event: Event | string | number | DateTimeValue,
     type: string,
     metaObj: RecordOfAnyType,
   ) {
-    const value = $event.target?.value ?? $event;
+    const value =
+      ($event as Event & {target?: HTMLInputElement})?.target?.value ?? $event;
     this.dateTime = {
       date: '',
       time: '',
@@ -542,13 +679,25 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     this.date = '';
     switch (type) {
       case InputTypes.People:
-        const selectedIds = metaObj.list.filter((item: {id: any}) =>
-          (this.selectedItems as any[]).includes(`${item.id}`),
+        const selectedIds = metaObj.list.filter((item: SelectableItem) =>
+          (this.selectedItems as Array<string | number>).includes(`${item.id}`),
         );
         return selectedIds;
       case InputTypes.Date: {
         if (value) {
-          const dateObj = moment(value);
+          let dateInput: string | number;
+          if (typeof value === 'object' && value !== null && 'date' in value) {
+            dateInput = (value as DateTimeValue).date;
+          } else if (
+            typeof value === 'object' &&
+            value !== null &&
+            'target' in value
+          ) {
+            dateInput = ((value as Event).target as HTMLInputElement).value;
+          } else {
+            dateInput = value as string | number;
+          }
+          const dateObj = moment(dateInput);
           return {
             day: dateObj.date(),
             month: dateObj.month() + 1,
@@ -558,11 +707,18 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
         break;
       }
       case InputTypes.DateTime:
-        if (value) {
-          if (value.time === '') {
-            value.time = node.state.get('defaultTime') ?? '9:00';
+        if (
+          value &&
+          typeof value === 'object' &&
+          'date' in value &&
+          'time' in value
+        ) {
+          const dateTimeValue = value as DateTimeValue;
+          if (dateTimeValue.time === '') {
+            dateTimeValue.time =
+              (node.state.get('defaultTime') as string) ?? '9:00';
           }
-          const dateObj = moment(`${value.date} ${value.time}`);
+          const dateObj = moment(`${dateTimeValue.date} ${dateTimeValue.time}`);
           return {
             date: {
               day: dateObj.date(),
@@ -602,47 +758,46 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
     }
   }
 
-  handleKeyPress(event: any) {
+  handleKeyPress(event: KeyboardEvent) {
     const keyCode = event.which || event.keyCode;
     const isDigit = keyCode >= 48 && keyCode <= 57;
     const isBackspaceOrDelete = [8, 46].includes(keyCode);
-    const inputValue = event.target.value;
+    const inputValue = (event.target as HTMLInputElement).value;
     const isValidInput = /^-?\d*\.?\d*$/.test(inputValue);
     if (!(isDigit || isBackspaceOrDelete) || !isValidInput) {
       event.preventDefault();
     }
   }
   handleEnterEvent(
-    callback: any,
+    callback: (value: unknown) => void,
     node: BpmnNode,
-    $event: any,
+    $event: Event | string | number | DateTimeValue,
     type: string,
-    event: any,
+    event: KeyboardEvent,
   ) {
     const response = this.getLibraryValue(node, $event, type, {});
 
-    //check whether the entered key is "ENTER" key
     if (event.keyCode === 13) {
       callback(response);
     }
   }
 
   updateSecondVariable(
-    event: any,
+    event: Event,
     inputType: InputTypes,
     dateTimeField?: string,
   ) {
-    //if inputType->dateTime
+    const inputValue = (event.target as HTMLInputElement)?.value ?? '';
     switch (inputType) {
       case InputTypes.DateTime:
         if (dateTimeField == 'date') {
-          this.dateTime.date = event;
+          this.dateTime.date = inputValue;
         } else {
-          this.dateTime.time = event;
+          this.dateTime.time = inputValue;
         }
         break;
       case InputTypes.Date:
-        this.date = event;
+        this.date = inputValue;
     }
   }
 
@@ -665,5 +820,9 @@ export class GroupComponent<E> implements OnInit, AfterViewInit {
       element.node.state.remove(nextKey);
       element.node.state.remove(`${nextKey}Name`);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.closeOverlay();
   }
 }

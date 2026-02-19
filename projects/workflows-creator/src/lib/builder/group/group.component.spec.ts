@@ -1,5 +1,4 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NgxPopperjsModule, NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {
   NodeService,
   AbstractBaseGroup,
@@ -35,7 +34,6 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {AllowedValues, RecordOfAnyType} from '../../types';
-import {popper} from '@popperjs/core';
 
 describe('GroupComponent', () => {
   let component: GroupComponent<any>;
@@ -81,7 +79,7 @@ describe('GroupComponent', () => {
     nodeServiceSpy.getActions.and.returnValue(mockActions);
 
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         GroupComponent,
         NodeComponent,
         TooltipRenderComponent,
@@ -89,23 +87,31 @@ describe('GroupComponent', () => {
       ],
       providers: [
         {provide: NodeService, useValue: nodeServiceSpy},
-        LocalizationProviderService,
-        LocalizationPipe,
+        {
+          provide: LocalizationProviderService,
+          useValue: {
+            getLocalizedString: (key: string) => key,
+            getLocalizedStringMap: () => ({}),
+          },
+        },
       ],
-      imports: [NgxPopperjsModule],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GroupComponent);
     component = fixture.componentInstance;
-    component.group = new AndGroup({}, '', NodeTypes.EVENT, false);
-    component.isLast = false;
-    component.isFirst = false;
-    component.eventGroups = [];
-    component.nodeType = NodeTypes.ACTION;
-    component.nodeType = NodeTypes.EVENT;
-    component.allColumns = [];
+
+    // Set inputs using fixture.componentRef.setInput() for signals
+    fixture.componentRef.setInput(
+      'group',
+      new AndGroup({}, '', NodeTypes.EVENT, false),
+    );
+    fixture.componentRef.setInput('isLast', false);
+    fixture.componentRef.setInput('isFirst', false);
+    fixture.componentRef.setInput('eventGroups', []);
+    fixture.componentRef.setInput('nodeType', NodeTypes.EVENT);
+    fixture.componentRef.setInput('allColumns', []);
 
     fixture.detectChanges();
   });
@@ -123,7 +129,7 @@ describe('GroupComponent', () => {
   it('should set the templateMap', () => {
     component.ngAfterViewInit();
 
-    expect(component.templateMap).toBeDefined();
+    expect(component.computedTemplateMap).toBeDefined();
   });
 
   it('should emit the remove event', () => {
@@ -140,7 +146,7 @@ describe('GroupComponent', () => {
 
   it('should add the node to the group', () => {
     component.onNodeAdd(eventStub, 'groupType', 'groupId', 'id');
-    expect(component.group.children.length).toBeGreaterThan(0);
+    expect(component.group().children.length).toBeGreaterThan(0);
   });
 
   it('should throw an error if the node type is neither EVENT nor ACTION', () => {
@@ -152,12 +158,12 @@ describe('GroupComponent', () => {
   });
 
   it('should remove the node at the given index from the group', () => {
-    component.group.children.push({
+    component.group().children.push({
       node: eventStub,
       inputs: [],
     });
     component.onNodeRemove(0);
-    expect(component.group.children.length).toEqual(0);
+    expect(component.group().children.length).toEqual(0);
   });
 
   it('should emit the eventRemoved event', () => {
@@ -166,37 +172,24 @@ describe('GroupComponent', () => {
     expect(component.eventRemoved.emit).toHaveBeenCalled();
   });
 
-  it('should return a function that hides the popper and emits the value', () => {
-    const popper = {hide: () => {}} as NgxPopperjsContentComponent;
+  it('createCallback should close overlay after execution', () => {
+    // Simulate overlayRef being present
+    spyOn(component, 'closeOverlay');
     const callback = component.createCallback(
-      {
-        node: eventStub,
-        inputs: [],
-      },
+      {node: eventStub, inputs: []},
       new ValueInput(),
-      popper,
     );
-    spyOn(popper, 'hide');
-
-    callback();
-    expect(popper.hide).toHaveBeenCalled();
+    callback({value: 'testValue'} as any);
+    expect(component.closeOverlay).toHaveBeenCalled();
   });
 
-  const popperSpy = jasmine.createSpyObj('NgxPopperjsContentComponent', [
-    'show',
-    'hide',
-  ]);
-
-  it('should hide the previous popper and show the current popper', () => {
+  it('onPoperClick replacement: opening a new overlay closes existing overlay', () => {
+    // Simulate existing overlayRef and ensure closeOverlay called when opening new overlay
+    spyOn(component, 'closeOverlay');
     const event = new MouseEvent('click');
-    component.prevPopperRef = popperSpy; // Assign the spy object to prevPopperRef
-
-    // Act
-    component.onPoperClick(event, popperSpy);
-
-    // Assert
-    expect(component.prevPopperRef.hide).toHaveBeenCalled();
-    expect(popperSpy.show).toHaveBeenCalled(); // Spy on the show method of popperSpy
+    // Call the method that would open overlay in new implementation
+    component.openNodeOverlay(event);
+    expect(component.closeOverlay).toHaveBeenCalled();
   });
 
   it('should set the tooltipText, showsTooltip, topPosition, and leftPosition properties', () => {
@@ -209,7 +202,7 @@ describe('GroupComponent', () => {
       },
       new ValueInput(),
     );
-    expect(component.tooltipText).toBe('Select a column first');
+    expect(component.tooltipText).toBe('selectColumnTooltip');
     expect(component.showsTooltip).toBe(true);
     expect(component.topPosition).toBe(event.clientY + 10);
     expect(component.leftPosition).toBe(event.clientX);
@@ -222,23 +215,11 @@ describe('GroupComponent', () => {
     expect(component.leftPosition).toBeNull();
   });
 
-  it('should return a function that hides the previous popper', () => {
-    const mockElementRef = {} as ElementRef<any>;
-    const mockRenderer = {} as Renderer2;
-    const mockViewContainerRef = {} as ViewContainerRef;
-    const mockChangeDetectorRef = {} as ChangeDetectorRef;
-
-    const mockNgxPopperjsContentComponent = jasmine.createSpyObj(
-      'NgxPopperjsContentComponent',
-      ['hide'],
-    );
-
-    component.prevPopperRef = mockNgxPopperjsContentComponent;
-
+  it('hidePopper should call closeOverlay', () => {
+    spyOn(component, 'closeOverlay');
     const hidePopperFn = component.hidePopper();
     hidePopperFn();
-
-    expect(component.prevPopperRef.hide).toHaveBeenCalled();
+    expect(component.closeOverlay).toHaveBeenCalled();
   });
 
   it('should set enableActionIcon to false if the node type is OnChangeEvent and the value is ValueTypes.AnyValue', () => {
@@ -253,7 +234,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: ValueTypes.AnyValue,
-      element: element,
+      item: element.node,
     });
   });
 
@@ -271,7 +252,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: 'value',
-      element: element,
+      item: element.node,
     });
   });
 

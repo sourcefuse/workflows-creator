@@ -1,16 +1,9 @@
 /* eslint-disable @angular-eslint/use-lifecycle-interface */
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule, TemplateRef} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {Injector} from '@angular/core';
-import {HttpClientModule} from '@angular/common/http';
-import {NgxPopperjsModule} from 'ngx-popperjs';
-import {BuilderComponent} from './builder/builder.component';
-import {FormsModule} from '@angular/forms';
-import {WorkflowBuilderModule} from './workflow-builder.module';
-import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
+import {BrowserModule} from '@angular/platform-browser';
 import {createCustomElement} from '@angular/elements';
+import {BuilderComponent} from './builder/builder.component';
 import {LocalizationPipe} from './pipes/localization.pipe';
 import {
   ChangeColumnValueAction,
@@ -32,27 +25,16 @@ import {
 import {InputTypes} from './enum';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule,
-    FormsModule,
-    BrowserModule,
-    HttpClientModule,
-    NgxPopperjsModule,
-    WorkflowBuilderModule,
-    BrowserAnimationsModule,
-    NgMultiSelectDropDownModule.forRoot(),
-  ],
-  entryComponents: [BuilderComponent],
+  imports: [BrowserModule, BuilderComponent],
+  providers: [LocalizationPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WorkflowElementModule {
-  [x: string]: any;
+  [x: string]: unknown;
   constructor(private injector: Injector, private local: LocalizationPipe) {}
   ngDoBootstrap() {
     const webComponent = createCustomElement(BuilderComponent, {
       injector: this.injector,
-      // Render the web component's template
     });
     customElements.define('sourceloop-workflow-element', webComponent);
 

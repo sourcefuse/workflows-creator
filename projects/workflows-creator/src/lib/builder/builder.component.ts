@@ -2,15 +2,23 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
-  Input,
-  OnChanges,
+  input,
+  output,
+  model,
+  effect,
   OnInit,
-  Output,
-  SimpleChanges,
+  OnDestroy,
   TemplateRef,
   ViewEncapsulation,
+  ViewChild,
+  ViewContainerRef,
+  Injector,
+  runInInjectionContext,
 } from '@angular/core';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {take} from 'rxjs/operators';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {OverlayContext} from '../interfaces';
 import {
   isSelectInput,
   Statement,
@@ -48,6 +56,12 @@ import {
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
 import {LocalizationPipe} from '../pipes/localization.pipe';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {GroupComponent} from './group/group.component';
+import {NodeComponent} from './node/node.component';
+import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
 @Component({
   selector: 'workflow-builder',
   templateUrl: './builder.component.html',
@@ -55,64 +69,93 @@ import {LocalizationPipe} from '../pipes/localization.pipe';
     './builder.component.scss',
     '../../assets/icons/icomoon/style.css',
   ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgSelectModule,
+    GroupComponent,
+    LocalizationPipe,
+  ],
   providers: [LocalizationPipe],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BuilderComponent<E> implements OnInit, OnChanges {
+export class BuilderComponent<E> implements OnInit, OnDestroy {
+  private previousDiagram = '';
+  private previousState: StateMap<RecordOfAnyType> | null = null;
+  private previousLocalizedStringMap: RecordOfAnyType | null = null;
+  private isInitialized = false;
+  private isInternalUpdate = false;
+
   constructor(
+    private injector: Injector,
     private readonly builder: BuilderService<E, RecordOfAnyType>,
     private readonly nodes: NodeService<E>,
     private readonly elements: ElementService<E>,
     private readonly cdr: ChangeDetectorRef,
     private readonly localizationSvc: LocalizationProviderService,
-  ) {}
-  private _state: StateMap<RecordOfAnyType> = {};
-  public get state(): StateMap<RecordOfAnyType> {
-    return this._state;
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
+  ) {
+    // Effect to handle input changes similar to ngOnChanges
+    runInInjectionContext(this.injector, () => {
+      effect(() => {
+        try {
+          const currentLocalizedStringMap = this.localizedStringMap();
+          const currentDiagram = this.diagram();
+          const currentState = this.state();
+
+          // Handle localizedStringMap changes (after initialization)
+          if (
+            this.isInitialized &&
+            currentLocalizedStringMap &&
+            currentLocalizedStringMap !== this.previousLocalizedStringMap &&
+            Object.keys(currentLocalizedStringMap).length > 0
+          ) {
+            this.handleLocalizedStringMapChange(currentLocalizedStringMap);
+            this.previousLocalizedStringMap = currentLocalizedStringMap;
+          }
+
+          // Handle diagram and state changes (after initialization)
+          if (
+            this.isInitialized &&
+            !this.isInternalUpdate &&
+            currentDiagram &&
+            currentState &&
+            (currentDiagram !== this.previousDiagram ||
+              currentState !== this.previousState)
+          ) {
+            this.handleDiagramAndStateChange(currentDiagram, currentState);
+            this.previousDiagram = currentDiagram;
+            this.previousState = currentState;
+          }
+        } catch (error) {
+          console.error('Effect error in BuilderComponent:', error);
+          // Handle gracefully - reset state or show user error if needed
+        }
+      });
+    });
   }
-  @Input()
-  public set state(value: StateMap<RecordOfAnyType>) {
-    this._state = value;
-  }
-  private _localizedStringMap: RecordOfAnyType = {};
-  public get localizedStringMap() {
-    return this._localizedStringMap;
-  }
-  @Input()
-  public set localizedStringMap(value: RecordOfAnyType) {
-    this._localizedStringMap = value;
-  }
-  @Input()
-  public diagram: string = '';
-  private _templateMap: {
-    [key: string]: TemplateRef<RecordOfAnyType>;
-  };
-  public get templateMap() {
-    return this._templateMap;
-  }
-  @Input()
-  public set templateMap(value: {[key: string]: TemplateRef<RecordOfAnyType>}) {
-    this._templateMap = value;
-  }
-  private _allColumns: Select[] = [];
-  @Input()
-  public set allColumns(value: Select[]) {
-    this._allColumns = value;
-  }
-  public get allColumns() {
-    return this._allColumns;
-  }
-  @Output()
-  stateChange = new EventEmitter<StateMap<RecordOfAnyType>>();
-  @Output()
-  diagramChange = new EventEmitter<Object>();
-  @Output()
-  eventAdded = new EventEmitter<EventAddition<E>>();
-  @Output()
-  actionAdded = new EventEmitter<ActionAddition<E>>();
-  @Output()
-  itemChanged = new EventEmitter<InputChanged<E>>();
+
+  state = model<StateMap<RecordOfAnyType>>({});
+
+  localizedStringMap = input<RecordOfAnyType>({});
+
+  diagram = model<string>('');
+
+  templateMap = input<{[key: string]: TemplateRef<RecordOfAnyType>}>({});
+
+  allColumns = input<Select[]>([]);
+
+  // Custom output for diagram validation status (model() auto-creates diagramChange that emits just the string)
+  diagramValidation = output<{diagram: string; isValid: boolean}>();
+
+  eventAdded = output<EventAddition<E>>();
+
+  actionAdded = output<ActionAddition<E>>();
+
+  itemChanged = output<InputChanged<E>>();
   selectedElseActions: ActionWithInput<E>[] = [];
   selectedEvents: EventWithInput<E>[] = [];
   selectedActions: ActionWithInput<E>[] = [];
@@ -121,21 +164,29 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   elseActionGroups: AbstractBaseGroup<E>[] = [];
   nodeList: AbstractBaseGroup<E>[] = [];
   processId: string;
-  // sonarignore:start
-  // TODO: Refactor this code to be more flexible
-  // sonarignore:start
   elseBlockHidden = false;
   elseBlockRemoved = false;
   public types = NodeTypes;
   localizedStringKeys = LocalizedStringKeys;
+
+  private overlayRef: OverlayRef | null = null;
+  @ViewChild('nodePopupTemplate') nodePopupTemplate: TemplateRef<any>;
+
   /**
    * We're getting all the groups from the node service, and then we're adding them to the list of groups
    */
   ngOnInit(): void {
     this.initiateNode();
+    // Set initial values
+    this.previousLocalizedStringMap = this.localizedStringMap();
+    this.previousDiagram = this.diagram();
+    this.previousState = this.state();
+    // Mark as initialized to enable effect-based change detection
+    this.isInitialized = true;
   }
+
   initiateNode() {
-    this.localizationSvc.setLocalizedStrings(this.localizedStringMap);
+    this.localizationSvc.setLocalizedStrings(this.localizedStringMap());
     this.eventGroups = [];
     this.actionGroups = [];
     this.elseActionGroups = [];
@@ -150,18 +201,39 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       .forEach(group => this.elseActionGroups.push(group));
     this.cdr.detectChanges();
   }
+
   /**
-   * > If the diagram and state have changed, restore the diagram and state from the builder
-   * @param {SimpleChanges} changes - SimpleChanges - the changes that have occurred in the component
+   * Handle changes to localizedStringMap
    */
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes['localizedStringMap'] && this.localizedStringMap) {
+  private handleLocalizedStringMapChange(localizedStringMap: RecordOfAnyType) {
+    if (localizedStringMap && Object.keys(localizedStringMap).length > 0) {
       this.initiateNode();
       this.updateDiagram();
     }
-    if (changes['diagram'] && changes['state'] && this.diagram && this.state) {
-      const {events, actions, elseActions, groups, process, state} =
-        await this.builder.restore(this.diagram);
+  }
+
+  /**
+   * Handle changes to diagram and state
+   */
+  private async handleDiagramAndStateChange(
+    diagram: string,
+    state: StateMap<RecordOfAnyType>,
+  ) {
+    if (
+      diagram &&
+      typeof diagram === 'string' &&
+      diagram.trim().length > 0 &&
+      state &&
+      Object.keys(state).length > 0
+    ) {
+      const {
+        events,
+        actions,
+        elseActions,
+        groups,
+        process,
+        state: restoredState,
+      } = await this.builder.restore(diagram);
       this.processId = process.id;
       this.selectedActions = actions;
       this.selectedEvents = events;
@@ -169,14 +241,16 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       if (this.selectedActions.length) this.actionGroups = [];
       if (this.selectedEvents) this.eventGroups = [];
       groups.forEach(group => this.onGroupAdd(group));
-      this.restoreState(state);
-      this.elseActionGroups[0].children = elseActions;
-      this.elseActionGroups[0].children.forEach(action =>
-        this.actionAdded.emit({
-          name: action.node.getIdentifier(),
-          action: action.node as WorkflowAction<E>,
-        }),
-      );
+      this.restoreState(restoredState);
+      if (this.elseActionGroups[0]) {
+        this.elseActionGroups[0].children = elseActions;
+        this.elseActionGroups[0].children.forEach(action =>
+          this.actionAdded.emit({
+            name: action.node.getIdentifier(),
+            action: action.node as WorkflowAction<E>,
+          }),
+        );
+      }
       events.forEach(event => {
         const groupId = event.node.groupId;
         this.eventGroups.forEach(group => {
@@ -211,10 +285,10 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
 
   hideElseBlockIfRequired() {
-    const events = this.eventGroups[0].children;
-    const firstEvent = events[0]?.node;
+    const events = this.eventGroups[0]?.children;
+    const firstEvent = events?.[0]?.node;
 
-    if (events.length !== 1 || !firstEvent) {
+    if (!events || events.length !== 1 || !firstEvent) {
       this.elseBlockHidden = false;
       return;
     }
@@ -285,8 +359,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * Hides the else block when it is not needed.
    */
   onEventRemoved() {
-    const events = this.eventGroups[0].children;
+    const events = this.eventGroups[0]?.children;
     this.elseBlockHidden =
+      events &&
       events.length === 1 &&
       (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
         events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
@@ -312,15 +387,32 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
   /**
    * The function is called when an item is changed in the UI. It emits an event to the parent
    * component, updates the state of the item, and updates the diagram
-   * @param {RecordOfAnyType} item - RecordOfAnyType
+   * @param {InputChanged<E>} item - The InputChanged event emitted from group component
    */
-  onItemChanged(item: RecordOfAnyType) {
-    this.itemChanged.emit({
-      field: item.field,
-      value: item.value,
-      item: item.element.node,
+  onItemChanged(item: InputChanged<E>) {
+    // Find the element with inputs from the group children arrays
+    const allNodes: NodeWithInput<E>[] = [];
+
+    this.eventGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
     });
-    this.updateState(item.element.node, item.element.inputs);
+    this.actionGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
+    });
+    this.elseActionGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
+    });
+
+    const element = allNodes.find(n => n.node.id === item.item.id);
+
+    if (!element) {
+      console.error('Could not find element for node:', item.item.id);
+      return;
+    }
+
+    // Re-emit the event as-is
+    this.itemChanged.emit(item);
+    this.updateState(element.node, element.inputs);
     this.hideElseBlockIfRequired();
     this.updateDiagram();
   }
@@ -329,21 +421,95 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    *
    * The above function is a good example of how to use the enum
    * @param {NodeTypes} type - The type of node to be added.
+   * @param {MouseEvent} event - The click event from the trigger element
    */
-  openPopup(type: NodeTypes) {
+  openPopup(type: NodeTypes, event?: MouseEvent) {
     if (type === NodeTypes.GROUP) {
       this.nodeList = this.nodes.getGroups();
+      if (event && this.nodePopupTemplate) {
+        this.openOverlay(event, this.nodePopupTemplate, {
+          nodeList: this.nodeList,
+        });
+      }
     } else {
       throw new InvalidEntityError('' + type);
     }
   }
+
+  /**
+   * Opens an overlay at the trigger element position.
+   * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
+   * @param {TemplateRef} template - The template to display in the overlay
+   * @param context - Context data to pass to the template
+   */
+  openOverlay(
+    event: MouseEvent,
+    template: TemplateRef<OverlayContext>,
+    context: OverlayContext,
+  ) {
+    // Close existing overlay if open
+    this.closeOverlay();
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const target = event.currentTarget as HTMLElement;
+
+    // Create position strategy
+    const positionStrategy = this.overlay
+      .position()
+      .flexibleConnectedTo(target)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      ]);
+
+    // Create overlay
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+    });
+
+    // Create portal from template
+    const portal = new TemplatePortal(template, this.viewContainerRef, context);
+    this.overlayRef.attach(portal);
+
+    // Close overlay on backdrop click
+    this.overlayRef
+      .backdropClick()
+      .pipe(take(1))
+      .subscribe(() => this.closeOverlay());
+  }
+
+  /**
+   * Closes the currently open overlay
+   */
+  closeOverlay() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+    }
+  }
+
   /**
    * It takes a state object, merges it with the current state, and then loops through the state object
    * and adds the values to the inputs
    * @param state - StateMap<RecordOfAnyType>
    */
   private restoreState(state: StateMap<RecordOfAnyType>) {
-    state = this.mergeState(this.state, state);
+    state = this.mergeState(this.state(), state);
     const allNodes = [
       ...this.selectedEvents,
       ...this.selectedActions,
@@ -418,8 +584,8 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @returns A function that takes a state and returns a boolean.
    */
   build() {
-    const statement = new Statement<E>(this.state);
-    const elseStatement = new Statement<E>(this.state);
+    const statement = new Statement<E>(this.state());
+    const elseStatement = new Statement<E>(this.state());
     if (this.processId) {
       statement.processId = this.processId;
     }
@@ -452,7 +618,7 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         throw new Error('Invalid Node type');
       }
     });
-    if (this.elseActionGroups[0].children.length > 0) {
+    if (this.elseActionGroups[0]?.children?.length > 0) {
       this.elseActionGroups.forEach(group => {
         group.children
           .map(e => e.node)
@@ -471,14 +637,14 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    */
   async updateDiagram() {
     const nodes = [
-      ...this.eventGroups[0].children,
-      ...this.actionGroups[0].children,
-      ...this.elseActionGroups[0].children,
+      ...(this.eventGroups[0]?.children || []),
+      ...(this.actionGroups[0]?.children || []),
+      ...(this.elseActionGroups[0]?.children || []),
     ];
     let isValid =
-      !!this.eventGroups[0].children.length &&
-      (!!this.actionGroups[0].children.length ||
-        !!this.elseActionGroups[0].children.length);
+      !!this.eventGroups[0]?.children?.length &&
+      (!!this.actionGroups[0]?.children?.length ||
+        !!this.elseActionGroups[0]?.children?.length);
     if (isValid) {
       for (const node of nodes) {
         switch (node.node.getIdentifier()) {
@@ -523,8 +689,14 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
         }
       }
     }
-    this.diagram = await this.build();
-    this.diagramChange.emit({diagram: this.diagram, isValid: isValid});
+    const newDiagram = await this.build();
+    // Update the diagram model (this automatically emits diagramChange with the string value)
+    this.isInternalUpdate = true;
+    this.diagram.set(newDiagram);
+    this.previousDiagram = newDiagram;
+    this.isInternalUpdate = false;
+    // Emit the diagram validation event with additional status info
+    this.diagramValidation.emit({diagram: newDiagram, isValid: isValid});
     this.cdr.detectChanges();
   }
   /**
@@ -534,19 +706,26 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
    * @param [remove=false] - boolean - if true, the state for the node will be removed
    */
   updateState(node: WorkflowNode<E>, inputs: WorkflowPrompt[], remove = false) {
-    if (!this.state) {
-      this.state = {};
+    let currentState = this.state();
+    if (!currentState) {
+      currentState = {};
     }
+    // Create a mutable copy
+    const newState = {...currentState};
     if (remove) {
-      delete this.state[node.id];
+      delete newState[node.id];
     } else {
       const keys = inputs.map(input => input.inputKey);
-      this.state[node.id] = node.state.getAll([
+      newState[node.id] = node.state.getAll([
         ...keys,
         ...keys.map(k => `${k}Name`),
       ]);
     }
-    this.stateChange.emit(this.state);
+    // Update the state model (this automatically emits stateChange with the new state)
+    this.isInternalUpdate = true;
+    this.state.set(newState);
+    this.previousState = newState;
+    this.isInternalUpdate = false;
   }
   /**
    * > If the user has already entered data for a subsequent input, remove it
@@ -591,5 +770,9 @@ export class BuilderComponent<E> implements OnInit, OnChanges {
       });
     });
     return stateA;
+  }
+
+  ngOnDestroy(): void {
+    this.closeOverlay();
   }
 }

@@ -34,7 +34,8 @@
             "prefix": "workflow",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/prefer-inject": "off"
       }
     },
     {

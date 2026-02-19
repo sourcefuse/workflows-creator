@@ -1,12 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-} from '@angular/core';
-import {NgxPopperjsContentComponent} from 'ngx-popperjs';
+import {Component, input, output, TemplateRef} from '@angular/core';
 import {RecordOfAnyType, NodeWithInput} from '../../types';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'workflow-node',
@@ -15,28 +9,21 @@ import {RecordOfAnyType, NodeWithInput} from '../../types';
     './node.component.scss',
     '../../../assets/icons/icomoon/style.css',
   ],
+  standalone: true,
+  imports: [CommonModule],
 })
 export class NodeComponent<E> {
-  @Input()
-  node: NodeWithInput<E>;
+  node = input.required<NodeWithInput<E>>();
 
-  @Input()
-  isLast = false;
+  isLast = input(false);
 
-  @Input()
-  isFirst = false;
+  isFirst = input(false);
 
-  @Input()
-  inputTemplate!: TemplateRef<RecordOfAnyType>;
+  inputTemplate = input.required<TemplateRef<RecordOfAnyType>>();
 
-  @Input()
-  popupTemplate!: NgxPopperjsContentComponent;
+  remove = output<boolean>();
 
-  @Output()
-  remove = new EventEmitter<boolean>();
-
-  @Output()
-  add = new EventEmitter<boolean>();
+  add = output<MouseEvent>();
 
   /**
    * The removeClick() function emits a boolean value of true to the parent component
@@ -46,9 +33,10 @@ export class NodeComponent<E> {
   }
 
   /**
-   * The addClick() function emits the add event, which is a boolean value of true
+   * The addClick() function emits the click event to the parent component
+   * @param {MouseEvent} event - The mouse click event
    */
-  addClick() {
-    this.add.emit(true);
+  addClick(event: MouseEvent) {
+    this.add.emit(event);
   }
 }

@@ -14,42 +14,42 @@
     "prebuild": "npm run checkIfNodeModulesExist || npm run installNodeModules",
     "libraryBuild": "ng build && cp -r src/assets dist/assets",
     "elementBuild": "ng build workflows-element",
-    "postbuild": "ts-node bundle-element.ts",
+    "postbuild": "cd ../../ && npx tsx projects/workflows-creator/bundle-element.ts",
     "build": "npm run libraryBuild && npm run elementBuild",
     "prepublishOnly": "npm run build",
     "pretest": "npm run build",
     "test": "echo \"No tests available !\""
   },
   "devDependencies": {
-    "@angular-eslint/schematics": "^13.5.0",
-    "@angular/common": "~13.3.11",
-    "@angular/core": "~13.3.11",
-    "@angular/elements": "~13.3.0",
-    "@angular/forms": "~13.3.11",
-    "@angular/platform-browser": "~13.3.11",
-    "@angular/platform-browser-dynamic": "~13.3.11",
-    "@semantic-release/changelog": "^6.0.2",
+    "@angular-eslint/schematics": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/cdk": "^20.0.0",
+    "@angular/elements": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/platform-browser-dynamic": "^20.0.0",
+    "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^10.0.4",
-    "@semantic-release/release-notes-generator": "^11.0.3",
+    "@semantic-release/npm": "^13.1.1",
+    "@semantic-release/release-notes-generator": "^10.0.3",
     "@types/bpmn-moddle": "^5.1.6",
     "@types/fs-extra": "^11.0.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^20.2.5",
-    "@typescript-eslint/eslint-plugin": "5.27.1",
-    "@typescript-eslint/parser": "5.27.1",
+    "@typescript-eslint/eslint-plugin": "8.0.0",
+    "@typescript-eslint/parser": "8.0.0",
     "bpmn-moddle": "^8.0.0",
     "concat": "^1.0.3",
-    "eslint": "^8.17.0",
+    "eslint": "^8.57.0",
     "husky": "^8.0.3",
     "lodash": "^4.17.21",
-    "ng-packagr": "~13.0.0",
-    "ngx-popperjs": "^13.3.0",
-    "semantic-release": "^21.0.5",
+    "ng-packagr": "^20.0.0",
+    "semantic-release": "^25.0.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.0.0",
-    "typedoc-umlclass": "^0.6.1"
+    "typedoc-umlclass": "^0.10.2"
   },
   "repository": {
     "type": "git",
@@ -63,13 +63,7 @@
     "access": "public",
     "directory": "dist"
   },
-  "overrides": {
-    "ng-packagr": {
-      "@angular/compiler-cli": "~13.3.10",
-      "typescript": "~4.6.4"
-    }
-  },
   "dependencies": {
-    "@ng-select/ng-select": "^8.0.0"
+    "@ng-select/ng-select": "^14.0.0"
   }
 }

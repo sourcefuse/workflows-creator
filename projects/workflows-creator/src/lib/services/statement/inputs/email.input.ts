@@ -5,42 +5,42 @@ import {RecordOfAnyType} from '../../../types/base.types';
 import {BpmnNode} from '../../../types';
 
 export class EmailDataInput extends WorkflowPrompt {
-  prefix = '';
-  suffix = '';
-  typeFunction = () => InputTypes.Email;
-  inputKey = 'email';
-  placeholder = 'Email';
+  override prefix = '';
+  override suffix = '';
+  override typeFunction = () => InputTypes.Email;
+  override inputKey = 'email';
+  override placeholder = 'Email';
   static identifier = 'EmailDataInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return EmailDataInput.identifier;
   }
 }
 
 export class EmailToInput extends WorkflowPrompt {
-  prefix = 'to';
-  suffix = '';
-  placeholder = 'someone';
-  inputKey = 'emailTo';
+  override prefix = 'to';
+  override suffix = '';
+  override placeholder = 'someone';
+  override inputKey = 'emailTo';
   listNameField = 'text';
   listValueField = 'value';
-  prevchange = <S extends RecordOfAnyType>(state: State<S>) => {};
+  override prevchange = <S extends RecordOfAnyType>(state: State<S>) => {};
   options = <S extends RecordOfAnyType>(state: State<S>) =>
-    state.get('emailToValues') as [];
-  typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
-    state.get('emailToInputType') as InputTypes;
+    (state.get('emailToValues') as []) || [];
+  override typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
+    (state.get('emailToInputType') as InputTypes) || InputTypes.List;
   static identifier = 'EmailToInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return EmailToInput.identifier;
   }
 }
 
 export class EmailRecepientInput extends ValueInput {
-  inputKey = 'specificRecepient';
-  placeholder = 'recipients';
+  override inputKey = 'specificRecepient';
+  override placeholder = 'recipients';
 
-  isHidden = (node: BpmnNode) => {
+  override isHidden = (node: BpmnNode) => {
     return ![
       NotificationRecipientTypesEnum.NotifySpecificPeople,
       NotificationRecipientTypesEnum.NotifySpecificColumn,
@@ -49,7 +49,7 @@ export class EmailRecepientInput extends ValueInput {
 
   static identifier = 'EmailRecepientInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return EmailRecepientInput.identifier;
   }
 }
