@@ -234,7 +234,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: ValueTypes.AnyValue,
-      element: element,
+      item: element.node,
     });
   });
 
@@ -252,7 +252,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: 'value',
-      element: element,
+      item: element.node,
     });
   });
 

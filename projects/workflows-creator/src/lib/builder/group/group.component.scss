@@ -239,7 +239,7 @@ input[type="time"]:focus {
   }
 }
 
-:host ::ng-deep {
+:host {
   .dropdown-list {
     min-width: 250px;
     margin-top: 0 !important;

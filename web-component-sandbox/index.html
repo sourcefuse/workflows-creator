@@ -19,6 +19,11 @@
       href="./assets/icons/icomoon/style.css"
     />
     <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/styles/workflow-styles.css"
+    />
 
     <style>
       html,
@@ -36,10 +41,13 @@
       .tree-group .last-node {
         height: auto !important;
       }
+      .diagramRender {
+        display: none; /* Hide the raw XML output */
+      }
     </style>
   </head>
   <body>
-    <sourceloop-workflow-element></sourceloop-workflow-element>
+    <div id="workflow-container"></div>
     <div class="diagramRender">
       <p id="diagram"></p>
     </div>
@@ -148,8 +156,15 @@
     <script type="text/javascript" src="workflows-element.js"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const element = document.querySelector('sourceloop-workflow-element');
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Wait for the custom element to be defined
+        await customElements.whenDefined('sourceloop-workflow-element');
+
+        // Create the element
+        const element = document.createElement('sourceloop-workflow-element');
+
+        // Get the container
+        const container = document.getElementById('workflow-container');
 
         const NORMALIZED_COLUMN = [
           {
@@ -174,6 +189,13 @@
           {text: 'Days', value: 'D', timescale: ''},
           {text: 'Hours', value: 'H', timescale: 'T'},
           {text: 'Seconds', value: 'S', timescale: 'T'},
+        ];
+
+        const EMAIL_RECIPIENTS = [
+          {text: 'Me', value: 'me'},
+          {text: 'Everyone on project', value: 'everyone'},
+          {text: 'Project owners', value: 'owners'},
+          {text: 'Specific people', value: 'specific'},
         ];
 
         const VALUE_TYPES = [
@@ -242,6 +264,111 @@
         let gatewayTypeCol = [];
         let diagram = '';
 
+        // Initialize localization map - matching Angular sandbox structure
+        const localeMap = {
+          whenThisHappensLbl: 'When This Happens',
+          doThisLbl: 'Do This',
+          columnChangesLbl: 'Column Changes',
+          onIntervalLbl: 'On Interval',
+          onAddItemLbl: 'On Add Item',
+          itemCreatedLbl: 'Item Created',
+          checkValueLbl: 'Check Value',
+          changeValueLbl: 'Change Value',
+          sendAnEmailLbl: 'Send An Email',
+          elseLbl: 'else',
+          typeSubjectLbl: 'Type Subject',
+          typeEmailLbl: 'Type Email',
+          selectColumnTooltip: 'Select Column Tooltip',
+          setLbl: 'Set',
+        };
+
+        element.localizedStringMap = localeMap;
+        element.state = {
+          columns: NORMALIZED_COLUMN,
+          conditions: [],
+          values: [],
+        };
+        element.allColumns = [
+          {
+            text: 'Status',
+            value: '{{Status}}',
+          },
+          {
+            text: 'People',
+            value: '{{People}}',
+          },
+          {
+            text: 'Text',
+            value: '{{Text}}',
+          },
+          {
+            text: 'Number',
+            value: '{{Number}}',
+          },
+          {
+            text: 'Date/Time',
+            value: '{{Date/Time}}',
+          },
+          {
+            text: 'Date',
+            value: '{{Date}}',
+          },
+          {
+            text: 'Assignee',
+            value: '{{Assignee}}',
+          },
+        ];
+
+        console.log('Setting localizedStringMap:', localeMap);
+        console.log('Element before setting properties:', element);
+        console.log('Element tagName:', element.tagName);
+
+        // Set properties on the element
+        element.localizedStringMap = localeMap;
+        element.state = {
+          columns: NORMALIZED_COLUMN,
+          conditions: [],
+          values: [],
+        };
+        element.allColumns = [
+          {
+            text: 'Status',
+            value: '{{Status}}',
+          },
+          {
+            text: 'People',
+            value: '{{People}}',
+          },
+          {
+            text: 'Text',
+            value: '{{Text}}',
+          },
+          {
+            text: 'Number',
+            value: '{{Number}}',
+          },
+          {
+            text: 'Date/Time',
+            value: '{{Date/Time}}',
+          },
+          {
+            text: 'Date',
+            value: '{{Date}}',
+          },
+          {
+            text: 'Assignee',
+            value: '{{Assignee}}',
+          },
+        ];
+
+        console.log(
+          'LocalizedStringMap after setting:',
+          element.localizedStringMap,
+        );
+
+        // Now append the element to the DOM with all properties set
+        container.appendChild(element);
+
         element.addEventListener('diagramChange', event => {
           diagram = event.detail;
           const element = document.getElementById('diagram');
@@ -275,80 +402,12 @@
             case window.ChangeColumnValueAction.identifier:
               selectedElement.state.change('columns', NORMALIZED_COLUMN);
               break;
+            case window.SendEmailAction.identifier:
+              selectedElement.state.change('emailToInputType', 'list');
+              selectedElement.state.change('emailToValues', EMAIL_RECIPIENTS);
+              break;
           }
         }
-        element.state = {
-          columns: NORMALIZED_COLUMN,
-          conditions: [],
-          values: [],
-        };
-
-        element.allColumns = [
-          {
-            text: 'Status',
-            value: '{{Status}}',
-          },
-          {
-            text: 'People',
-            value: '{{People}}',
-          },
-          {
-            text: 'Text',
-            value: '{{Text}}',
-          },
-          {
-            text: 'Number',
-            value: '{{Number}}',
-          },
-          {
-            text: 'Date/Time',
-            value: '{{Date/Time}}',
-          },
-          {
-            text: 'Date',
-            value: '{{Date}}',
-          },
-          {
-            text: 'Assignee',
-            value: '{{Assignee}}',
-          },
-        ];
-
-        let localeMap = {};
-        const LocalizedStringKeys = {
-          WhenThisHappens: 'whenThisHappensLbl',
-          DoThis: 'doThisLbl',
-          ColumnChanges: 'columnChangesLbl',
-          ChangesTo: 'triggerColumnSuffix',
-          OnInterval: 'onIntervalLbl',
-          OnAddItem: 'onAddItemLbl',
-          ItemCreated: 'itemCreatedLbl',
-          CheckValue: 'checkValueLbl',
-          ChangeValue: 'changeValueLbl',
-          SendAnEmail: 'sendAnEmailLbl',
-          Else: 'elseLbl',
-          TypeSubject: 'typeSubjectLbl',
-          TypeEmail: 'typeEmailLbl',
-          SelectColumnTooltip: 'selectColumnTooltip',
-          SetLbl: 'setLbl',
-        };
-
-        localeMap[LocalizedStringKeys.WhenThisHappens] = 'When This Happens';
-        localeMap[LocalizedStringKeys.DoThis] = 'Do This';
-        localeMap[LocalizedStringKeys.ColumnChanges] = 'Column Changes';
-        localeMap[LocalizedStringKeys.OnInterval] = 'On Interval';
-        localeMap[LocalizedStringKeys.OnAddItem] = 'On Add Item';
-        localeMap[LocalizedStringKeys.ItemCreated] = 'Item Created';
-        localeMap[LocalizedStringKeys.CheckValue] = 'Check Value';
-        localeMap[LocalizedStringKeys.ChangeValue] = 'Change Value';
-        localeMap[LocalizedStringKeys.SendAnEmail] = 'Send An Email';
-        localeMap[LocalizedStringKeys.Else] = 'else';
-        localeMap[LocalizedStringKeys.TypeSubject] = 'Type Subject';
-        localeMap[LocalizedStringKeys.TypeEmail] = 'Type Email';
-        localeMap[LocalizedStringKeys.SelectColumnTooltip] =
-          'Select Column Tooltip';
-        element.localizedStringMap = localeMap;
-        console.log(element.localizedStringMap);
 
         function valueChanges(event) {
           let selectedCol;

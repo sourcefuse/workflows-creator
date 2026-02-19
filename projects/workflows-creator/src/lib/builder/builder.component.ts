@@ -4,6 +4,7 @@ import {
   Component,
   input,
   output,
+  model,
   effect,
   OnInit,
   OnDestroy,
@@ -17,6 +18,7 @@ import {
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {take} from 'rxjs/operators';
 import {TemplatePortal} from '@angular/cdk/portal';
+import {OverlayContext} from '../interfaces';
 import {
   isSelectInput,
   Statement,
@@ -84,6 +86,7 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
   private previousState: StateMap<RecordOfAnyType> | null = null;
   private previousLocalizedStringMap: RecordOfAnyType | null = null;
   private isInitialized = false;
+  private isInternalUpdate = false;
 
   constructor(
     private injector: Injector,
@@ -117,6 +120,7 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
           // Handle diagram and state changes (after initialization)
           if (
             this.isInitialized &&
+            !this.isInternalUpdate &&
             currentDiagram &&
             currentState &&
             (currentDiagram !== this.previousDiagram ||
@@ -134,19 +138,18 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
     });
   }
 
-  state = input<StateMap<RecordOfAnyType>>({});
+  state = model<StateMap<RecordOfAnyType>>({});
 
   localizedStringMap = input<RecordOfAnyType>({});
 
-  diagram = input('');
+  diagram = model<string>('');
 
   templateMap = input<{[key: string]: TemplateRef<RecordOfAnyType>}>({});
 
   allColumns = input<Select[]>([]);
 
-  stateChange = output<StateMap<RecordOfAnyType>>();
-
-  diagramChange = output<Object>();
+  // Custom output for diagram validation status (model() auto-creates diagramChange that emits just the string)
+  diagramValidation = output<{diagram: string; isValid: boolean}>();
 
   eventAdded = output<EventAddition<E>>();
 
@@ -161,9 +164,6 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
   elseActionGroups: AbstractBaseGroup<E>[] = [];
   nodeList: AbstractBaseGroup<E>[] = [];
   processId: string;
-  // sonarignore:start
-  // TODO: Refactor this code to be more flexible
-  // sonarignore:start
   elseBlockHidden = false;
   elseBlockRemoved = false;
   public types = NodeTypes;
@@ -242,13 +242,15 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
       if (this.selectedEvents) this.eventGroups = [];
       groups.forEach(group => this.onGroupAdd(group));
       this.restoreState(restoredState);
-      this.elseActionGroups[0].children = elseActions;
-      this.elseActionGroups[0].children.forEach(action =>
-        this.actionAdded.emit({
-          name: action.node.getIdentifier(),
-          action: action.node as WorkflowAction<E>,
-        }),
-      );
+      if (this.elseActionGroups[0]) {
+        this.elseActionGroups[0].children = elseActions;
+        this.elseActionGroups[0].children.forEach(action =>
+          this.actionAdded.emit({
+            name: action.node.getIdentifier(),
+            action: action.node as WorkflowAction<E>,
+          }),
+        );
+      }
       events.forEach(event => {
         const groupId = event.node.groupId;
         this.eventGroups.forEach(group => {
@@ -283,10 +285,10 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
    */
 
   hideElseBlockIfRequired() {
-    const events = this.eventGroups[0].children;
-    const firstEvent = events[0]?.node;
+    const events = this.eventGroups[0]?.children;
+    const firstEvent = events?.[0]?.node;
 
-    if (events.length !== 1 || !firstEvent) {
+    if (!events || events.length !== 1 || !firstEvent) {
       this.elseBlockHidden = false;
       return;
     }
@@ -357,8 +359,9 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
    * Hides the else block when it is not needed.
    */
   onEventRemoved() {
-    const events = this.eventGroups[0].children;
+    const events = this.eventGroups[0]?.children;
     this.elseBlockHidden =
+      events &&
       events.length === 1 &&
       (events[0].node.getIdentifier() === EventTypes.OnIntervalEvent ||
         events[0].node.getIdentifier() === EventTypes.OnAddItemEvent ||
@@ -384,15 +387,32 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
   /**
    * The function is called when an item is changed in the UI. It emits an event to the parent
    * component, updates the state of the item, and updates the diagram
-   * @param {RecordOfAnyType} item - RecordOfAnyType
+   * @param {InputChanged<E>} item - The InputChanged event emitted from group component
    */
-  onItemChanged(item: RecordOfAnyType) {
-    this.itemChanged.emit({
-      field: item.field,
-      value: item.value,
-      item: item.element.node,
+  onItemChanged(item: InputChanged<E>) {
+    // Find the element with inputs from the group children arrays
+    const allNodes: NodeWithInput<E>[] = [];
+
+    this.eventGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
     });
-    this.updateState(item.element.node, item.element.inputs);
+    this.actionGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
+    });
+    this.elseActionGroups.forEach(group => {
+      allNodes.push(...(group.children || []));
+    });
+
+    const element = allNodes.find(n => n.node.id === item.item.id);
+
+    if (!element) {
+      console.error('Could not find element for node:', item.item.id);
+      return;
+    }
+
+    // Re-emit the event as-is
+    this.itemChanged.emit(item);
+    this.updateState(element.node, element.inputs);
     this.hideElseBlockIfRequired();
     this.updateDiagram();
   }
@@ -420,9 +440,13 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
    * Opens an overlay at the trigger element position.
    * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
    * @param {TemplateRef} template - The template to display in the overlay
-   * @param {any} context - Context data to pass to the template
+   * @param context - Context data to pass to the template
    */
-  openOverlay(event: MouseEvent, template: TemplateRef<any>, context: any) {
+  openOverlay(
+    event: MouseEvent,
+    template: TemplateRef<OverlayContext>,
+    context: OverlayContext,
+  ) {
     // Close existing overlay if open
     this.closeOverlay();
 
@@ -594,7 +618,7 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
         throw new Error('Invalid Node type');
       }
     });
-    if (this.elseActionGroups[0].children.length > 0) {
+    if (this.elseActionGroups[0]?.children?.length > 0) {
       this.elseActionGroups.forEach(group => {
         group.children
           .map(e => e.node)
@@ -613,14 +637,14 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
    */
   async updateDiagram() {
     const nodes = [
-      ...this.eventGroups[0].children,
-      ...this.actionGroups[0].children,
-      ...this.elseActionGroups[0].children,
+      ...(this.eventGroups[0]?.children || []),
+      ...(this.actionGroups[0]?.children || []),
+      ...(this.elseActionGroups[0]?.children || []),
     ];
     let isValid =
-      !!this.eventGroups[0].children.length &&
-      (!!this.actionGroups[0].children.length ||
-        !!this.elseActionGroups[0].children.length);
+      !!this.eventGroups[0]?.children?.length &&
+      (!!this.actionGroups[0]?.children?.length ||
+        !!this.elseActionGroups[0]?.children?.length);
     if (isValid) {
       for (const node of nodes) {
         switch (node.node.getIdentifier()) {
@@ -666,7 +690,13 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
       }
     }
     const newDiagram = await this.build();
-    this.diagramChange.emit({diagram: newDiagram, isValid: isValid});
+    // Update the diagram model (this automatically emits diagramChange with the string value)
+    this.isInternalUpdate = true;
+    this.diagram.set(newDiagram);
+    this.previousDiagram = newDiagram;
+    this.isInternalUpdate = false;
+    // Emit the diagram validation event with additional status info
+    this.diagramValidation.emit({diagram: newDiagram, isValid: isValid});
     this.cdr.detectChanges();
   }
   /**
@@ -691,7 +721,11 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
         ...keys.map(k => `${k}Name`),
       ]);
     }
-    this.stateChange.emit(newState);
+    // Update the state model (this automatically emits stateChange with the new state)
+    this.isInternalUpdate = true;
+    this.state.set(newState);
+    this.previousState = newState;
+    this.isInternalUpdate = false;
   }
   /**
    * > If the user has already entered data for a subsequent input, remove it

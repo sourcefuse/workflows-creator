@@ -79,9 +79,6 @@ export class BpmnBuilderService extends BuilderService<
     statement.addStart(start);
     statement.addEnd(end);
     let current = statement.head;
-    // sonarignore:start
-    // TODO: Refactor this code to be more flexible
-    // sonarignore:start
     this.addElseIntoMainFlow(elseStatement, statement);
     this.traverseToSetTags(current[0]);
     this.traverseToLink(current[0]);
@@ -250,9 +247,6 @@ export class BpmnBuilderService extends BuilderService<
       const [elementCtor, nodeCtor, id, groupType, groupId, isElseAction] =
         tag.id.split('_');
       const element = this.elements.createInstanceByName(elementCtor);
-      // sonarignore:start
-      // TODO: Refactor
-      // sonarignore:start
       currentNode = this.nodes.getNodeByName(
         nodeCtor,
         groupType,

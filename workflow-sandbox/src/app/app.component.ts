@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {
   BuilderComponent,
   OnChangeEvent,
@@ -6,6 +6,7 @@ import {
   OnIntervalEvent,
   OnAddItemEvent,
   ChangeColumnValueAction,
+  SendEmailAction,
   ValueInput,
   IntervalInput,
   TriggerColumnInput,
@@ -13,8 +14,19 @@ import {
   ConditionInput,
   ToColumnInput,
   EmailDataInput,
+  EmailToInput,
+  EmailRecepientInput,
   BASE_XML_VALUE,
+  StateMap,
+  RecordOfAnyType,
 } from '@sourceloop/workflows-creator';
+import {
+  ColumnOption,
+  TimescaleOption,
+  FieldValuesMap,
+  ConditionsMap,
+  WorkflowEvent,
+} from './interfaces';
 
 @Component({
   standalone: true,
@@ -22,16 +34,17 @@ import {
   imports: [BuilderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
-  NORMALIZED_COLUMN = [
+  NORMALIZED_COLUMN: ColumnOption[] = [
     {text: 'Status', value: '1952177d-9a3e-6ef4-ae8f-522c08153026'},
     {text: 'Priority', value: '1952177d-9a3e-6ef4-ae8f-522c08153026'},
     {text: 'Text', value: '2069d144-db46-0737-2c9d-bc339949d684'},
     {text: 'Number', value: '47beeecd-712c-6f8b-c595-92c3712780cb'},
   ];
 
-  allColumns = [
+  allColumns: ColumnOption[] = [
     {text: 'Status', value: '{{Status}}'},
     {text: 'People', value: '{{People}}'},
     {text: 'Text', value: '{{Text}}'},
@@ -41,7 +54,14 @@ export class AppComponent {
     {text: 'Assignee', value: '{{Assignee}}'},
   ];
 
-  localizedStringMap = {
+  EMAIL_RECIPIENTS: ColumnOption[] = [
+    {text: 'Me', value: 'me'},
+    {text: 'Everyone on project', value: 'everyone'},
+    {text: 'Project owners', value: 'owners'},
+    {text: 'Specific people', value: 'specific'},
+  ];
+
+  localizedStringMap: Record<string, string> = {
     whenThisHappensLbl: 'When This Happens',
     doThisLbl: 'Do This',
     columnChangesLbl: 'Column Changes',
@@ -58,13 +78,13 @@ export class AppComponent {
     setLbl: 'Set',
   };
 
-  TIMESCALE = [
+  TIMESCALE: TimescaleOption[] = [
     {text: 'Days', value: 'D', timescale: ''},
     {text: 'Hours', value: 'H', timescale: 'T'},
     {text: 'Seconds', value: 'S', timescale: 'T'},
   ];
 
-  FIELD_VALUES: any = {
+  FIELD_VALUES: FieldValuesMap = {
     status: {
       valueInputType: 'list',
       values: [
@@ -99,44 +119,32 @@ export class AppComponent {
     {text: 'Past by', value: 'pastby'},
   ];
 
-  CONDITIONS: any = {
+  CONDITIONS: ConditionsMap = {
     date: this.DATE_CONDITIONS,
     datetime: this.DATE_CONDITIONS,
   };
 
-  // IMPORTANT: do NOT pre-seed state
-  state: any = {
-    columns: [],
-    conditions: [],
-    values: [],
-    properties: new Map(),
-  };
+  state: StateMap<RecordOfAnyType> = {};
   _diagram = BASE_XML_VALUE;
 
-  // get diagram(): string {
-  //   return this._diagram;
-  // }
-
-  // set diagram(value: unknown) {
-  //   if (typeof value === 'string' && value.trim().length > 0) {
-  //     this._diagram = value;
-  //   }
-  // }
-
-  onEventAdded(event: any) {
+  onEventAdded(event: WorkflowEvent) {
     this.handleElementClick(event);
   }
 
-  onActionAdded(event: any) {
+  onActionAdded(event: WorkflowEvent) {
     this.handleElementClick(event);
   }
 
-  onItemChanged(event: any) {
+  onItemChanged(event: WorkflowEvent) {
     this.handleValueChange(event);
   }
 
-  handleElementClick(event: any) {
+  handleElementClick(event: WorkflowEvent) {
     const selected = event.event ?? event.action;
+
+    if (!selected) {
+      return;
+    }
 
     switch (selected.getIdentifier()) {
       case OnIntervalEvent.identifier:
@@ -149,7 +157,7 @@ export class AppComponent {
         selected.state.change(
           'columns',
           this.NORMALIZED_COLUMN.filter(
-            (col: any) => col.text.toLowerCase() !== 'priority',
+            (col: ColumnOption) => col.text.toLowerCase() !== 'priority',
           ),
         );
         break;
@@ -157,11 +165,20 @@ export class AppComponent {
       case ChangeColumnValueAction.identifier:
         selected.state.change('columns', this.NORMALIZED_COLUMN);
         break;
+
+      case SendEmailAction.identifier:
+        selected.state.change('emailToInputType', 'list');
+        selected.state.change('emailToValues', this.EMAIL_RECIPIENTS);
+        break;
     }
   }
-  private selectedCol: any;
+  private selectedCol?: ColumnOption;
 
-  handleValueChange(event: any) {
+  handleValueChange(event: WorkflowEvent) {
+    if (!event.item) {
+      return;
+    }
+
     switch (event.field) {
       case ValueInput.identifier:
         if (event.item.getIdentifier() === OnIntervalEvent.identifier) {
@@ -189,7 +206,6 @@ export class AppComponent {
           this.CONDITIONS[type] || this.DEFAULT_CONDITION,
         );
 
-        // Set valueInputType when column changes
         event.item.state.change(
           'valueInputType',
           this.FIELD_VALUES[type].valueInputType,
@@ -200,7 +216,6 @@ export class AppComponent {
         break;
 
       case ConditionInput.identifier:
-        // Get the selected column from the event item's state
         const columnId =
           event.item.state.get('column') ||
           event.item.state.get('triggerColumn');
@@ -212,7 +227,6 @@ export class AppComponent {
 
         const columnType = this.selectedCol.text.toLowerCase();
 
-        // Re-set valueInputType after condition changes
         event.item.state.change(
           'valueInputType',
           this.FIELD_VALUES[columnType].valueInputType,
@@ -226,7 +240,6 @@ export class AppComponent {
         break;
 
       case ToColumnInput.identifier:
-        // For ToColumnInput in actions, get the column and set valueInputType
         const toColumnId = event.value;
         const toCol = this.NORMALIZED_COLUMN.find(
           col => col.value === toColumnId,

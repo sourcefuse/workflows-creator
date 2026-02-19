@@ -3,18 +3,18 @@ import {InputTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
 export class ColumnInput extends WorkflowPrompt {
-  prefix = '';
-  suffix = '';
-  typeFunction = () => InputTypes.List;
-  inputKey = 'column';
+  override prefix = '';
+  override suffix = '';
+  override typeFunction = () => InputTypes.List;
+  override inputKey = 'column';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'Column';
+  override placeholder = 'Column';
   options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('columns');
   static identifier = 'ColumnInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ColumnInput.identifier;
   }
 }

@@ -88,17 +88,18 @@ import {
   // misc
   typeTuppleList,
 } from './index';
+import {WorkflowEnvironmentConfig} from './interfaces';
 
 /**
  * Angular 16–19 compatible provider factory.
  * This replaces WorkflowBuilderModule.
  */
-export function provideWorkflowCreator(env?: any) {
+export function provideWorkflowCreator(env?: WorkflowEnvironmentConfig) {
   return makeEnvironmentProviders([
     // 🔴 BPMN Moddle
     {
       provide: CustomBpmnModdle,
-      useFactory: () => 
+      useFactory: () =>
         new BPMNModdle({
           camunda: {
             ...camundaModdle,

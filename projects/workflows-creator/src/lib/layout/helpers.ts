@@ -35,7 +35,7 @@ export function connectRectangles(
 
   // overlapping elements
   if (!directions) {
-    return;
+    return [];
   }
 
   if (directions === 'h:h') {

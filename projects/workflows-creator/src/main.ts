@@ -6,6 +6,7 @@ import {provideWorkflowCreator} from './lib/provide-workflow-creator';
 import {InputTypes} from './lib/enum';
 import {
   ChangeColumnValueAction,
+  SendEmailAction,
   OnAddItemEvent,
   OnIntervalEvent,
   ColumnInput,
@@ -27,7 +28,6 @@ createApplication({
   providers: [provideWorkflowCreator((window as any).workflowEnv)],
 })
   .then(appRef => {
-    // Create and register the custom element
     const webComponent = createCustomElement(BuilderComponent, {
       injector: appRef.injector,
     });
@@ -36,6 +36,7 @@ createApplication({
     // Export services for vanilla JS projects
     Object.assign(window, {
       ChangeColumnValueAction,
+      SendEmailAction,
       OnAddItemEvent,
       OnIntervalEvent,
       ColumnInput,

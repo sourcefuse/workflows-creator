@@ -12,6 +12,7 @@ import {
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {take} from 'rxjs/operators';
 import {TemplatePortal} from '@angular/cdk/portal';
+import {DateTimeValue, OverlayContext, SelectableItem} from '../../interfaces';
 import {isSelectInput, NodeService, WorkflowPrompt} from '../../classes';
 import {AbstractBaseGroup} from '../../classes/nodes';
 import {
@@ -27,6 +28,7 @@ import {
   AllowedValues,
   AllowedValuesMap,
   BpmnNode,
+  InputChanged,
   NodeWithInput,
   RecordOfAnyType,
   WorkflowNode,
@@ -103,10 +105,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
 
   actionAdded = output<unknown>();
 
-  itemChanged = output<unknown>();
+  itemChanged = output<InputChanged<E>>();
 
   date: string = '';
-  dateTime: any = {
+  dateTime: DateTimeValue = {
     date: '',
     time: '',
   };
@@ -127,7 +129,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     allowSearchFilter: true,
     defaultOpen: true,
   };
-  selectedItems = [];
+  selectedItems: Array<string | number> = [];
   showDateTimePicker = true;
   enableActionIcon = true;
   events: WorkflowNode<E>[] = [];
@@ -138,8 +140,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
 
   showsTooltip = false;
   tooltipText = 'This is default parent component text';
-  topPosition: any;
-  leftPosition: any;
+  topPosition: number | null = 0;
+  leftPosition: number | null = 0;
 
   public types = NodeTypes;
   private overlayRef: OverlayRef | null = null;
@@ -478,9 +480,13 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
    * Opens an overlay at the trigger element position.
    * @param {MouseEvent} event - MouseEvent - The event that triggered the overlay to show.
    * @param {TemplateRef} template - The template to display in the overlay
-   * @param {any} context - Context data to pass to the template
+   * @param context - Context data to pass to the template
    */
-  openOverlay(event: MouseEvent, template: TemplateRef<any>, context: any) {
+  openOverlay(
+    event: MouseEvent,
+    template: TemplateRef<OverlayContext>,
+    context: OverlayContext,
+  ) {
     // Close existing overlay if open
     this.closeOverlay();
 
@@ -636,7 +642,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
           input.inputKey === 'value'
             ? (value as AllowedValuesMap)[input.listValueField]
             : value,
-        element: element,
+        item: element.node,
       });
     }
     element.node.state.change(input.inputKey, value);
@@ -644,14 +650,14 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     this.itemChanged.emit({
       field: input.getIdentifier(),
       value: value,
-      element: element,
+      item: element.node,
     });
     this.enableActionIcon =
       element.node.state.get('value') !== ValueTypes.AnyValue;
   }
 
-  onSelectAll(list: any) {
-    this.selectedItems = list.map((item: any) => item.id);
+  onSelectAll(list: SelectableItem[]) {
+    this.selectedItems = list.map(item => item.id);
   }
 
   onClearAll() {
@@ -660,11 +666,12 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
 
   getLibraryValue(
     node: BpmnNode,
-    $event: any,
+    $event: Event | string | number | DateTimeValue,
     type: string,
     metaObj: RecordOfAnyType,
   ) {
-    const value = $event.target?.value ?? $event;
+    const value =
+      ($event as Event & {target?: HTMLInputElement})?.target?.value ?? $event;
     this.dateTime = {
       date: '',
       time: '',
@@ -672,13 +679,25 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     this.date = '';
     switch (type) {
       case InputTypes.People:
-        const selectedIds = metaObj.list.filter((item: {id: any}) =>
-          (this.selectedItems as any[]).includes(`${item.id}`),
+        const selectedIds = metaObj.list.filter((item: SelectableItem) =>
+          (this.selectedItems as Array<string | number>).includes(`${item.id}`),
         );
         return selectedIds;
       case InputTypes.Date: {
         if (value) {
-          const dateObj = moment(value);
+          let dateInput: string | number;
+          if (typeof value === 'object' && value !== null && 'date' in value) {
+            dateInput = (value as DateTimeValue).date;
+          } else if (
+            typeof value === 'object' &&
+            value !== null &&
+            'target' in value
+          ) {
+            dateInput = ((value as Event).target as HTMLInputElement).value;
+          } else {
+            dateInput = value as string | number;
+          }
+          const dateObj = moment(dateInput);
           return {
             day: dateObj.date(),
             month: dateObj.month() + 1,
@@ -688,11 +707,18 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
         break;
       }
       case InputTypes.DateTime:
-        if (value) {
-          if (value.time === '') {
-            value.time = node.state.get('defaultTime') ?? '9:00';
+        if (
+          value &&
+          typeof value === 'object' &&
+          'date' in value &&
+          'time' in value
+        ) {
+          const dateTimeValue = value as DateTimeValue;
+          if (dateTimeValue.time === '') {
+            dateTimeValue.time =
+              (node.state.get('defaultTime') as string) ?? '9:00';
           }
-          const dateObj = moment(`${value.date} ${value.time}`);
+          const dateObj = moment(`${dateTimeValue.date} ${dateTimeValue.time}`);
           return {
             date: {
               day: dateObj.date(),
@@ -732,47 +758,46 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleKeyPress(event: any) {
+  handleKeyPress(event: KeyboardEvent) {
     const keyCode = event.which || event.keyCode;
     const isDigit = keyCode >= 48 && keyCode <= 57;
     const isBackspaceOrDelete = [8, 46].includes(keyCode);
-    const inputValue = event.target.value;
+    const inputValue = (event.target as HTMLInputElement).value;
     const isValidInput = /^-?\d*\.?\d*$/.test(inputValue);
     if (!(isDigit || isBackspaceOrDelete) || !isValidInput) {
       event.preventDefault();
     }
   }
   handleEnterEvent(
-    callback: any,
+    callback: (value: unknown) => void,
     node: BpmnNode,
-    $event: any,
+    $event: Event | string | number | DateTimeValue,
     type: string,
-    event: any,
+    event: KeyboardEvent,
   ) {
     const response = this.getLibraryValue(node, $event, type, {});
 
-    //check whether the entered key is "ENTER" key
     if (event.keyCode === 13) {
       callback(response);
     }
   }
 
   updateSecondVariable(
-    event: any,
+    event: Event,
     inputType: InputTypes,
     dateTimeField?: string,
   ) {
-    //if inputType->dateTime
+    const inputValue = (event.target as HTMLInputElement)?.value ?? '';
     switch (inputType) {
       case InputTypes.DateTime:
         if (dateTimeField == 'date') {
-          this.dateTime.date = event;
+          this.dateTime.date = inputValue;
         } else {
-          this.dateTime.time = event;
+          this.dateTime.time = inputValue;
         }
         break;
       case InputTypes.Date:
-        this.date = event;
+        this.date = inputValue;
     }
   }
 

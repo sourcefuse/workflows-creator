@@ -30,7 +30,7 @@ import {InputTypes} from './enum';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WorkflowElementModule {
-  [x: string]: any;
+  [x: string]: unknown;
   constructor(private injector: Injector, private local: LocalizationPipe) {}
   ngDoBootstrap() {
     const webComponent = createCustomElement(BuilderComponent, {

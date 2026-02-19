@@ -15,9 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
 
-    // App-level Angular modules
     importProvidersFrom(BrowserAnimationsModule, OverlayModule),
 
-    provideWorkflowCreator((window as any).workflowEnv),
+    provideWorkflowCreator(window.workflowEnv),
   ],
 };
