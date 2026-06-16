@@ -294,7 +294,14 @@ export class GatewayLinkStrategy implements LinkStrategy<ModdleElement> {
       ConditionTypes.NotEqual === conditionType ? '!' : '';
     const conditionExpressionElse =
       ConditionTypes.NotEqual === conditionType ? '' : '!';
-    if (column?.toLowerCase() === InputTypes.People) {
+    // A people-array value is identified by its input type, not the column's
+    // display name. Resource columns reuse the People input type, so gate on
+    // `valueInputType` to cover both (and people columns renamed off "people").
+    // Item keeps its own branch below.
+    if (
+      column?.toLowerCase() === InputTypes.People ||
+      (valueInputType === InputTypes.People && column !== InputTypes.Item)
+    ) {
       return !isElse
         ? `var selectedVals = ${condition};
       var selCol = selectedVals.split(',');
