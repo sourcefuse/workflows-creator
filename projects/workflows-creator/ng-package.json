@@ -3,7 +3,7 @@
   "dest": "../../dist/workflows-creator",
   "allowedNonPeerDependencies": [
     "bpmn-moddle",
-    "lodash",
+    "lodash-es",
     "moment",
     "tslib"
   ],
