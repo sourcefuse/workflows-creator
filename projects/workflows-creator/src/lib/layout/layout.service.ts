@@ -1,6 +1,6 @@
 import {RecordOfAnyType, CustomBpmnModdle, ModdleElement} from '../types';
 import {DiFactoryService} from './di.service';
-import {assign} from 'lodash';
+import {assign} from 'lodash-es';
 import {Point} from './types';
 import {getOutgoingConnection, getStartEvent} from './helpers';
 import {Injectable} from '@angular/core';
