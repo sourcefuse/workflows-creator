@@ -1,5 +1,5 @@
 import {RecordOfAnyType, CustomBpmnModdle, ModdleElement} from '../types';
-import {assign, map, pick} from 'lodash';
+import {assign, map, pick} from 'lodash-es';
 import {connectRectangles, is} from './helpers';
 import {Point} from './types';
 import {Injectable} from '@angular/core';
