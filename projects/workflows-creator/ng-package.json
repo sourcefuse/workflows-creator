@@ -3,8 +3,8 @@
   "dest": "../../dist/workflows-creator",
   "allowedNonPeerDependencies": [
     "bpmn-moddle",
+    "dayjs",
     "lodash-es",
-    "moment",
     "tslib"
   ],
   "lib": {
