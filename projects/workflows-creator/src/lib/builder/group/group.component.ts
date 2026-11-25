@@ -41,7 +41,6 @@ import {
   EmailInput,
   Select,
 } from '../../types/base.types';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {
   ChangeColumnValue,
   GatewayElement,
@@ -102,7 +101,7 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
 
   remove = output<boolean>();
 
-  add = output<boolean>();
+  add = output<MouseEvent>();
 
   eventAdded = output<unknown>();
 
@@ -123,17 +122,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     focusKey: '',
   };
 
-  dropdownSettings: IDropdownSettings = {
-    singleSelection: false,
-    idField: 'id',
-    textField: 'fullName',
-    selectAllText: 'Select All',
-    unSelectAllText: 'UnSelect All',
-    enableCheckAll: true,
-    itemsShowLimit: 2,
-    allowSearchFilter: true,
-    defaultOpen: true,
-  };
   selectedItems: Array<string | number> = [];
   showDateTimePicker = true;
   enableActionIcon = true;
@@ -279,10 +267,10 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * The addClick() function emits the add event, which is a boolean value of true
+   * The addClick() function passes the click on, so the builder can anchor the AND/OR popup to it
    */
-  addClick() {
-    this.add.emit(true);
+  addClick(event: MouseEvent) {
+    this.add.emit(event);
   }
 
   /**

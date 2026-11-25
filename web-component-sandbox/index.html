@@ -13,16 +13,11 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <!-- Built by `npm run elementBuild`; serve the repo root, see README.md -->
     <link
       rel="stylesheet"
       type="text/css"
-      href="./assets/icons/icomoon/style.css"
-    />
-    <link rel="stylesheet" type="text/css" href="./styles.css" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="./assets/styles/workflow-styles.css"
+      href="../projects/workflows-element/dist/styles.css"
     />
 
     <style>
@@ -52,108 +47,10 @@
       <p id="diagram"></p>
     </div>
 
-    <!-- Critical fix for zone.js hasOwnProperty error - MUST run before workflows-element.js -->
-    <script>
-      (function () {
-        'use strict';
-
-        // Store original functions
-        const originalGetPrototypeOf = Object.getPrototypeOf;
-        const originalHasOwnProperty = Object.prototype.hasOwnProperty;
-        const patchedObjects = new WeakSet();
-
-        // Comprehensive fix: ensure ALL objects have hasOwnProperty
-        function ensureHasOwnProperty(obj) {
-          if (!obj || patchedObjects.has(obj)) {
-            return obj;
-          }
-
-          try {
-            // If the object doesn't have hasOwnProperty or it's not a function
-            const descriptor = Object.getOwnPropertyDescriptor(
-              obj,
-              'hasOwnProperty',
-            );
-            if (!descriptor || typeof obj.hasOwnProperty !== 'function') {
-              Object.defineProperty(obj, 'hasOwnProperty', {
-                value: function (prop) {
-                  return originalHasOwnProperty.call(this, prop);
-                },
-                writable: true,
-                configurable: true,
-                enumerable: false,
-              });
-            }
-            patchedObjects.add(obj);
-          } catch (e) {
-            // Ignore sealed/frozen objects
-          }
-
-          return obj;
-        }
-
-        // Override Object.getPrototypeOf to patch prototypes as they're accessed
-        Object.getPrototypeOf = function (obj) {
-          const proto = originalGetPrototypeOf(obj);
-          if (proto) {
-            ensureHasOwnProperty(proto);
-          }
-          return proto;
-        };
-
-        // Preemptively patch all built-in prototypes
-        const builtIns = [
-          Object,
-          Array,
-          Function,
-          String,
-          Number,
-          Boolean,
-          Date,
-          RegExp,
-          Error,
-          Map,
-          Set,
-          WeakMap,
-          WeakSet,
-          Promise,
-          Int8Array,
-          Uint8Array,
-          Uint8ClampedArray,
-          Int16Array,
-          Uint16Array,
-          Int32Array,
-          Uint32Array,
-          Float32Array,
-          Float64Array,
-        ];
-
-        builtIns.forEach(function (BuiltIn) {
-          try {
-            if (BuiltIn && BuiltIn.prototype) {
-              ensureHasOwnProperty(BuiltIn.prototype);
-            }
-          } catch (e) {
-            // Ignore
-          }
-        });
-
-        // Also patch window/global prototype chain
-        try {
-          let current = window;
-          while (current) {
-            ensureHasOwnProperty(current);
-            current = originalGetPrototypeOf(current);
-          }
-        } catch (e) {
-          // Ignore
-        }
-
-        console.log('Zone.js hasOwnProperty fix applied');
-      })();
-    </script>
-
-    <script type="text/javascript" src="workflows-element.js"></script>
+    <script
+      type="text/javascript"
+      src="../projects/workflows-element/dist/workflows-element.js"
+    ></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', async () => {

@@ -124,10 +124,11 @@ describe('GroupComponent', () => {
     expect(component.remove.emit).toHaveBeenCalledWith(true);
   });
 
-  it('should emit the add event', () => {
+  it('should emit the add event with the click event', () => {
     spyOn(component.add, 'emit');
-    component.addClick();
-    expect(component.add.emit).toHaveBeenCalledWith(true);
+    const event = new MouseEvent('click');
+    component.addClick(event);
+    expect(component.add.emit).toHaveBeenCalledWith(event);
   });
 
   it('should add the node to the group', () => {
@@ -538,8 +539,10 @@ describe('GroupComponent inside a parent view', () => {
     template: `<workflow-group
       [group]="group"
       [nodeType]="nodeType"
+      [isLast]="true"
       [eventGroups]="[]"
       [allColumns]="[]"
+      (add)="added = $event"
     ></workflow-group>`,
     standalone: true,
     imports: [GroupComponent],
@@ -552,6 +555,7 @@ describe('GroupComponent inside a parent view', () => {
       false,
     );
     nodeType = NodeTypes.EVENT;
+    added: unknown;
   }
 
   beforeEach(async () => {
@@ -591,8 +595,32 @@ describe('GroupComponent inside a parent view', () => {
 
     const el: HTMLElement = host.nativeElement;
     expect(el.querySelectorAll('workflow-node').length).toBe(1);
-    expect(el.querySelector('.tree-group')?.classList).not.toContain(
-      'no-node',
-    );
+    expect(el.querySelector('.tree-group')?.classList).not.toContain('no-node');
+  });
+
+  it('passes the click event on when the group "+" is clicked', () => {
+    const host = TestBed.createComponent(HostComponent);
+    host.componentInstance.group.children.push({
+      node: new OnChangeEvent({}, '', '', ''),
+      inputs: [],
+    });
+    host.detectChanges();
+
+    const plus = host.nativeElement.querySelector('.action-add') as HTMLElement;
+    plus.click();
+
+    expect(host.componentInstance.added).toEqual(jasmine.any(MouseEvent));
+  });
+
+  it('closes its popup when destroyed', () => {
+    const host = TestBed.createComponent(HostComponent);
+    host.detectChanges();
+
+    (host.nativeElement.querySelector('.input-text') as HTMLElement).click();
+    expect(document.querySelector('.cdk-overlay-pane')).toBeTruthy();
+
+    host.destroy();
+
+    expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
   });
 });

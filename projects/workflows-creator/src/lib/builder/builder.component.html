@@ -69,7 +69,7 @@
 <ng-template #nodePopupTemplate let-nodeList="nodeList">
   <div class="workflow-popper">
     @for (node of nodeList; track node) {
-    <div class="option-div" (click)="onGroupAdd(node); closeOverlay()">
+    <div class="option-div" (click)="onGroupPicked(node)">
       {{ node.name }}
     </div>
     }

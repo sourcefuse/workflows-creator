@@ -26,3 +26,5 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '${{ github.workspace }}'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'

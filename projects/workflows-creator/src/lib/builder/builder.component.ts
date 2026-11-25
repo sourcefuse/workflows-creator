@@ -324,6 +324,16 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
     }
   }
   /**
+   * Adds the group picked in the AND/OR popup. The popup is rendered outside
+   * this component's view, so mark the builder for check to show the new group.
+   * @param group - AbstractBaseGroup<E>
+   */
+  onGroupPicked(group: AbstractBaseGroup<E>) {
+    this.onGroupAdd(group);
+    this.closeOverlay();
+    this.cdr.markForCheck();
+  }
+  /**
    * The function takes in an index number, and then removes the event group at that index from the
    * eventGroups array
    * @param {number} index - The index of the group to remove.

@@ -29,7 +29,7 @@
     @if (group().children.length && enableActionIcon) {
     <span class="action-items hide">
       @if (isLast() && nodeType() === types.EVENT) {
-      <span class="action-add" (click)="addClick()">
+      <span class="action-add" (click)="addClick($event)">
         <span class="action-icons icon-workflow-plus"></span>
       </span>
       } @if (!isFirst()) {

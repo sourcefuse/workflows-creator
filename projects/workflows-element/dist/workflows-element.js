@@ -1,61 +1,5 @@
-// projects/workflows-creator/src/zone-flags.ts
-(function() {
-  const originalGetPrototypeOf = Object.getPrototypeOf;
-  const originalHasOwnProperty = Object.prototype.hasOwnProperty;
-  const patchedProtos = /* @__PURE__ */ new WeakSet();
-  function ensureHasOwnProperty(proto) {
-    if (!proto || patchedProtos.has(proto)) {
-      return proto;
-    }
-    try {
-      if (typeof proto.hasOwnProperty !== "function") {
-        Object.defineProperty(proto, "hasOwnProperty", {
-          value: function(prop) {
-            return originalHasOwnProperty.call(this, prop);
-          },
-          writable: true,
-          configurable: true,
-          enumerable: false
-        });
-      }
-      patchedProtos.add(proto);
-    } catch (e) {
-    }
-    return proto;
-  }
-  Object.getPrototypeOf = function(obj) {
-    if (obj === null || obj === void 0) {
-      return null;
-    }
-    const proto = originalGetPrototypeOf(obj);
-    return ensureHasOwnProperty(proto);
-  };
-  const builtIns = [
-    Object,
-    Array,
-    Function,
-    String,
-    Number,
-    Boolean,
-    Date,
-    RegExp,
-    Error,
-    Map,
-    Set,
-    WeakMap,
-    WeakSet,
-    Promise
-  ];
-  builtIns.forEach((BuiltIn) => {
-    try {
-      if (BuiltIn && BuiltIn.prototype) {
-        ensureHasOwnProperty(BuiltIn.prototype);
-      }
-    } catch (e) {
-    }
-  });
-})();
-
+(function () {
+"use strict";
 // node_modules/zone.js/fesm2015/zone.js
 /**
  * @license Angular v<unknown>
@@ -2440,9 +2384,12 @@ function patchCommon(Zone2) {
 var Zone$1 = loadZone();
 patchCommon(Zone$1);
 patchBrowser(Zone$1);
-//# debugId=0598f985-7ed6-5e0e-90ab-a6d81c378c0f
+//# debugId=91bdc370-8ef6-5acc-b836-0b574c552316
 //# sourceMappingURL=polyfills.js.map
 
+})();
+(function () {
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
@@ -64187,7 +64134,7 @@ var NodeComponent = class _NodeComponent {
   }], null, { node: [{ type: Input, args: [{ isSignal: true, alias: "node", required: true }] }], isLast: [{ type: Input, args: [{ isSignal: true, alias: "isLast", required: false }] }], isFirst: [{ type: Input, args: [{ isSignal: true, alias: "isFirst", required: false }] }], inputTemplate: [{ type: Input, args: [{ isSignal: true, alias: "inputTemplate", required: true }] }], remove: [{ type: Output, args: ["remove"] }], add: [{ type: Output, args: ["add"] }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(NodeComponent, { className: "NodeComponent", filePath: "src/lib/builder/node/node.component.ts", lineNumber: 26 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(NodeComponent, { className: "NodeComponent", filePath: "projects/workflows-creator/src/lib/builder/node/node.component.ts", lineNumber: 26 });
 })();
 
 // projects/workflows-creator/src/lib/builder/tooltip-render/tooltip-render.component.ts
@@ -64267,7 +64214,7 @@ var TooltipRenderComponent = class _TooltipRenderComponent {
   }], () => [], { showsTooltip: [{ type: Input, args: [{ isSignal: true, alias: "showsTooltip", required: false }] }], tooltipText: [{ type: Input, args: [{ isSignal: true, alias: "tooltipText", required: false }] }], topPosition: [{ type: Input, args: [{ isSignal: true, alias: "topPosition", required: false }] }], leftPosition: [{ type: Input, args: [{ isSignal: true, alias: "leftPosition", required: false }] }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TooltipRenderComponent, { className: "TooltipRenderComponent", filePath: "src/lib/builder/tooltip-render/tooltip-render.component.ts", lineNumber: 9 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TooltipRenderComponent, { className: "TooltipRenderComponent", filePath: "projects/workflows-creator/src/lib/builder/tooltip-render/tooltip-render.component.ts", lineNumber: 9 });
 })();
 
 // projects/workflows-creator/src/lib/builder/group/group.component.ts
@@ -64348,10 +64295,10 @@ function GroupComponent_Conditional_6_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     const _r3 = \u0275\u0275getCurrentView();
     \u0275\u0275elementStart(0, "span", 20);
-    \u0275\u0275listener("click", function GroupComponent_Conditional_6_Conditional_1_Template_span_click_0_listener() {
+    \u0275\u0275listener("click", function GroupComponent_Conditional_6_Conditional_1_Template_span_click_0_listener($event) {
       \u0275\u0275restoreView(_r3);
       const ctx_r0 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r0.addClick());
+      return \u0275\u0275resetView(ctx_r0.addClick($event));
     });
     \u0275\u0275element(1, "span", 21);
     \u0275\u0275elementEnd();
@@ -64994,17 +64941,6 @@ var GroupComponent = class _GroupComponent {
       body: "",
       focusKey: ""
     };
-    this.dropdownSettings = {
-      singleSelection: false,
-      idField: "id",
-      textField: "fullName",
-      selectAllText: "Select All",
-      unSelectAllText: "UnSelect All",
-      enableCheckAll: true,
-      itemsShowLimit: 2,
-      allowSearchFilter: true,
-      defaultOpen: true
-    };
     this.selectedItems = [];
     this.showDateTimePicker = true;
     this.enableActionIcon = true;
@@ -65102,10 +65038,10 @@ var GroupComponent = class _GroupComponent {
     this.remove.emit(true);
   }
   /**
-   * The addClick() function emits the add event, which is a boolean value of true
+   * The addClick() function passes the click on, so the builder can anchor the AND/OR popup to it
    */
-  addClick() {
-    this.add.emit(true);
+  addClick(event) {
+    this.add.emit(event);
   }
   /**
    * If the focusKey is subject, append the value of the item to the subject. If the focusKey is body,
@@ -65636,7 +65572,7 @@ var GroupComponent = class _GroupComponent {
     @if (group().children.length && enableActionIcon) {
     <span class="action-items hide">
       @if (isLast() && nodeType() === types.EVENT) {
-      <span class="action-add" (click)="addClick()">
+      <span class="action-add" (click)="addClick($event)">
         <span class="action-icons icon-workflow-plus"></span>
       </span>
       } @if (!isFirst()) {
@@ -66071,7 +66007,7 @@ var GroupComponent = class _GroupComponent {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GroupComponent, { className: "GroupComponent", filePath: "src/lib/builder/group/group.component.ts", lineNumber: 83 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GroupComponent, { className: "GroupComponent", filePath: "projects/workflows-creator/src/lib/builder/group/group.component.ts", lineNumber: 82 });
 })();
 
 // projects/workflows-creator/src/lib/builder/builder.component.ts
@@ -66209,8 +66145,7 @@ function BuilderComponent_ng_template_8_For_2_Template(rf, ctx) {
     \u0275\u0275listener("click", function BuilderComponent_ng_template_8_For_2_Template_div_click_0_listener() {
       const node_r11 = \u0275\u0275restoreView(_r10).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(2);
-      ctx_r1.onGroupAdd(node_r11);
-      return \u0275\u0275resetView(ctx_r1.closeOverlay());
+      return \u0275\u0275resetView(ctx_r1.onGroupPicked(node_r11));
     });
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
@@ -66438,6 +66373,16 @@ var BuilderComponent = class _BuilderComponent {
     } else {
       throw new Error("Invalid Group");
     }
+  }
+  /**
+   * Adds the group picked in the AND/OR popup. The popup is rendered outside
+   * this component's view, so mark the builder for check to show the new group.
+   * @param group - AbstractBaseGroup<E>
+   */
+  onGroupPicked(group) {
+    this.onGroupAdd(group);
+    this.closeOverlay();
+    this.cdr.markForCheck();
   }
   /**
    * The function takes in an index number, and then removes the event group at that index from the
@@ -66845,14 +66790,14 @@ var BuilderComponent = class _BuilderComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(BuilderComponent, [{
     type: Component,
-    args: [{ selector: "workflow-builder", standalone: true, imports: [FormsModule, NgSelectModule, GroupComponent, LocalizationPipe], providers: [LocalizationPipe], encapsulation: ViewEncapsulation.None, changeDetection: ChangeDetectionStrategy.OnPush, template: '<div class="container">\n  @for (group of eventGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="i === eventGroups.length - 1"\n      [isFirst]="i === 0"\n      [nodeType]="types.EVENT"\n      [eventGroups]="eventGroups"\n      [templateMap]="templateMap()"\n      (add)="openPopup(types.GROUP, $event)"\n      (remove)="onGroupRemove(i)"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  }\n  <div class="down-arrow">\n    <span class="icon-workflow-down-arrow green"></span>\n  </div>\n  @for (group of actionGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="true"\n      [isFirst]="true"\n      [nodeType]="types.GROUP"\n      [templateMap]="templateMap()"\n      [allColumns]="allColumns()"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  } @if (!elseBlockRemoved && !elseBlockHidden) {\n  <div class="else-block">\n    <span>{{ localizedStringKeys.Else | localization }}</span>\n    <span\n      class="action-icons icon-workflow-delete"\n      title="Delete else block"\n      (click)="removeElseBlock()"\n    ></span>\n  </div>\n  <div class="down-arrow">\n    <span class="icon-workflow-down-arrow red"></span>\n  </div>\n  @for (group of elseActionGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="true"\n      [isFirst]="true"\n      [nodeType]="types.GROUP"\n      [templateMap]="templateMap()"\n      [allColumns]="allColumns()"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  } }\n</div>\n\n<!-- CDK Overlay Template for Node Popup -->\n<ng-template #nodePopupTemplate let-nodeList="nodeList">\n  <div class="workflow-popper">\n    @for (node of nodeList; track node) {\n    <div class="option-div" (click)="onGroupAdd(node); closeOverlay()">\n      {{ node.name }}\n    </div>\n    }\n  </div>\n</ng-template>\n', styles: ["/* projects/workflows-creator/src/lib/builder/builder.component.scss */\n:host {\n  overflow-y: scroll;\n  min-height: 100%;\n}\n.action-text,\n.input-text {\n  display: inline-block;\n  -webkit-user-select: none;\n  user-select: none;\n  cursor: pointer;\n  text-decoration: underline;\n  text-decoration-color: #9e9a9a;\n  color: #9e9a9a;\n}\n.action-text p,\n.input-text p {\n  margin-bottom: 0;\n}\n.input-text {\n  display: inline;\n}\n.input-text .value-text {\n  color: #000;\n  text-decoration: dotted;\n}\n.container {\n  min-width: 46%;\n  max-width: max-content;\n  color: rgb(50, 51, 56);\n  margin: auto;\n  font-size: 24px;\n  font-weight: 300;\n  font-family:\n    Helvetica,\n    Arial,\n    Verdana,\n    Tahoma,\n    sans-serif;\n}\n@media screen and (max-width: 480px) {\n  .container {\n    font-size: 18px;\n    width: 95%;\n  }\n}\n@media screen and (min-width: 481px) and (max-width: 768px) {\n  .container {\n    font-size: 20px;\n    width: 60%;\n  }\n}\n.container .down-arrow {\n  margin-top: 10px;\n}\n.container .icon-workflow-down-arrow {\n  font-weight: 600;\n  font-size: 30px;\n}\n.container .icon-workflow-down-arrow.green {\n  color: green;\n}\n.container .icon-workflow-down-arrow.red {\n  color: #8c0000;\n}\n.option-div {\n  padding: 5px 15px;\n  cursor: pointer;\n  font-size: 14px;\n  min-width: 200px;\n}\n.option-div:hover {\n  background: rgb(240, 239, 239);\n}\n.else-block {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 10px;\n}\n.else-block .action-icons {\n  cursor: pointer;\n  display: inline !important;\n  margin: 0 15px;\n  font-size: 18px;\n  padding: 5px;\n}\n.else-block .action-icons:hover.icon-workflow-delete {\n  background: #dcdfec;\n  border-radius: 5px;\n}\n/*# sourceMappingURL=builder.component.css.map */\n", '/* projects/workflows-creator/src/assets/icons/icomoon/style.css */\n@font-face {\n  font-family: "icomoon";\n  src: url("./media/icomoon.eot?y9pwfy");\n  src:\n    url("./media/icomoon.eot?y9pwfy#iefix") format("embedded-opentype"),\n    url("./media/icomoon.ttf?y9pwfy") format("truetype"),\n    url("./media/icomoon.woff?y9pwfy") format("woff"),\n    url("./media/icomoon.svg?y9pwfy#icomoon") format("svg");\n  font-weight: normal;\n  font-style: normal;\n  font-display: block;\n}\n[class^=icon-],\n[class*=" icon-"] {\n  font-family: "icomoon" !important;\n  speak: never;\n  font-style: normal;\n  font-weight: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.icon-workflow-delete:before {\n  content: "\\e900";\n}\n.icon-workflow-down-arrow:before {\n  content: "\\e901";\n}\n.icon-workflow-plus:before {\n  content: "\\e902";\n}\n/*# sourceMappingURL=style.css.map */\n'] }]
+    args: [{ selector: "workflow-builder", standalone: true, imports: [FormsModule, NgSelectModule, GroupComponent, LocalizationPipe], providers: [LocalizationPipe], encapsulation: ViewEncapsulation.None, changeDetection: ChangeDetectionStrategy.OnPush, template: '<div class="container">\n  @for (group of eventGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="i === eventGroups.length - 1"\n      [isFirst]="i === 0"\n      [nodeType]="types.EVENT"\n      [eventGroups]="eventGroups"\n      [templateMap]="templateMap()"\n      (add)="openPopup(types.GROUP, $event)"\n      (remove)="onGroupRemove(i)"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  }\n  <div class="down-arrow">\n    <span class="icon-workflow-down-arrow green"></span>\n  </div>\n  @for (group of actionGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="true"\n      [isFirst]="true"\n      [nodeType]="types.GROUP"\n      [templateMap]="templateMap()"\n      [allColumns]="allColumns()"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  } @if (!elseBlockRemoved && !elseBlockHidden) {\n  <div class="else-block">\n    <span>{{ localizedStringKeys.Else | localization }}</span>\n    <span\n      class="action-icons icon-workflow-delete"\n      title="Delete else block"\n      (click)="removeElseBlock()"\n    ></span>\n  </div>\n  <div class="down-arrow">\n    <span class="icon-workflow-down-arrow red"></span>\n  </div>\n  @for (group of elseActionGroups; track group; let i = $index) {\n  <span>\n    <workflow-group\n      [group]="group"\n      [isLast]="true"\n      [isFirst]="true"\n      [nodeType]="types.GROUP"\n      [templateMap]="templateMap()"\n      [allColumns]="allColumns()"\n      (eventAdded)="onEventAdded($event)"\n      (eventRemoved)="onEventRemoved()"\n      (actionAdded)="onActionAdded($event)"\n      (itemChanged)="onItemChanged($event)"\n    ></workflow-group>\n  </span>\n  } }\n</div>\n\n<!-- CDK Overlay Template for Node Popup -->\n<ng-template #nodePopupTemplate let-nodeList="nodeList">\n  <div class="workflow-popper">\n    @for (node of nodeList; track node) {\n    <div class="option-div" (click)="onGroupPicked(node)">\n      {{ node.name }}\n    </div>\n    }\n  </div>\n</ng-template>\n', styles: ["/* projects/workflows-creator/src/lib/builder/builder.component.scss */\n:host {\n  overflow-y: scroll;\n  min-height: 100%;\n}\n.action-text,\n.input-text {\n  display: inline-block;\n  -webkit-user-select: none;\n  user-select: none;\n  cursor: pointer;\n  text-decoration: underline;\n  text-decoration-color: #9e9a9a;\n  color: #9e9a9a;\n}\n.action-text p,\n.input-text p {\n  margin-bottom: 0;\n}\n.input-text {\n  display: inline;\n}\n.input-text .value-text {\n  color: #000;\n  text-decoration: dotted;\n}\n.container {\n  min-width: 46%;\n  max-width: max-content;\n  color: rgb(50, 51, 56);\n  margin: auto;\n  font-size: 24px;\n  font-weight: 300;\n  font-family:\n    Helvetica,\n    Arial,\n    Verdana,\n    Tahoma,\n    sans-serif;\n}\n@media screen and (max-width: 480px) {\n  .container {\n    font-size: 18px;\n    width: 95%;\n  }\n}\n@media screen and (min-width: 481px) and (max-width: 768px) {\n  .container {\n    font-size: 20px;\n    width: 60%;\n  }\n}\n.container .down-arrow {\n  margin-top: 10px;\n}\n.container .icon-workflow-down-arrow {\n  font-weight: 600;\n  font-size: 30px;\n}\n.container .icon-workflow-down-arrow.green {\n  color: green;\n}\n.container .icon-workflow-down-arrow.red {\n  color: #8c0000;\n}\n.option-div {\n  padding: 5px 15px;\n  cursor: pointer;\n  font-size: 14px;\n  min-width: 200px;\n}\n.option-div:hover {\n  background: rgb(240, 239, 239);\n}\n.else-block {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 10px;\n}\n.else-block .action-icons {\n  cursor: pointer;\n  display: inline !important;\n  margin: 0 15px;\n  font-size: 18px;\n  padding: 5px;\n}\n.else-block .action-icons:hover.icon-workflow-delete {\n  background: #dcdfec;\n  border-radius: 5px;\n}\n/*# sourceMappingURL=builder.component.css.map */\n", '/* projects/workflows-creator/src/assets/icons/icomoon/style.css */\n@font-face {\n  font-family: "icomoon";\n  src: url("./media/icomoon.eot?y9pwfy");\n  src:\n    url("./media/icomoon.eot?y9pwfy#iefix") format("embedded-opentype"),\n    url("./media/icomoon.ttf?y9pwfy") format("truetype"),\n    url("./media/icomoon.woff?y9pwfy") format("woff"),\n    url("./media/icomoon.svg?y9pwfy#icomoon") format("svg");\n  font-weight: normal;\n  font-style: normal;\n  font-display: block;\n}\n[class^=icon-],\n[class*=" icon-"] {\n  font-family: "icomoon" !important;\n  speak: never;\n  font-style: normal;\n  font-weight: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.icon-workflow-delete:before {\n  content: "\\e900";\n}\n.icon-workflow-down-arrow:before {\n  content: "\\e901";\n}\n.icon-workflow-plus:before {\n  content: "\\e902";\n}\n/*# sourceMappingURL=style.css.map */\n'] }]
   }], () => [{ type: Injector }, { type: BuilderService }, { type: NodeService }, { type: ElementService }, { type: ChangeDetectorRef }, { type: LocalizationProviderService }, { type: Overlay }, { type: ViewContainerRef }], { state: [{ type: Input, args: [{ isSignal: true, alias: "state", required: false }] }, { type: Output, args: ["stateChange"] }], localizedStringMap: [{ type: Input, args: [{ isSignal: true, alias: "localizedStringMap", required: false }] }], diagram: [{ type: Input, args: [{ isSignal: true, alias: "diagram", required: false }] }, { type: Output, args: ["diagramChange"] }], templateMap: [{ type: Input, args: [{ isSignal: true, alias: "templateMap", required: false }] }], allColumns: [{ type: Input, args: [{ isSignal: true, alias: "allColumns", required: false }] }], diagramValidation: [{ type: Output, args: ["diagramValidation"] }], eventAdded: [{ type: Output, args: ["eventAdded"] }], actionAdded: [{ type: Output, args: ["actionAdded"] }], itemChanged: [{ type: Output, args: ["itemChanged"] }], nodePopupTemplate: [{
     type: ViewChild,
     args: ["nodePopupTemplate"]
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(BuilderComponent, { className: "BuilderComponent", filePath: "src/lib/builder/builder.component.ts", lineNumber: 75 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(BuilderComponent, { className: "BuilderComponent", filePath: "projects/workflows-creator/src/lib/builder/builder.component.ts", lineNumber: 75 });
 })();
 
 // node_modules/min-dash/dist/index.esm.js
@@ -75015,59 +74960,6 @@ var CAMUNDA = {
   emumerations: []
 };
 
-// projects/workflows-creator/src/lib/workflow-element.module.ts
-var WorkflowElementModule = class _WorkflowElementModule {
-  constructor(injector, local) {
-    this.injector = injector;
-    this.local = local;
-  }
-  ngDoBootstrap() {
-    const webComponent = createCustomElement(BuilderComponent, {
-      injector: this.injector
-    });
-    customElements.define("sourceloop-workflow-element", webComponent);
-    Object.assign(window, {
-      ChangeColumnValueAction,
-      OnAddItemEvent,
-      OnIntervalEvent,
-      ColumnInput,
-      ConditionInput,
-      ToColumnInput,
-      ValueInput,
-      OnChangeEvent,
-      IntervalInput,
-      OnValueEvent,
-      EmailDataInput,
-      EmailToInput,
-      TriggerColumnInput,
-      ValueTypeInput,
-      EmailRecepientInput,
-      InputTypes
-    });
-  }
-  static {
-    this.\u0275fac = function WorkflowElementModule_Factory(__ngFactoryType__) {
-      return new (__ngFactoryType__ || _WorkflowElementModule)(\u0275\u0275inject(Injector), \u0275\u0275inject(LocalizationPipe));
-    };
-  }
-  static {
-    this.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({ type: _WorkflowElementModule });
-  }
-  static {
-    this.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({ providers: [LocalizationPipe], imports: [BrowserModule, BuilderComponent] });
-  }
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(WorkflowElementModule, [{
-    type: NgModule,
-    args: [{
-      imports: [BrowserModule, BuilderComponent],
-      providers: [LocalizationPipe],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }]
-  }], () => [{ type: Injector }, { type: LocalizationPipe }], null);
-})();
-
 // projects/workflows-creator/src/lib/provide-workflow-creator.ts
 function provideWorkflowCreator(env) {
   return makeEnvironmentProviders([
@@ -75175,6 +75067,7 @@ createApplication({
     InputTypes
   });
 }).catch((err) => console.error(err));
-//# debugId=21658cb3-f2b8-52ff-b425-ad9ea82c6bf3
+//# debugId=ab5d8980-dafc-572a-9504-1ffcf080596e
 //# sourceMappingURL=main.js.map
 
+})();
