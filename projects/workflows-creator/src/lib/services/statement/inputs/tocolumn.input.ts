@@ -1,10 +1,10 @@
 import {ColumnInput} from './column.input';
 
 export class ToColumnInput extends ColumnInput {
-  suffix = 'to';
+  override suffix = 'to';
   static identifier = 'ToColumnInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ToColumnInput.identifier;
   }
 }

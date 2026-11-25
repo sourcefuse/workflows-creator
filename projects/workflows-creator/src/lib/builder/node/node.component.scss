@@ -1,4 +1,4 @@
-@import '../../../assets/styles/colors';
+@use '../../../assets/styles/colors';
 
 .tree-node {
   display: flex;
@@ -27,7 +27,7 @@
     &:hover {
       &.icon-workflow-plus,
       &.icon-workflow-delete {
-        background: $grey2;
+        background: colors.$grey2;
         border-radius: 5px;
       }
     }

@@ -1,10 +1,10 @@
 import {ColumnInput} from './column.input';
 
 export class TriggerColumnInput extends ColumnInput {
-  suffix = 'changes to';
+  override suffix = 'changes to';
   static identifier = 'TriggerColumnInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return TriggerColumnInput.identifier;
   }
 }

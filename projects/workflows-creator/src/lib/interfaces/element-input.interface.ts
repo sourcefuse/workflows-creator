@@ -1,4 +1,5 @@
 import {State} from '../classes';
+import {RecordOfAnyType} from '../types';
 
 /* It's defining an interface called ElementInput. */
 export interface ElementInput {
@@ -45,7 +46,7 @@ export type StateParam = {
  * @property formatter - A function that takes the current state and returns a string.
  */
 export type FormattedParam = {
-  formatter: <S>(state: State<S>) => string;
+  formatter: <S extends RecordOfAnyType>(state: State<S>) => string;
 };
 
 /**

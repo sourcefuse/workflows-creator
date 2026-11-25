@@ -1,21 +1,43 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
-import { NgxPopperjsContentComponent } from 'ngx-popperjs';
-import { NodeComponent } from './node.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  ChangeDetectorRef,
+  Component,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import {NodeComponent} from './node.component';
 
 describe('NodeComponent', () => {
   let component: NodeComponent<any>;
   let fixture: ComponentFixture<NodeComponent<any>>;
 
+  @Component({
+    template: '<ng-template #testTemplate></ng-template>',
+    standalone: true,
+  })
+  class TestHostComponent {
+    @ViewChild('testTemplate', {static: true}) template!: TemplateRef<any>;
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NodeComponent],
+      imports: [NodeComponent, TestHostComponent],
     }).compileComponents();
   });
 
   beforeEach(() => {
+    const hostFixture = TestBed.createComponent(TestHostComponent);
+    const mockTemplate = hostFixture.componentInstance.template;
+
     fixture = TestBed.createComponent(NodeComponent);
     component = fixture.componentInstance;
+
+    // Set required inputs using fixture.componentRef.setInput()
+    fixture.componentRef.setInput('node', {
+      node: {statement: 'test'},
+    });
+    fixture.componentRef.setInput('inputTemplate', mockTemplate);
+
     fixture.detectChanges();
   });
 
@@ -31,11 +53,37 @@ describe('NodeComponent', () => {
     });
   });
 
+  it('shows a statement changed on the same node object when the parent re-checks', () => {
+    @Component({
+      template: `<workflow-node
+          [node]="node"
+          [inputTemplate]="tpl"
+        ></workflow-node>
+        <ng-template #tpl></ng-template>`,
+      standalone: true,
+      imports: [NodeComponent],
+    })
+    class ParentComponent {
+      @ViewChild('tpl', {static: true}) tpl!: TemplateRef<any>;
+      node = {node: {statement: 'before'}};
+    }
+
+    const parent = TestBed.createComponent(ParentComponent);
+    parent.detectChanges();
+
+    parent.componentInstance.node.node.statement = 'after';
+    parent.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+    parent.detectChanges();
+
+    expect(parent.nativeElement.textContent).toContain('after');
+  });
+
   describe('addClick', () => {
     it('should emit true when addClick is called', () => {
       spyOn(component.add, 'emit');
-      component.addClick();
-      expect(component.add.emit).toHaveBeenCalledWith(true);
+      const ev = new MouseEvent('click');
+      component.addClick(ev);
+      expect(component.add.emit).toHaveBeenCalledWith(ev);
     });
   });
 });

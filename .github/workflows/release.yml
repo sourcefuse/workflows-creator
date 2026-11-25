@@ -13,9 +13,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_COMMIT_GH_PAT }}
       - name: Setup Node
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v5
         with:
-          node-version: '18.x'
+          node-version: '24.x'
       - name: Configure CI Git User
         run: |
           git config --global user.name $CONFIG_USERNAME
@@ -35,11 +35,9 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_USERNAME: ${{ vars.NPM_USERNAME }}
 
-      - name: Bootstrap
-        run: |
-          npm ci
-          npm i -g lerna@5.1.5
-          lerna bootstrap
+      - name: Install Dependencies
+        # lerna 10 has no bootstrap; both packages build from the root node_modules
+        run: npm ci --ignore-scripts
       - name: Test
         run: npx lerna run test
       - name: Stash Changes

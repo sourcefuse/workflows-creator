@@ -3,18 +3,18 @@ import {InputTypes} from '../../../enum';
 import {BpmnNode, RecordOfAnyType} from '../../../types';
 
 export class ValueTypeInput extends WorkflowListPrompt {
-  prefix = {state: 'valueTypePrefix'};
-  suffix = {state: 'valueTypeSuffix'};
-  typeFunction = () => InputTypes.List;
-  inputKey = 'valueType';
-  listNameField = 'text';
-  listValueField = 'value';
-  placeholder = 'Something';
+  override prefix = {state: 'valueTypePrefix'};
+  override suffix = {state: 'valueTypeSuffix'};
+  override typeFunction = () => InputTypes.List;
+  override inputKey = 'valueType';
+  override listNameField = 'text';
+  override listValueField = 'value';
+  override placeholder = 'Something';
 
-  options = <S extends RecordOfAnyType>(state: State<S>) =>
+  override options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('valueTypes') as [];
 
-  isHidden = (node: BpmnNode) => {
+  override isHidden = (node: BpmnNode) => {
     return ![
       InputTypes.Text,
       InputTypes.Number,
@@ -25,7 +25,7 @@ export class ValueTypeInput extends WorkflowListPrompt {
 
   static identifier = 'ValueTypeInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ValueTypeInput.identifier;
   }
 }

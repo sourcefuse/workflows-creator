@@ -1,41 +1,25 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NgxPopperjsModule, NgxPopperjsContentComponent} from 'ngx-popperjs';
 import {
-  NodeService,
-  AbstractBaseGroup,
-  WorkflowPrompt,
-  State,
-  WorkflowEvent,
-} from '../../classes';
-import {NodeTypes, ValueTypes, InputTypes} from '../../enum';
-import {InvalidEntityError} from '../../errors';
-import BPMNModdle from 'bpmn-moddle';
+  ChangeDetectorRef,
+  Component,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
+import {OverlayRef} from '@angular/cdk/overlay';
+import {NodeService} from '../../classes';
+import {AbstractBaseGroup} from '../../classes/nodes';
+import {InputTypes, NodeTypes, ValueTypes} from '../../enum';
 import {LocalizationPipe} from '../../pipes/localization.pipe';
 import {
   AndGroup,
-  BpmnNodesService,
-  ChangeColumnValueAction,
   LocalizationProviderService,
-  OnAddItemEvent,
   OnChangeEvent,
-  OnIntervalEvent,
-  OnValueEvent,
-  OrGroup,
-  SendEmailAction,
   ValueInput,
 } from '../../services';
 import {GroupComponent} from './group.component';
 import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component';
-import {BPMN_NODES} from '../../const';
 import {NodeComponent} from '../node/node.component';
-import {
-  ElementRef,
-  Renderer2,
-  ViewContainerRef,
-  ChangeDetectorRef,
-} from '@angular/core';
-import {AllowedValues, RecordOfAnyType} from '../../types';
-import {popper} from '@popperjs/core';
+import {ModdleElement, RecordOfAnyType} from '../../types';
 
 describe('GroupComponent', () => {
   let component: GroupComponent<any>;
@@ -81,7 +65,7 @@ describe('GroupComponent', () => {
     nodeServiceSpy.getActions.and.returnValue(mockActions);
 
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         GroupComponent,
         NodeComponent,
         TooltipRenderComponent,
@@ -89,23 +73,31 @@ describe('GroupComponent', () => {
       ],
       providers: [
         {provide: NodeService, useValue: nodeServiceSpy},
-        LocalizationProviderService,
-        LocalizationPipe,
+        {
+          provide: LocalizationProviderService,
+          useValue: {
+            getLocalizedString: (key: string) => key,
+            getLocalizedStringMap: () => ({}),
+          },
+        },
       ],
-      imports: [NgxPopperjsModule],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GroupComponent);
     component = fixture.componentInstance;
-    component.group = new AndGroup({}, '', NodeTypes.EVENT, false);
-    component.isLast = false;
-    component.isFirst = false;
-    component.eventGroups = [];
-    component.nodeType = NodeTypes.ACTION;
-    component.nodeType = NodeTypes.EVENT;
-    component.allColumns = [];
+
+    // Set inputs using fixture.componentRef.setInput() for signals
+    fixture.componentRef.setInput(
+      'group',
+      new AndGroup({}, '', NodeTypes.EVENT, false),
+    );
+    fixture.componentRef.setInput('isLast', false);
+    fixture.componentRef.setInput('isFirst', false);
+    fixture.componentRef.setInput('eventGroups', []);
+    fixture.componentRef.setInput('nodeType', NodeTypes.EVENT);
+    fixture.componentRef.setInput('allColumns', []);
 
     fixture.detectChanges();
   });
@@ -123,7 +115,7 @@ describe('GroupComponent', () => {
   it('should set the templateMap', () => {
     component.ngAfterViewInit();
 
-    expect(component.templateMap).toBeDefined();
+    expect(component.computedTemplateMap).toBeDefined();
   });
 
   it('should emit the remove event', () => {
@@ -132,15 +124,16 @@ describe('GroupComponent', () => {
     expect(component.remove.emit).toHaveBeenCalledWith(true);
   });
 
-  it('should emit the add event', () => {
+  it('should emit the add event with the click event', () => {
     spyOn(component.add, 'emit');
-    component.addClick();
-    expect(component.add.emit).toHaveBeenCalledWith(true);
+    const event = new MouseEvent('click');
+    component.addClick(event);
+    expect(component.add.emit).toHaveBeenCalledWith(event);
   });
 
   it('should add the node to the group', () => {
     component.onNodeAdd(eventStub, 'groupType', 'groupId', 'id');
-    expect(component.group.children.length).toBeGreaterThan(0);
+    expect(component.group().children.length).toBeGreaterThan(0);
   });
 
   it('should throw an error if the node type is neither EVENT nor ACTION', () => {
@@ -152,12 +145,12 @@ describe('GroupComponent', () => {
   });
 
   it('should remove the node at the given index from the group', () => {
-    component.group.children.push({
+    component.group().children.push({
       node: eventStub,
       inputs: [],
     });
     component.onNodeRemove(0);
-    expect(component.group.children.length).toEqual(0);
+    expect(component.group().children.length).toEqual(0);
   });
 
   it('should emit the eventRemoved event', () => {
@@ -166,37 +159,24 @@ describe('GroupComponent', () => {
     expect(component.eventRemoved.emit).toHaveBeenCalled();
   });
 
-  it('should return a function that hides the popper and emits the value', () => {
-    const popper = {hide: () => {}} as NgxPopperjsContentComponent;
+  it('createCallback should close overlay after execution', () => {
+    // Simulate overlayRef being present
+    spyOn(component, 'closeOverlay');
     const callback = component.createCallback(
-      {
-        node: eventStub,
-        inputs: [],
-      },
+      {node: eventStub, inputs: []},
       new ValueInput(),
-      popper,
     );
-    spyOn(popper, 'hide');
-
-    callback();
-    expect(popper.hide).toHaveBeenCalled();
+    callback({value: 'testValue'} as any);
+    expect(component.closeOverlay).toHaveBeenCalled();
   });
 
-  const popperSpy = jasmine.createSpyObj('NgxPopperjsContentComponent', [
-    'show',
-    'hide',
-  ]);
-
-  it('should hide the previous popper and show the current popper', () => {
+  it('onPoperClick replacement: opening a new overlay closes existing overlay', () => {
+    // Simulate existing overlayRef and ensure closeOverlay called when opening new overlay
+    spyOn(component, 'closeOverlay');
     const event = new MouseEvent('click');
-    component.prevPopperRef = popperSpy; // Assign the spy object to prevPopperRef
-
-    // Act
-    component.onPoperClick(event, popperSpy);
-
-    // Assert
-    expect(component.prevPopperRef.hide).toHaveBeenCalled();
-    expect(popperSpy.show).toHaveBeenCalled(); // Spy on the show method of popperSpy
+    // Call the method that would open overlay in new implementation
+    component.openNodeOverlay(event);
+    expect(component.closeOverlay).toHaveBeenCalled();
   });
 
   it('should set the tooltipText, showsTooltip, topPosition, and leftPosition properties', () => {
@@ -209,7 +189,7 @@ describe('GroupComponent', () => {
       },
       new ValueInput(),
     );
-    expect(component.tooltipText).toBe('Select a column first');
+    expect(component.tooltipText).toBe('selectColumnTooltip');
     expect(component.showsTooltip).toBe(true);
     expect(component.topPosition).toBe(event.clientY + 10);
     expect(component.leftPosition).toBe(event.clientX);
@@ -222,23 +202,47 @@ describe('GroupComponent', () => {
     expect(component.leftPosition).toBeNull();
   });
 
-  it('should return a function that hides the previous popper', () => {
-    const mockElementRef = {} as ElementRef<any>;
-    const mockRenderer = {} as Renderer2;
-    const mockViewContainerRef = {} as ViewContainerRef;
-    const mockChangeDetectorRef = {} as ChangeDetectorRef;
-
-    const mockNgxPopperjsContentComponent = jasmine.createSpyObj(
-      'NgxPopperjsContentComponent',
-      ['hide'],
-    );
-
-    component.prevPopperRef = mockNgxPopperjsContentComponent;
-
+  it('hidePopper should call closeOverlay', () => {
+    spyOn(component, 'closeOverlay');
     const hidePopperFn = component.hidePopper();
     hidePopperFn();
+    expect(component.closeOverlay).toHaveBeenCalled();
+  });
 
-    expect(component.prevPopperRef.hide).toHaveBeenCalled();
+  describe('hideUnlessDropdownPanelClick', () => {
+    const clickOn = (target: HTMLElement, hide: jasmine.Spy) => {
+      const listener = (event: Event) =>
+        component.hideUnlessDropdownPanelClick(event, hide);
+      document.addEventListener('click', listener);
+      target.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+      document.removeEventListener('click', listener);
+    };
+
+    it('keeps the popup open for clicks inside the ng-select dropdown panel', () => {
+      // ng-select renders its panel in a separate CDK overlay, outside the popup
+      const panel = document.createElement('ng-dropdown-panel');
+      const option = document.createElement('div');
+      option.className = 'ng-option';
+      panel.appendChild(option);
+      document.body.appendChild(panel);
+      const hide = jasmine.createSpy('hide');
+
+      clickOn(option, hide);
+      panel.remove();
+
+      expect(hide).not.toHaveBeenCalled();
+    });
+
+    it('hides the popup for clicks outside the dropdown panel', () => {
+      const outside = document.createElement('div');
+      document.body.appendChild(outside);
+      const hide = jasmine.createSpy('hide');
+
+      clickOn(outside, hide);
+      outside.remove();
+
+      expect(hide).toHaveBeenCalled();
+    });
   });
 
   it('should set enableActionIcon to false if the node type is OnChangeEvent and the value is ValueTypes.AnyValue', () => {
@@ -253,7 +257,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: ValueTypes.AnyValue,
-      element: element,
+      item: element.node,
     });
   });
 
@@ -271,7 +275,7 @@ describe('GroupComponent', () => {
     expect(component.itemChanged.emit).toHaveBeenCalledWith({
       field: input.getIdentifier(),
       value: 'value',
-      element: element,
+      item: element.node,
     });
   });
 
@@ -347,5 +351,276 @@ describe('GroupComponent', () => {
     // Assert
     expect(event1.preventDefault).not.toHaveBeenCalled();
     expect(event2.preventDefault).toHaveBeenCalled();
+  });
+
+  describe('popup templates', () => {
+    const render = (
+      template: TemplateRef<RecordOfAnyType>,
+      context: RecordOfAnyType,
+    ) => {
+      const view = fixture.componentRef.injector
+        .get(ViewContainerRef)
+        .createEmbeddedView(template, context);
+      view.detectChanges();
+      return view;
+    };
+
+    it('saves the selected people when the searchable dropdown loses focus', () => {
+      const list = [
+        {id: 1, displayValue: 'Ann'},
+        {id: 2, displayValue: 'Bob'},
+      ];
+      const callback = jasmine.createSpy('callback');
+      component.selectedItems = ['2'];
+      const view = render(component.searchableDropdownTemplate, {
+        list,
+        callback,
+        nodeWithInput: {node: eventStub, inputs: []},
+        hide: () => undefined,
+      });
+
+      const select = view.rootNodes[0].querySelector('ng-select');
+      select.querySelector('input').dispatchEvent(new FocusEvent('blur'));
+
+      expect(callback).toHaveBeenCalledOnceWith([list[1]]);
+      view.destroy();
+    });
+
+    it('commits the number and closes the popup on Enter', () => {
+      const callback = jasmine.createSpy('callback');
+      const input = new ValueInput();
+      const view = render(component.numberTemplate, {
+        callback,
+        input,
+        nodeWithInput: {node: eventStub, inputs: []},
+        hide: () => undefined,
+      });
+      const field: HTMLInputElement = view.rootNodes[0].querySelector('input');
+      document.body.appendChild(view.rootNodes[0]);
+      field.focus();
+      field.value = '42';
+
+      field.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', keyCode: 13}),
+      );
+
+      expect(callback).toHaveBeenCalledOnceWith(field);
+      view.rootNodes[0].remove();
+      view.destroy();
+    });
+  });
+
+  describe('handleEnterEvent', () => {
+    const keydown = (keyCode: number) =>
+      new KeyboardEvent('keydown', {keyCode});
+
+    it('does not commit or reset the typed date on intermediate keystrokes', () => {
+      const callback = jasmine.createSpy('callback');
+      component.date = '2026-11-23';
+
+      component.handleEnterEvent(
+        callback,
+        eventStub,
+        {target: {value: component.date}} as unknown as Event,
+        InputTypes.Date,
+        keydown(50),
+      );
+
+      expect(callback).not.toHaveBeenCalled();
+      expect(component.date).toBe('2026-11-23');
+    });
+
+    it('commits the typed date on Enter', () => {
+      const callback = jasmine.createSpy('callback');
+      component.date = '2026-11-23';
+
+      component.handleEnterEvent(
+        callback,
+        eventStub,
+        {target: {value: component.date}} as unknown as Event,
+        InputTypes.Date,
+        keydown(13),
+      );
+
+      expect(callback).toHaveBeenCalledOnceWith({
+        day: 23,
+        month: 11,
+        year: 2026,
+      });
+    });
+  });
+
+  describe('handleEscape', () => {
+    let overlayElement: HTMLElement;
+    let field: HTMLInputElement;
+    let focusOut: jasmine.Spy;
+
+    beforeEach(() => {
+      overlayElement = document.createElement('div');
+      field = document.createElement('input');
+      overlayElement.appendChild(field);
+      document.body.appendChild(overlayElement);
+      field.focus();
+      focusOut = jasmine.createSpy('focusout');
+      field.addEventListener('focusout', focusOut);
+      component['overlayRef'] = {
+        overlayElement,
+        dispose: () => undefined,
+      } as OverlayRef;
+    });
+
+    afterEach(() => {
+      overlayElement.remove();
+      component['overlayRef'] = null;
+    });
+
+    it('saves the focused input and closes the popup', () => {
+      spyOn(component, 'closeOverlay');
+
+      component.handleEscape(new KeyboardEvent('keydown', {key: 'Escape'}));
+
+      expect(focusOut).toHaveBeenCalledTimes(1);
+      expect(component.closeOverlay).toHaveBeenCalled();
+    });
+
+    it('leaves the popup open when ng-select already handled the key', () => {
+      spyOn(component, 'closeOverlay');
+      const select = document.createElement('ng-select');
+      const selectInput = document.createElement('input');
+      select.appendChild(selectInput);
+      overlayElement.appendChild(select);
+      select.addEventListener('keydown', event => event.preventDefault());
+      const listener = (event: KeyboardEvent) => component.handleEscape(event);
+      document.addEventListener('keydown', listener);
+
+      selectInput.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+      document.removeEventListener('keydown', listener);
+
+      expect(component.closeOverlay).not.toHaveBeenCalled();
+    });
+
+    it('closes the popup when an input already prevented the key default', () => {
+      spyOn(component, 'closeOverlay');
+      field.addEventListener('keydown', event => event.preventDefault());
+      const listener = (event: KeyboardEvent) => component.handleEscape(event);
+      document.addEventListener('keydown', listener);
+
+      field.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+      document.removeEventListener('keydown', listener);
+
+      expect(component.closeOverlay).toHaveBeenCalled();
+    });
+
+    it('does nothing when no popup is open', () => {
+      component['overlayRef'] = null;
+      spyOn(component, 'closeOverlay');
+
+      component.handleEscape(new KeyboardEvent('keydown', {key: 'Escape'}));
+
+      expect(component.closeOverlay).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('GroupComponent inside a parent view', () => {
+  @Component({
+    template: `<workflow-group
+      [group]="group"
+      [nodeType]="nodeType"
+      [isLast]="true"
+      [eventGroups]="[]"
+      [allColumns]="[]"
+      (add)="added = $event"
+    ></workflow-group>`,
+    standalone: true,
+    imports: [GroupComponent],
+  })
+  class HostComponent {
+    group: AbstractBaseGroup<ModdleElement> = new AndGroup<ModdleElement>(
+      {},
+      '',
+      NodeTypes.EVENT,
+      false,
+    );
+    nodeType = NodeTypes.EVENT;
+    added: unknown;
+  }
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HostComponent],
+      providers: [
+        {
+          provide: NodeService,
+          useValue: {
+            getActions: () => [],
+            getEvents: () => [],
+            getGroups: () => [],
+          },
+        },
+        {
+          provide: LocalizationProviderService,
+          useValue: {
+            getLocalizedString: (key: string) => key,
+            getLocalizedStringMap: () => ({}),
+          },
+        },
+      ],
+    }).compileComponents();
+  });
+
+  it('shows nodes added to the group from outside, like a restored workflow', () => {
+    const host = TestBed.createComponent(HostComponent);
+    host.detectChanges();
+
+    host.componentInstance.group.children.push({
+      node: new OnChangeEvent({}, '', '', ''),
+      inputs: [],
+    });
+    // what the builder does after a restore: re-check its own view only
+    host.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+    host.detectChanges();
+
+    const el: HTMLElement = host.nativeElement;
+    expect(el.querySelectorAll('workflow-node').length).toBe(1);
+    expect(el.querySelector('.tree-group')?.classList).not.toContain('no-node');
+  });
+
+  it('passes the click event on when the group "+" is clicked', () => {
+    const host = TestBed.createComponent(HostComponent);
+    host.componentInstance.group.children.push({
+      node: new OnChangeEvent({}, '', '', ''),
+      inputs: [],
+    });
+    host.detectChanges();
+
+    const plus = host.nativeElement.querySelector('.action-add') as HTMLElement;
+    plus.click();
+
+    expect(host.componentInstance.added).toEqual(jasmine.any(MouseEvent));
+  });
+
+  it('closes its popup when destroyed', () => {
+    const host = TestBed.createComponent(HostComponent);
+    host.detectChanges();
+
+    (host.nativeElement.querySelector('.input-text') as HTMLElement).click();
+    expect(document.querySelector('.cdk-overlay-pane')).toBeTruthy();
+
+    host.destroy();
+
+    expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
   });
 });

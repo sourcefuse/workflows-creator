@@ -59,9 +59,6 @@ export class BpmnElementService<E> implements ElementService<E> {
     }
   }
 
-  // sonarignore:start
-  // TODO: Refactor this code
-  // sonarignore:end
   cloneInstance(element: WorkflowElement<E>) {
     return Object.assign(Object.create(element.constructor.prototype), element);
   }

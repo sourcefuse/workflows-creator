@@ -5,7 +5,11 @@
     "entryFile": "src/public-api.ts"
   },
   "allowedNonPeerDependencies": [
-    "@ng-select/ng-select"
+    "@ng-select/ng-select",
+    "bpmn-moddle",
+    "camunda-bpmn-moddle",
+    "lodash",
+    "moment",
+    "tslib"
   ]
- 
 }

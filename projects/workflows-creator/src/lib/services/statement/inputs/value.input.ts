@@ -9,15 +9,15 @@ import {
 import {BpmnNode, RecordOfAnyType} from '../../../types';
 
 export class ValueInput extends WorkflowListPrompt {
-  prefix: string | {state: string} = '';
-  suffix: string | {state: string} = {state: 'valueSuffix'};
-  inputKey = 'value';
-  listNameField = 'text';
-  listValueField = 'value';
-  placeholder = 'Something';
+  override prefix: string | {state: string} = '';
+  override suffix: string | {state: string} = {state: 'valueSuffix'};
+  override inputKey = 'value';
+  override listNameField = 'text';
+  override listValueField = 'value';
+  override placeholder = 'Something';
   customPlaceholder: string | {state: string} = {state: 'valuePlaceholder'};
 
-  isHidden = (node: BpmnNode) => {
+  override isHidden = (node: BpmnNode) => {
     return (
       [
         NotificationRecipientTypesEnum.NotifyMe,
@@ -37,17 +37,17 @@ export class ValueInput extends WorkflowListPrompt {
     );
   };
 
-  prevchange = <S extends RecordOfAnyType>(state: State<S>) => {
+  override prevchange = <S extends RecordOfAnyType>(state: State<S>) => {
     state.remove('value');
     state.remove('valueName');
   };
-  options = <S extends RecordOfAnyType>(state: State<S>) =>
+  override options = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('values') as [];
-  typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
+  override typeFunction = <S extends RecordOfAnyType>(state: State<S>) =>
     state.get('valueInputType') as InputTypes;
   static identifier = 'ValueInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ValueInput.identifier;
   }
 }

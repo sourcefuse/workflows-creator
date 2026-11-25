@@ -1,26 +1,23 @@
 <div class="tree-node">
+  @if (isLast()) {
   <span
     class="action-icons icon-workflow-plus"
-    *ngIf="isLast"
-    [popper]="popupTemplate"
-    [popperShowOnStart]="false"
-    [popperHideOnClickOutside]="true"
-    [popperHideOnScroll]="true"
-    [popperTrigger]="'click'"
-    [popperPlacement]="'bottom'"
-    (click)="addClick()"
+    (click)="addClick($event)"
   ></span>
+  }
   <span
     class="action-icons icon-workflow-delete"
     (click)="removeClick()"
   ></span>
 
   <div class="workflow-content">
-    <span *ngIf="!isFirst"> and </span>
-    {{ node?.node?.statement || '' }}
+    @if (!isFirst()) {
+    <span> and </span>
+    }
+    {{ node()?.node?.statement || '' }}
 
     <ng-container
-      *ngTemplateOutlet="inputTemplate; context: {node: node}"
+      *ngTemplateOutlet="inputTemplate(); context: {node: node()}"
     ></ng-container>
   </div>
 </div>

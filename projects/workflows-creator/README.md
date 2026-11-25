@@ -12,15 +12,32 @@ npm i @sourceloop/workflows-creator
 
 - Install the workflows-creator
   `npm i @sourceloop/workflows-creator`
-- Import the `WorkflowBuilderModule` in the required module -
+- Requires Angular 22 and Node `^22.22.3 || ^24.15.0`.
+- Register the builder's services once, in your application providers -
 
   ```typescript
-    ...
-    imports: [
-        ...
-        WorkflowBuilderModule,
-        ...
+  import {ApplicationConfig} from '@angular/core';
+  import {provideWorkflowCreator} from '@sourceloop/workflows-creator';
+
+  export const appConfig: ApplicationConfig = {
+    providers: [
+      // optionally pass {envIdentifier: '...'}
+      provideWorkflowCreator(),
     ],
+  };
+  ```
+
+- `BuilderComponent` is standalone; import it where you use it -
+
+  ```typescript
+  import {BuilderComponent} from '@sourceloop/workflows-creator';
+
+  @Component({
+    selector: 'app-workflow',
+    imports: [BuilderComponent],
+    templateUrl: './workflow.component.html',
+  })
+  export class WorkflowComponent {}
   ```
 
 - Use the component selector in your application -
@@ -32,6 +49,7 @@ npm i @sourceloop/workflows-creator
     (eventAdded)="elementClick($event)"
     (actionAdded)="elementClick($event)"
     (itemChanged)="valueChanges($event)"
+    (diagramValidation)="onValidation($event)"
   ></workflow-builder>
   ```
 
@@ -39,7 +57,9 @@ npm i @sourceloop/workflows-creator
   - `diagram` is initial BPMN Diagram respectively.
   - `eventAdded` - this event fires whenever a new event is added in the workflow
   - `actionAdded` - this event fires whenever a new action is added in the workflow
-  - `itemChange` - this event fires whenever a user input changes
+  - `itemChanged` - this event fires whenever a user input changes
+  - `diagramChange` (part of `[(diagram)]`) emits the BPMN XML string whenever the workflow changes
+  - `diagramValidation` emits `{diagram, isValid}` so you can tell whether the workflow is complete
 
 ### Configurations
 

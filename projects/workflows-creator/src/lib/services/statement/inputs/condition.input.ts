@@ -3,16 +3,16 @@ import {InputTypes} from '../../../enum';
 import {RecordOfAnyType} from '../../../types';
 
 export class ConditionInput extends WorkflowPrompt {
-  prefix = '';
-  suffix = {
+  override prefix = '';
+  override suffix = {
     state: 'conditionSuffix',
   };
-  typeFunction = () => InputTypes.List;
-  inputKey = 'condition';
+  override typeFunction = () => InputTypes.List;
+  override inputKey = 'condition';
   listNameField = 'text';
   listValueField = 'value';
-  placeholder = 'is';
-  prevchange = <S extends RecordOfAnyType>(state: State<S>) => {
+  override placeholder = 'is';
+  override prevchange = <S extends RecordOfAnyType>(state: State<S>) => {
     state.remove('conditions');
     state.remove('conditionName');
     state.remove('value');
@@ -22,7 +22,7 @@ export class ConditionInput extends WorkflowPrompt {
   options = (state: State<RecordOfAnyType>) => state.get('conditions');
   static identifier = 'ConditionInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ConditionInput.identifier;
   }
 }

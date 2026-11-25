@@ -2,7 +2,9 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
     "analytics": false,
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -14,7 +16,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "project": "projects/workflows-creator/ng-package.json"
           },
@@ -29,11 +31,14 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
-            "main": "projects/workflows-creator/src/test.ts",
             "tsConfig": "projects/workflows-creator/tsconfig.spec.json",
-            "karmaConfig": "projects/workflows-creator/karma.conf.js"
+            "karmaConfig": "projects/workflows-creator/karma.conf.js",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
           }
         },
         "lint": {
@@ -62,31 +67,32 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "./projects/workflows-creator/dist/workflows-element",
             "index": "projects/workflows-creator/src/index.html",
-            "main": "projects/workflows-creator/src/main.ts",
-            "polyfills": "projects/workflows-creator/src/polyfills.ts",
+            "browser": "projects/workflows-creator/src/main.ts",
+            "polyfills": [
+              "projects/workflows-creator/src/polyfills.ts"
+            ],
             "tsConfig": "projects/workflows-creator/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "projects/workflows-creator/src/favicon.ico",
               "projects/workflows-creator/src/assets"
             ],
-            "styles": ["projects/workflows-creator/src/styles.scss",
-          "projects/workflows-creator/src/assets/icons/icomoon/style.css"],
+            "styles": [
+              "projects/workflows-creator/src/styles.scss",
+              "projects/workflows-creator/src/assets/icons/icomoon/style.css"
+            ],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": false,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-            
               "budgets": [
                 {
                   "type": "initial",
@@ -102,9 +108,7 @@
               "outputHashing": "none"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -113,14 +117,12 @@
           "defaultConfiguration": "production"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "WorkflowsElement:build"
+            "buildTarget": "workflows-element:build"
           }
         }
-      }        
+      }
     }
-  },
-  "defaultProject": "workflows-creator"
+  }
 }
-

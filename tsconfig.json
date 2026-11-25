@@ -7,7 +7,6 @@
     }
   },
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -15,22 +14,19 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "paths": {
-      "@sourceloop/workflows-creator": ["dist"]
+      "@angular/*": ["./node_modules/@angular/*"],
+      "projects/*": ["./projects/*"]
     },
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2017",
     "module": "es2020",
     "lib": ["es2018", "dom"]
-  },
-  "paths": {
-    "@angular/*": ["./node_modules/@angular/*"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

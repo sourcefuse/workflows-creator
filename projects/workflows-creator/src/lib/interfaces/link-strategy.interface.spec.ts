@@ -1,29 +1,37 @@
 import {StatementNode} from '../classes';
 import {WorkflowElement} from '../classes/element/abstract-element.class';
 import {LinkStrategy} from './link-strategy.interface';
+import {CreateStrategy} from './create-strategy.interface';
+import {ElementInput} from './element-input.interface';
+import {TestElement} from './test-element.interface';
+import {RecordOfAnyType} from '../types';
 
 class MockWorkflowElement<T> extends WorkflowElement<T> {
-  tag: any;
-  attributes: any;
-  name: any;
-  inputs: any;
-  outputs: any;
-  creator: any;
-  linker: any;
-  getIdentifier(): any {
-    return '';
+  tag = 'mock-tag';
+  attributes: RecordOfAnyType = {};
+  name = 'mock-element';
+  inputs: ElementInput = {name: 'mock', fields: {}};
+  outputs = '';
+  protected creator: CreateStrategy<T> = {
+    execute: () => ({} as T),
+  };
+  protected linker: LinkStrategy<T> = {
+    execute: () => [],
+  };
+  getIdentifier(): string {
+    return 'mock-identifier';
   }
 }
 
 describe('LinkStrategy', () => {
-  let linkStrategy: LinkStrategy<any>;
+  let linkStrategy: LinkStrategy<TestElement>;
 
   beforeEach(() => {
     linkStrategy = {
       execute: (
-        element: WorkflowElement<any>,
-        node: StatementNode<any>,
-      ): any[] => {
+        element: WorkflowElement<TestElement>,
+        node: StatementNode<TestElement>,
+      ): TestElement[] => {
         return [];
       },
     };
@@ -34,8 +42,8 @@ describe('LinkStrategy', () => {
   });
 
   it('execute method should return an empty array', () => {
-    const mockElement = new MockWorkflowElement<any>();
-    const mockNode = new StatementNode<any>(mockElement);
+    const mockElement = new MockWorkflowElement<TestElement>();
+    const mockNode = new StatementNode<TestElement>(mockElement);
 
     const result = linkStrategy.execute(mockElement, mockNode);
     expect(result).toEqual([]);

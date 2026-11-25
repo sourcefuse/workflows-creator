@@ -1,14 +1,14 @@
 <div class="container">
-  <span *ngFor="let group of eventGroups; let i = index">
+  @for (group of eventGroups; track group; let i = $index) {
+  <span>
     <workflow-group
       [group]="group"
       [isLast]="i === eventGroups.length - 1"
       [isFirst]="i === 0"
       [nodeType]="types.EVENT"
       [eventGroups]="eventGroups"
-      [popupTemplate]="nodePopup"
-      [templateMap]="templateMap"
-      (add)="openPopup(types.GROUP)"
+      [templateMap]="templateMap()"
+      (add)="openPopup(types.GROUP, $event)"
       (remove)="onGroupRemove(i)"
       (eventAdded)="onEventAdded($event)"
       (eventRemoved)="onEventRemoved()"
@@ -16,61 +16,62 @@
       (itemChanged)="onItemChanged($event)"
     ></workflow-group>
   </span>
+  }
   <div class="down-arrow">
     <span class="icon-workflow-down-arrow green"></span>
   </div>
-  <span *ngFor="let group of actionGroups; let i = index">
+  @for (group of actionGroups; track group; let i = $index) {
+  <span>
     <workflow-group
       [group]="group"
       [isLast]="true"
       [isFirst]="true"
       [nodeType]="types.GROUP"
-      [popupTemplate]="nodePopup"
-      [templateMap]="templateMap"
-      [allColumns]="allColumns"
+      [templateMap]="templateMap()"
+      [allColumns]="allColumns()"
       (eventAdded)="onEventAdded($event)"
       (eventRemoved)="onEventRemoved()"
       (actionAdded)="onActionAdded($event)"
       (itemChanged)="onItemChanged($event)"
     ></workflow-group>
   </span>
-  <ng-container *ngIf="!elseBlockRemoved && !elseBlockHidden">
-    <div class="else-block">
-      <span>{{ localizedStringKeys.Else | localization }}</span>
-      <span
-        class="action-icons icon-workflow-delete"
-        title="Delete else block"
-        (click)="removeElseBlock()"
-      ></span>
-    </div>
-    <div class="down-arrow">
-      <span class="icon-workflow-down-arrow red"></span>
-    </div>
-
-    <span *ngFor="let group of elseActionGroups; let i = index">
-      <workflow-group
-        [group]="group"
-        [isLast]="true"
-        [isFirst]="true"
-        [nodeType]="types.GROUP"
-        [popupTemplate]="nodePopup"
-        [templateMap]="templateMap"
-        [allColumns]="allColumns"
-        (eventAdded)="onEventAdded($event)"
-        (eventRemoved)="onEventRemoved()"
-        (actionAdded)="onActionAdded($event)"
-        (itemChanged)="onItemChanged($event)"
-      ></workflow-group>
-    </span>
-  </ng-container>
+  } @if (!elseBlockRemoved && !elseBlockHidden) {
+  <div class="else-block">
+    <span>{{ localizedStringKeys.Else | localization }}</span>
+    <span
+      class="action-icons icon-workflow-delete"
+      title="Delete else block"
+      (click)="removeElseBlock()"
+    ></span>
+  </div>
+  <div class="down-arrow">
+    <span class="icon-workflow-down-arrow red"></span>
+  </div>
+  @for (group of elseActionGroups; track group; let i = $index) {
+  <span>
+    <workflow-group
+      [group]="group"
+      [isLast]="true"
+      [isFirst]="true"
+      [nodeType]="types.GROUP"
+      [templateMap]="templateMap()"
+      [allColumns]="allColumns()"
+      (eventAdded)="onEventAdded($event)"
+      (eventRemoved)="onEventRemoved()"
+      (actionAdded)="onActionAdded($event)"
+      (itemChanged)="onItemChanged($event)"
+    ></workflow-group>
+  </span>
+  } }
 </div>
 
-<popper-content #nodePopup>
-  <div
-    class="option-div"
-    (click)="onGroupAdd(node); nodePopup.hide()"
-    *ngFor="let node of nodeList"
-  >
-    {{ node.name }}
+<!-- CDK Overlay Template for Node Popup -->
+<ng-template #nodePopupTemplate let-nodeList="nodeList">
+  <div class="workflow-popper">
+    @for (node of nodeList; track node) {
+    <div class="option-div" (click)="onGroupPicked(node)">
+      {{ node.name }}
+    </div>
+    }
   </div>
-</popper-content>
+</ng-template>

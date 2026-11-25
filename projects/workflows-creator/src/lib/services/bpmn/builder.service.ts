@@ -79,9 +79,6 @@ export class BpmnBuilderService extends BuilderService<
     statement.addStart(start);
     statement.addEnd(end);
     let current = statement.head;
-    // sonarignore:start
-    // TODO: Refactor this code to be more flexible
-    // sonarignore:start
     this.addElseIntoMainFlow(elseStatement, statement);
     this.traverseToSetTags(current[0]);
     this.traverseToLink(current[0]);
@@ -219,6 +216,11 @@ export class BpmnBuilderService extends BuilderService<
    *   -
    */
   async restore(xml: string) {
+    if (!xml || typeof xml !== 'string' || xml.trim().length === 0) {
+      throw new Error(
+        'Invalid XML: XML string is required and cannot be empty',
+      );
+    }
     const result = await this.moddle.fromXML(xml);
     this.root = result.rootElement;
     const process = this.root.get('rootElements')[0];
@@ -245,9 +247,6 @@ export class BpmnBuilderService extends BuilderService<
       const [elementCtor, nodeCtor, id, groupType, groupId, isElseAction] =
         tag.id.split('_');
       const element = this.elements.createInstanceByName(elementCtor);
-      // sonarignore:start
-      // TODO: Refactor
-      // sonarignore:start
       currentNode = this.nodes.getNodeByName(
         nodeCtor,
         groupType,

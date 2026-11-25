@@ -1,19 +1,18 @@
-@import '../../../assets/styles/colors';
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@use '../../../assets/styles/colors';
 
 @mixin round-btn {
   height: 30px;
   width: 44px;
   margin: 10px;
-  background-color: $white;
-  border: 1px solid $black;
+  background-color: colors.$white;
+  border: 1px solid colors.$black;
   border-radius: 5px;
 }
 
 @mixin theme {
-  background-color: $primary-color !important;
-  border: 1px solid $primary-color;
-  color: $white;
+  background-color: colors.$primary-color !important;
+  border: 1px solid colors.$primary-color;
+  color: colors.$white;
 }
 
 .multiselect{
@@ -21,19 +20,25 @@
   font-size: 15px;
 }
 
-popper-content {
-  display: inline-block !important;
-  margin-left:10px;
-  & > div {
-    padding: 0 !important;
+// CDK Overlay styles
+.workflow-popper {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+
+  .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin: 0px;
+    padding-bottom: 0px;
   }
-  .workflow-popper {
-    z-index: 100 !important;
-    .mat-form-field-appearance-outline .mat-form-field-wrapper {
-      margin: 0px;
-      padding-bottom: 0px;
-    }
-  }
+}
+
+.cdk-overlay-transparent-backdrop {
+  background: transparent;
 }
 
 /* my-component.scss */
@@ -108,10 +113,10 @@ input[type="time"]:focus {
   margin-bottom: 10px;
   padding: 5px 0;
   @media screen and (max-width: 480px) {
-    margin-bottom: -25px;
+    margin-bottom: 8px;
   }
   &.no-node {
-    margin-bottom: -25px !important;
+    margin-bottom: 4px !important;
   }
   .workflow-group {
     display: flex;
@@ -131,7 +136,7 @@ input[type="time"]:focus {
         &:hover {
           &.icon-workflow-plus,
           &.icon-workflow-delete {
-            background: $grey2;
+            background: colors.$grey2;
             border-radius: 5px;
           }
         }
@@ -155,7 +160,7 @@ input[type="time"]:focus {
     display: inline;
     text-decoration: inherit;
     .placeholder-text {
-      color: $placeholder-color;
+      color: colors.$placeholder-color;
       text-transform: lowercase;
     }
     .value-text {
@@ -176,65 +181,9 @@ input[type="time"]:focus {
     transform: translate(-50%, -50%);
     font-size: 20px;
   }
-  .email-template {
-    width: 450px;
-    .email-input {
-      padding: 10px;
-      width: 100%;
-      border: 0;
-      outline: none;
-    }
-    .email-body-input {
-      border-top: 1px solid $grey;
-      border-bottom: 1px solid $grey;
-    }
-    .auto-populate {
-      padding: 10px 0;
-      display: flex;
-      flex-wrap: wrap;
-      .item {
-        border: 1px solid $grey;
-        margin: 5px 10px;
-        padding: 4px;
-        font-size: 13px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    }
-    .set-email-btn {
-      text-align: right;
-      padding: 10px;
-      .close-btn {
-        background: $black;
-        color: $white;
-        cursor: pointer;
-        font-size: 13px;
-        padding: 5px 20px;
-        border: 0;
-        border-radius: 5px;
-      }
-    }
-  }
-  .text-input {
-    border: 0px solid $primary-color;
-    padding: 3px
-  }
-  .option-div {
-    padding: 5px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    min-width: 200px;
-    &:hover {
-      background: $hover-color;
-    }
-    &.selected {
-      background-color: $primary-color;
-      color: $white;
-    }
-  }
 }
 
-:host ::ng-deep {
+:host {
   .dropdown-list {
     min-width: 250px;
     margin-top: 0 !important;
@@ -270,13 +219,72 @@ input[type="time"]:focus {
   .sr-only {
     display: none;
   }
+}
 
-  .btn-link {
-    background-color: $white;
+// Popup content is rendered in a CDK overlay outside .tree-group and :host,
+// so these rules must not be nested under either.
+.email-template {
+  width: 450px;
+  .email-input {
+    padding: 10px;
+    width: 100%;
     border: 0;
-    color: $primary-color;
-    font-size: 13px;
+    outline: none;
   }
+  .email-body-input {
+    border-top: 1px solid colors.$grey;
+    border-bottom: 1px solid colors.$grey;
+  }
+  .auto-populate {
+    padding: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      border: 1px solid colors.$grey;
+      margin: 5px 10px;
+      padding: 4px;
+      font-size: 13px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+  .set-email-btn {
+    text-align: right;
+    padding: 10px;
+    .close-btn {
+      background: colors.$black;
+      color: colors.$white;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 20px;
+      border: 0;
+      border-radius: 5px;
+    }
+  }
+}
+.text-input {
+  border: 0px solid colors.$primary-color;
+  padding: 3px;
+}
+.option-div {
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 200px;
+  &:hover {
+    background: colors.$hover-color;
+  }
+  &.selected {
+    background-color: colors.$primary-color;
+    color: colors.$white;
+  }
+}
+
+.btn-link {
+  background-color: colors.$white;
+  border: 0;
+  color: colors.$primary-color;
+  font-size: 13px;
 }
 
 .date-time-picker {

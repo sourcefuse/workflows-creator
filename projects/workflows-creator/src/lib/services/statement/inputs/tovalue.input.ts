@@ -1,10 +1,10 @@
 import {ValueInput} from './value.input';
 
 export class ToValueInput extends ValueInput {
-  prefix = '';
+  override prefix = '';
   static identifier = 'ToValueInput';
 
-  getIdentifier(): string {
+  override getIdentifier(): string {
     return ToValueInput.identifier;
   }
 }
