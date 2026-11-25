@@ -1,5 +1,10 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import {NodeComponent} from './node.component';
 
 describe('NodeComponent', () => {
@@ -46,6 +51,31 @@ describe('NodeComponent', () => {
       component.removeClick();
       expect(component.remove.emit).toHaveBeenCalledWith(true);
     });
+  });
+
+  it('shows a statement changed on the same node object when the parent re-checks', () => {
+    @Component({
+      template: `<workflow-node
+          [node]="node"
+          [inputTemplate]="tpl"
+        ></workflow-node>
+        <ng-template #tpl></ng-template>`,
+      standalone: true,
+      imports: [NodeComponent],
+    })
+    class ParentComponent {
+      @ViewChild('tpl', {static: true}) tpl!: TemplateRef<any>;
+      node = {node: {statement: 'before'}};
+    }
+
+    const parent = TestBed.createComponent(ParentComponent);
+    parent.detectChanges();
+
+    parent.componentInstance.node.node.statement = 'after';
+    parent.componentRef.injector.get(ChangeDetectorRef).markForCheck();
+    parent.detectChanges();
+
+    expect(parent.nativeElement.textContent).toContain('after');
   });
 
   describe('addClick', () => {

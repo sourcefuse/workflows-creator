@@ -181,62 +181,6 @@ input[type="time"]:focus {
     transform: translate(-50%, -50%);
     font-size: 20px;
   }
-  .email-template {
-    width: 450px;
-    .email-input {
-      padding: 10px;
-      width: 100%;
-      border: 0;
-      outline: none;
-    }
-    .email-body-input {
-      border-top: 1px solid colors.$grey;
-      border-bottom: 1px solid colors.$grey;
-    }
-    .auto-populate {
-      padding: 10px 0;
-      display: flex;
-      flex-wrap: wrap;
-      .item {
-        border: 1px solid colors.$grey;
-        margin: 5px 10px;
-        padding: 4px;
-        font-size: 13px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    }
-    .set-email-btn {
-      text-align: right;
-      padding: 10px;
-      .close-btn {
-        background: colors.$black;
-        color: colors.$white;
-        cursor: pointer;
-        font-size: 13px;
-        padding: 5px 20px;
-        border: 0;
-        border-radius: 5px;
-      }
-    }
-  }
-  .text-input {
-    border: 0px solid colors.$primary-color;
-    padding: 3px
-  }
-  .option-div {
-    padding: 5px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    min-width: 200px;
-    &:hover {
-      background: colors.$hover-color;
-    }
-    &.selected {
-      background-color: colors.$primary-color;
-      color: colors.$white;
-    }
-  }
 }
 
 :host {
@@ -275,13 +219,72 @@ input[type="time"]:focus {
   .sr-only {
     display: none;
   }
+}
 
-  .btn-link {
-    background-color: colors.$white;
+// Popup content is rendered in a CDK overlay outside .tree-group and :host,
+// so these rules must not be nested under either.
+.email-template {
+  width: 450px;
+  .email-input {
+    padding: 10px;
+    width: 100%;
     border: 0;
-    color: colors.$primary-color;
-    font-size: 13px;
+    outline: none;
   }
+  .email-body-input {
+    border-top: 1px solid colors.$grey;
+    border-bottom: 1px solid colors.$grey;
+  }
+  .auto-populate {
+    padding: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      border: 1px solid colors.$grey;
+      margin: 5px 10px;
+      padding: 4px;
+      font-size: 13px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+  .set-email-btn {
+    text-align: right;
+    padding: 10px;
+    .close-btn {
+      background: colors.$black;
+      color: colors.$white;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 20px;
+      border: 0;
+      border-radius: 5px;
+    }
+  }
+}
+.text-input {
+  border: 0px solid colors.$primary-color;
+  padding: 3px;
+}
+.option-div {
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 200px;
+  &:hover {
+    background: colors.$hover-color;
+  }
+  &.selected {
+    background-color: colors.$primary-color;
+    color: colors.$white;
+  }
+}
+
+.btn-link {
+  background-color: colors.$white;
+  border: 0;
+  color: colors.$primary-color;
+  font-size: 13px;
 }
 
 .date-time-picker {

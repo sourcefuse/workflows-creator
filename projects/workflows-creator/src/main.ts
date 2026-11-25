@@ -1,6 +1,6 @@
 import {createApplication} from '@angular/platform-browser';
 import {createCustomElement} from '@angular/elements';
-import {Injector} from '@angular/core';
+import {provideZoneChangeDetection} from '@angular/core';
 import {BuilderComponent} from './lib/builder/builder.component';
 import {provideWorkflowCreator} from './lib/provide-workflow-creator';
 import {InputTypes} from './lib/enum';
@@ -25,7 +25,12 @@ import {
 
 // Create application context for custom element (no component bootstrapping)
 createApplication({
-  providers: [provideWorkflowCreator((window as any).workflowEnv)],
+  providers: [
+    // Angular 21+ is zoneless by default; the web component bundles zone.js
+    // (see polyfills.ts), so keep the zone-based scheduler to behave as before.
+    provideZoneChangeDetection(),
+    provideWorkflowCreator((window as any).workflowEnv),
+  ],
 })
   .then(appRef => {
     const webComponent = createCustomElement(BuilderComponent, {

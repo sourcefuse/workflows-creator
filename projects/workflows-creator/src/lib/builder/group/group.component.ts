@@ -1,6 +1,8 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
+  HostListener,
   input,
   output,
   OnInit,
@@ -36,10 +38,8 @@ import {
 import {
   EventWithInput,
   ActionWithInput,
-  DateTime,
   EmailInput,
   Select,
-  DateType,
 } from '../../types/base.types';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {
@@ -74,6 +74,11 @@ import {TooltipRenderComponent} from '../tooltip-render/tooltip-render.component
     LocalizationPipe,
   ],
   providers: [LocalizationPipe],
+  // Angular 22 makes OnPush the default. The builder adds nodes to
+  // group.children in place (e.g. when restoring a saved workflow), so keep
+  // the eager checking this component had before.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   constructor(
@@ -578,6 +583,27 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Closes the open input popup on Escape, saving a focused input the same way
+   * an outside click does. An open ng-select dropdown handles Escape first and
+   * marks the event as handled, so that one is left alone.
+   * @param {KeyboardEvent} event - the document keydown event
+   */
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent): void {
+    const handledBySelect =
+      event.defaultPrevented &&
+      (event.target as Element | null)?.closest?.('ng-select');
+    if (!this.overlayRef || handledBySelect) {
+      return;
+    }
+    const focused = document.activeElement as HTMLElement | null;
+    if (focused && this.overlayRef.overlayElement.contains(focused)) {
+      focused.blur();
+    }
+    this.closeOverlay();
+  }
+
+  /**
    * It returns a function that hides the overlay
    * @returns A function that calls the closeOverlay method.
    */
@@ -733,7 +759,6 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
         }
         break;
     }
-    return;
   }
 
   handleMouseDown(event: MouseEvent): void {
@@ -749,12 +774,29 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-
     // Check if the click is outside the input element and not part of a drag
     if (!this.isMouseDown) {
       // If not a drag and click outside the input, hide the input box
       this.hidePopper();
+    }
+  }
+
+  /**
+   * Hides the searchable dropdown popup on a document click, except for clicks
+   * inside the ng-select dropdown panel. ng-select renders that panel in its
+   * own CDK overlay, outside the popup, so those clicks reach the document.
+   * @param {Event} event - the document click event
+   * @param hide - closes the popup
+   */
+  hideUnlessDropdownPanelClick(event: Event, hide: () => void): void {
+    const insidePanel = event
+      .composedPath()
+      .some(
+        target =>
+          target instanceof Element && target.tagName === 'NG-DROPDOWN-PANEL',
+      );
+    if (!insidePanel) {
+      hide();
     }
   }
 
@@ -775,10 +817,8 @@ export class GroupComponent<E> implements OnInit, AfterViewInit, OnDestroy {
     type: string,
     event: KeyboardEvent,
   ) {
-    const response = this.getLibraryValue(node, $event, type, {});
-
     if (event.keyCode === 13) {
-      callback(response);
+      callback(this.getLibraryValue(node, $event, type, {}));
     }
   }
 

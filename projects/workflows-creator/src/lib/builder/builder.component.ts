@@ -56,12 +56,9 @@ import {
 } from '../types';
 import {LocalizationProviderService} from '../services/localization-provider.service';
 import {LocalizationPipe} from '../pipes/localization.pipe';
-import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {GroupComponent} from './group/group.component';
-import {NodeComponent} from './node/node.component';
-import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
 @Component({
   selector: 'workflow-builder',
   templateUrl: './builder.component.html',
@@ -70,20 +67,13 @@ import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component'
     '../../assets/icons/icomoon/style.css',
   ],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    NgSelectModule,
-    GroupComponent,
-    LocalizationPipe,
-  ],
+  imports: [FormsModule, NgSelectModule, GroupComponent, LocalizationPipe],
   providers: [LocalizationPipe],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuilderComponent<E> implements OnInit, OnDestroy {
   private previousDiagram = '';
-  private previousState: StateMap<RecordOfAnyType> | null = null;
   private previousLocalizedStringMap: RecordOfAnyType | null = null;
   private isInitialized = false;
   private isInternalUpdate = false;
@@ -117,18 +107,18 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
             this.previousLocalizedStringMap = currentLocalizedStringMap;
           }
 
-          // Handle diagram and state changes (after initialization)
+          // Restore when a new diagram comes in (after initialization). The
+          // host may set diagram and state one at a time, so a state-only
+          // change must not restore the old diagram, and a diagram that came
+          // in before its state is restored once the state arrives.
           if (
             this.isInitialized &&
             !this.isInternalUpdate &&
-            currentDiagram &&
-            currentState &&
-            (currentDiagram !== this.previousDiagram ||
-              currentState !== this.previousState)
+            currentDiagram !== this.previousDiagram &&
+            this.canRestore(currentDiagram, currentState)
           ) {
-            this.handleDiagramAndStateChange(currentDiagram, currentState);
             this.previousDiagram = currentDiagram;
-            this.previousState = currentState;
+            this.handleDiagramAndStateChange(currentDiagram, currentState);
           }
         } catch (error) {
           console.error('Effect error in BuilderComponent:', error);
@@ -177,12 +167,32 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.initiateNode();
+    const initialDiagram = this.diagram();
+    const initialState = this.state();
     // Set initial values
     this.previousLocalizedStringMap = this.localizedStringMap();
-    this.previousDiagram = this.diagram();
-    this.previousState = this.state();
     // Mark as initialized to enable effect-based change detection
     this.isInitialized = true;
+    // The effect only reacts to later changes, so handle the values passed in
+    // up front here: restore a saved workflow, or emit the starting diagram.
+    if (this.canRestore(initialDiagram, initialState)) {
+      this.previousDiagram = initialDiagram;
+      this.handleDiagramAndStateChange(initialDiagram, initialState);
+    } else if (Object.keys(this.localizedStringMap() ?? {}).length > 0) {
+      this.updateDiagram();
+    }
+  }
+
+  private canRestore(
+    diagram: string,
+    state: StateMap<RecordOfAnyType>,
+  ): boolean {
+    return (
+      typeof diagram === 'string' &&
+      diagram.trim().length > 0 &&
+      !!state &&
+      Object.keys(state).length > 0
+    );
   }
 
   initiateNode() {
@@ -219,13 +229,7 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
     diagram: string,
     state: StateMap<RecordOfAnyType>,
   ) {
-    if (
-      diagram &&
-      typeof diagram === 'string' &&
-      diagram.trim().length > 0 &&
-      state &&
-      Object.keys(state).length > 0
-    ) {
+    if (this.canRestore(diagram, state)) {
       const {
         events,
         actions,
@@ -291,13 +295,6 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
     if (!events || events.length !== 1 || !firstEvent) {
       this.elseBlockHidden = false;
       return;
-    }
-
-    // let value = firstEvent.state.get('value');
-    let value = events.length > 0 ? firstEvent?.state.get('value') : undefined;
-
-    if (typeof value === 'object') {
-      value = value.value;
     }
 
     const eventType = firstEvent.getIdentifier();
@@ -724,7 +721,6 @@ export class BuilderComponent<E> implements OnInit, OnDestroy {
     // Update the state model (this automatically emits stateChange with the new state)
     this.isInternalUpdate = true;
     this.state.set(newState);
-    this.previousState = newState;
     this.isInternalUpdate = false;
   }
   /**

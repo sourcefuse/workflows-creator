@@ -1,16 +1,19 @@
 <div class="tree-node">
+  @if (isLast()) {
   <span
     class="action-icons icon-workflow-plus"
-    *ngIf="isLast()"
     (click)="addClick($event)"
   ></span>
+  }
   <span
     class="action-icons icon-workflow-delete"
     (click)="removeClick()"
   ></span>
 
   <div class="workflow-content">
-    <span *ngIf="!isFirst()"> and </span>
+    @if (!isFirst()) {
+    <span> and </span>
+    }
     {{ node()?.node?.statement || '' }}
 
     <ng-container

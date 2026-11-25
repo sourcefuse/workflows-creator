@@ -7,40 +7,41 @@
   ></workflow-tooltip-render>
   <div class="workflow-group">
     <div class="workflow-group-content">
-      <span *ngIf="!isFirst() && group().children.length > 0">
+      @if (!isFirst() && group().children.length > 0) {
+      <span>
         {{ group().name }}
       </span>
-      <span
-        class="input-text"
-        *ngIf="group().children.length === 0"
-        (click)="openPopup(group().nodeType, $event)"
-      >
-        <span *ngIf="group().nodeType === types.EVENT">
+      } @if (group().children.length === 0) {
+      <span class="input-text" (click)="openPopup(group().nodeType, $event)">
+        @if (group().nodeType === types.EVENT) {
+        <span>
           {{ localizedStringKeys.WhenThisHappens | localization }}
         </span>
-        <span *ngIf="group().nodeType === types.ACTION">
+        } @if (group().nodeType === types.ACTION) {
+        <span>
           {{ localizedStringKeys.DoThis | localization }}
         </span>
+        }
       </span>
+      }
     </div>
 
-    <span
-      class="action-items hide"
-      *ngIf="group().children.length && enableActionIcon"
-    >
-      <span
-        class="action-add"
-        *ngIf="isLast() && nodeType() === types.EVENT"
-        (click)="addClick()"
-      >
+    @if (group().children.length && enableActionIcon) {
+    <span class="action-items hide">
+      @if (isLast() && nodeType() === types.EVENT) {
+      <span class="action-add" (click)="addClick()">
         <span class="action-icons icon-workflow-plus"></span>
       </span>
-      <span class="delete" *ngIf="!isFirst()" (click)="removeClick()">
+      } @if (!isFirst()) {
+      <span class="delete" (click)="removeClick()">
         <span class="action-icons icon-workflow-delete"></span>
       </span>
+      }
     </span>
+    }
   </div>
-  <span *ngFor="let node of group().children; let i = index">
+  @for (node of group().children; track node; let i = $index) {
+  <span>
     <workflow-node
       [ngClass]="{'last-node': i === group().children.length - 1}"
       [node]="node"
@@ -51,60 +52,55 @@
       (remove)="onNodeRemove(i)"
     ></workflow-node>
   </span>
+  }
 
   <ng-template #inputs let-nodeWithInput="node">
-    <ng-container *ngFor="let input of nodeWithInput.inputs || []">
-      <ng-container
-        *ngIf="!(input.isHidden && input.isHidden(nodeWithInput.node))"
+    @for (input of nodeWithInput.inputs || []; track input) { @if
+    (!(input.isHidden && input.isHidden(nodeWithInput.node))) {
+    {{
+      (input.prefix.state
+        ? nodeWithInput.node.state.get(input.prefix.state)
+        : input.prefix) || ''
+    }}
+    <div
+      class="input-text"
+      (click)="
+        openOverlay($event, inputPopupTemplate, {
+          nodeWithInput: nodeWithInput,
+          input: input,
+          list: input.options ? input.options(nodeWithInput.node.state) : [],
+          callback: createCallback(nodeWithInput, input),
+          emailInput: emailInput,
+          appendEmailBody: appendEmailBody,
+          setFocusKey: setFocusKey,
+          hide: closeOverlay.bind(this)
+        })
+      "
+      (mouseover)="showTooltip($event, nodeWithInput, input)"
+      (mouseout)="hideTooltip()"
+    >
+      @if (input.getValueName(nodeWithInput.node.state)) {
+      <span
+        class="value-text"
+        title="{{ input.getValueName(nodeWithInput.node.state) }}"
+        (click)="setInput(input, nodeWithInput)"
+        >{{ input.getValueName(nodeWithInput.node.state) }}</span
       >
+      } @if (!input.getValueName(nodeWithInput.node.state)) {
+      <span class="placeholder-text">
         {{
-          (input.prefix.state
-            ? nodeWithInput.node.state.get(input.prefix.state)
-            : input.prefix) || ''
+          nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
+            input.placeholder
         }}
-        <div
-          class="input-text"
-          (click)="
-            openOverlay($event, inputPopupTemplate, {
-              nodeWithInput: nodeWithInput,
-              input: input,
-              list: input.options
-                ? input.options(nodeWithInput.node.state)
-                : [],
-              callback: createCallback(nodeWithInput, input),
-              emailInput: emailInput,
-              appendEmailBody: appendEmailBody,
-              setFocusKey: setFocusKey,
-              hide: closeOverlay.bind(this)
-            })
-          "
-          (mouseover)="showTooltip($event, nodeWithInput, input)"
-          (mouseout)="hideTooltip()"
-        >
-          <span
-            class="value-text"
-            *ngIf="input.getValueName(nodeWithInput.node.state)"
-            title="{{ input.getValueName(nodeWithInput.node.state) }}"
-            (click)="setInput(input, nodeWithInput)"
-            >{{ input.getValueName(nodeWithInput.node.state) }}</span
-          >
-          <span
-            class="placeholder-text"
-            *ngIf="!input.getValueName(nodeWithInput.node.state)"
-          >
-            {{
-              nodeWithInput.node.state.get(input.customPlaceholder?.state) ??
-                input.placeholder
-            }}
-          </span>
-        </div>
-        {{
-          (input.suffix?.state
-            ? nodeWithInput.node.state.get(input.suffix?.state)
-            : input.suffix) || ''
-        }}
-      </ng-container>
-    </ng-container>
+      </span>
+      }
+    </div>
+    {{
+      (input.suffix?.state
+        ? nodeWithInput.node.state.get(input.suffix?.state)
+        : input.suffix) || ''
+    }}
+    } }
   </ng-template>
 
   <ng-template
@@ -147,6 +143,7 @@
         (mouseup)="handleMouseUp()"
         (mouseleave)="handleMouseLeave($event)"
         (keydown)="handleKeyPress($event)"
+        (keydown.enter)="$any($event.target).blur()"
       />
     </div>
   </ng-template>
@@ -159,6 +156,7 @@
     let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
+    @for (option of list; track option) {
     <div
       #select
       class="option-div"
@@ -169,19 +167,20 @@
       }"
       (click)="callback(option)"
       (document:click)="hide()"
-      *ngFor="let option of list"
     >
       {{ option[input.listNameField] }}
     </div>
+    }
   </ng-template>
 
   <ng-template
     #searchableDropdownTemplate
     let-list="list"
     let-callback="callback"
+    let-nodeWithInput="nodeWithInput"
     let-hide="hide"
   >
-    <div (document:click)="hide()">
+    <div (document:click)="hideUnlessDropdownPanelClick($event, hide)">
       <ng-select
         class="multiselect"
         [items]="list"
@@ -355,11 +354,11 @@
         [(ngModel)]="emailInput.body"
       ></textarea>
       <div class="auto-populate">
-        <ng-container *ngFor="let item of allColumns()">
-          <div class="item" (click)="appendEmailBody(item, emailInput)">
-            {{ item.text }}
-          </div>
-        </ng-container>
+        @for (item of allColumns(); track item) {
+        <div class="item" (click)="appendEmailBody(item, emailInput)">
+          {{ item.text }}
+        </div>
+        }
       </div>
       <div class="set-email-btn">
         <button
@@ -386,29 +385,25 @@
     let-hide="hide"
   >
     <div class="workflow-popper" (click)="$event.stopPropagation()">
+      @if ( computedTemplateMap &&
+      computedTemplateMap[input.typeFunction(nodeWithInput.node.state)] ) {
       <ng-container
-        *ngIf="
-          computedTemplateMap &&
-          computedTemplateMap[input.typeFunction(nodeWithInput.node.state)]
+        *ngTemplateOutlet="
+          computedTemplateMap[input.typeFunction(nodeWithInput.node.state)] ||
+            listTemplate;
+          context: {
+            list: list,
+            callback: callback,
+            nodeWithInput: nodeWithInput,
+            input: input,
+            emailInput: emailInput,
+            appendEmailBody: appendEmailBody,
+            setFocusKey: setFocusKey,
+            hide: hide
+          }
         "
-      >
-        <ng-container
-          *ngTemplateOutlet="
-            computedTemplateMap[input.typeFunction(nodeWithInput.node.state)] ||
-              listTemplate;
-            context: {
-              list: list,
-              callback: callback,
-              nodeWithInput: nodeWithInput,
-              input: input,
-              emailInput: emailInput,
-              appendEmailBody: appendEmailBody,
-              setFocusKey: setFocusKey,
-              hide: hide
-            }
-          "
-        ></ng-container>
-      </ng-container>
+      ></ng-container>
+      }
     </div>
   </ng-template>
 
@@ -420,6 +415,7 @@
     let-groupIdentifier="groupIdentifier"
   >
     <div class="workflow-popper">
+      @for (node of nodeList; track node) {
       <div
         class="option-div"
         (click)="
@@ -427,10 +423,10 @@
           closeOverlay();
           $event.stopPropagation()
         "
-        *ngFor="let node of nodeList"
       >
         {{ node.name }}
       </div>
+      }
     </div>
   </ng-template>
 </div>

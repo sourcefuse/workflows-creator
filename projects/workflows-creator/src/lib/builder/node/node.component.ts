@@ -1,4 +1,10 @@
-import {Component, input, output, TemplateRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  TemplateRef,
+} from '@angular/core';
 import {RecordOfAnyType, NodeWithInput} from '../../types';
 import {CommonModule} from '@angular/common';
 
@@ -11,6 +17,11 @@ import {CommonModule} from '@angular/common';
   ],
   standalone: true,
   imports: [CommonModule],
+  // Angular 22 makes OnPush the default. The builder mutates node objects in
+  // place (e.g. when restoring a saved workflow), so keep the eager checking
+  // this component had before.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class NodeComponent<E> {
   node = input.required<NodeWithInput<E>>();
