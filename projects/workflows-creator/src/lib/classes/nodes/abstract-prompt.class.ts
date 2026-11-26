@@ -1,5 +1,5 @@
 import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {InvalidEntityError} from '../../errors';
 import {InputTypes, NUMBER} from '../../enum';
 import {
@@ -11,6 +11,7 @@ import {
   Select,
 } from '../../types/base.types';
 import {State} from '../state';
+import {parseUtcLikeMoment} from '../../services/date-parse.util';
 
 /**
  * This is the WorkflowPrompt class. WorkflowPrompts are used to prompt the user
@@ -87,13 +88,13 @@ export abstract class WorkflowPrompt {
       }
       case InputTypes.Date:
         const _date = `${this.onDateSelect(value as NgbDateStruct)}`;
-        return moment(_date.toString(), 'DD-MM-YYYY').format();
+        return dayjs(_date.toString(), 'DD-MM-YYYY').format();
       case InputTypes.DateTime:
         const {date, time} = value as DateTime;
         const hours = this.convertToTwoDigits(time.hour);
         const min = this.convertToTwoDigits(time.minute);
         const dateTime = `${this.onDateSelect(date)} ${hours}:${min}`;
-        return moment(dateTime.toString(), 'DD-MM-YYYY hh:mm').format();
+        return dayjs(dateTime.toString(), 'DD-MM-YYYY hh:mm').format();
       case InputTypes.Email:
         (value as AllowedValuesMap).body = (
           (value as AllowedValuesMap).body as string
@@ -160,15 +161,16 @@ export abstract class WorkflowPrompt {
         return state.get(this.inputKey)?.displayValue;
       case InputTypes.Date:
         return state.get(this.inputKey)
-          ? moment
-              .utc(state.get(this.inputKey), 'YYYY-MM-DD')
-              .format('MMM DD, YYYY')
+          ? parseUtcLikeMoment(state.get(this.inputKey), 'YYYY-MM-DD').format(
+              'MMM DD, YYYY',
+            )
           : '';
       case InputTypes.DateTime:
         return state.get(this.inputKey)
-          ? moment
-              .utc(state.get(this.inputKey), 'YYYY-MM-DD hh:mm')
-              .format('MMM DD, YYYY hh:mm A')
+          ? parseUtcLikeMoment(
+              state.get(this.inputKey),
+              'YYYY-MM-DD hh:mm',
+            ).format('MMM DD, YYYY hh:mm A')
           : '';
       case InputTypes.IntervalDate:
       case InputTypes.IntervalTime:
@@ -239,24 +241,24 @@ export abstract class WorkflowPrompt {
       case InputTypes.Date: {
         const dateString = state.get(this.inputKey);
         return {
-          month: moment(dateString).month() + 1,
-          day: moment(dateString).date(),
-          year: moment(dateString).year(),
+          month: dayjs(dateString).month() + 1,
+          day: dayjs(dateString).date(),
+          year: dayjs(dateString).year(),
         };
       }
       case InputTypes.DateTime: {
-        const dateString = moment(state.get(this.inputKey))?.format(
+        const dateString = dayjs(state.get(this.inputKey))?.format(
           DATE_TIME_FORMAT,
         );
         return {
           date: {
-            month: moment(dateString).month() + 1,
-            day: moment(dateString).date(),
-            year: moment(dateString).year(),
+            month: dayjs(dateString).month() + 1,
+            day: dayjs(dateString).date(),
+            year: dayjs(dateString).year(),
           },
           time: {
-            hour: moment(dateString).hours(),
-            minute: moment(dateString).minutes(),
+            hour: dayjs(dateString).hour(),
+            minute: dayjs(dateString).minute(),
           },
         };
       }
